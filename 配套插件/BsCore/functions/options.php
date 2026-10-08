@@ -85,6 +85,7 @@ if (!function_exists('update_option')) {
 if (!function_exists('update_bs_key_params')) {
     function update_bs_key_params($option, $value, $autoload = null)
     {
+        // ponytail: 该选项存储 CSF_Options 对象，必须 serialize 保真；JSON 往返会把对象降级为数组，导致保存时 set_options 致命错误（plugin:BsCore_ 为纯数组才走 JSON）
         $db = Db::get();
         $pluginName = FRAMEWORK_KEY_PARMAS_NAME;
         $select = $db->select()->from('table.options')
@@ -96,29 +97,41 @@ if (!function_exists('update_bs_key_params')) {
             $db->query($db->insert('table.options')
                 ->rows([
                     'name' => $pluginName,
-                    'value' => json_encode($settings),
+                    'value' => serialize($settings),
                     'user' => 0
                 ]));
         } else {
-            $options = bs_decode_option_value($options['value']);
+            $options = @unserialize($options['value'], ['allowed_classes' => ['CSF_Options']]);
+            $options = is_array($options) ? $options : array();
             $options[$option] = $value;
             $db->query($db->update('table.options')
-                ->rows(['value' => json_encode($options)])
+                ->rows(['value' => serialize($options)])
                 ->where('name = ?', $pluginName)
                 ->where('user = ?', 0));
         }
-
-        bs_option_cache($pluginName, true);
     }
 }
 if (!function_exists('get_bs_key_params')) {
 
 // get option for framework
+    // ponytail: 读取 CSF_Options 对象须走 unserialize 还原；Typecho 1.3.0 升级脚本可能已把该行转成 JSON（对象信息丢失），此时双格式兼容回退，返回 false 由调用方守卫处理
     function get_bs_key_params($option, $default = false)
     {
-        $options = bs_option_cache(FRAMEWORK_KEY_PARMAS_NAME);
-        if (array_key_exists($option, $options)) {
-            return $options[$option];
+        $db = Db::get();
+        $row = $db->fetchRow($db->select('value')->from('table.options')
+            ->where('name = ?', FRAMEWORK_KEY_PARMAS_NAME));
+
+        if (empty($row) || !is_string($row['value']) || $row['value'] === '') {
+            return $default;
+        }
+
+        $map = @unserialize($row['value'], ['allowed_classes' => ['CSF_Options']]);
+        if (!is_array($map)) {
+            $map = bs_decode_option_value($row['value']);
+        }
+
+        if (is_array($map) && array_key_exists($option, $map)) {
+            return $map[$option];
         }
         return $default;
     }

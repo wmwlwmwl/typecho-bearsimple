@@ -40,6 +40,13 @@ $user = \Typecho\Widget::widget('Widget\User');
 
 
             $obj = get_bs_key_params($plugin);
+            if (!is_object($obj) || !method_exists($obj, 'set_options')) {
+                // ponytail: 配置对象行损坏（如被 Typecho 1.3.0 升级脚本转 JSON）时返回明确 JSON，避免 500 触发前端"防火墙"误导提示
+                $this->response->throwJson([
+                    'data' => ['notice' => '配置对象未初始化，请重新打开主题设置页面后重试', 'errors' => []],
+                    'success' => false
+                ]);
+            }
             $ret = $obj->set_options(true);
 
             if ($ret and empty($obj->errors)) {

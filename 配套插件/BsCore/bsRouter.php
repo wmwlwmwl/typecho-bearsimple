@@ -40,6 +40,10 @@ class bsRouter extends \Typecho\Widget
         $plugin = $this->request->get('plugin');
 
         $obj = get_bs_key_params($plugin);
+        if (!is_object($obj) || !method_exists($obj, 'set_options')) {
+            // ponytail: 配置对象行损坏时回跳而非致命错误
+            $this->response->goBack();
+        }
         $obj->set_options(true);
         $this->response->goBack();
     }
