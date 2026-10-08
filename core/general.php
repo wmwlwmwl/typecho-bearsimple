@@ -71,13 +71,14 @@ if($result){
 else{
 
     $db = \Typecho\Db::get();      
-    $sql = $db->select('COUNT(author) AS num', 'author', 'url', 'mail')      
-              ->from('table.comments')      
-              ->where('status = ?', 'approved')      
-              ->where('type = ?', 'comment')      
-              ->where('authorId = ?', '0') 
-              ->group('author')      
+    $sql = $db->select('COUNT(author) AS num', 'author', 'MAX(url) AS url', 'MAX(mail) AS mail')
+              ->from('table.comments')
+              ->where('status = ?', 'approved')
+              ->where('type = ?', 'comment')
+              ->where('authorId = ?', '0')
+              ->group('author')
               ->order('num', \Typecho\Db::SORT_DESC);
+    // ponytail: url/mail 用 MAX() 聚合，满足 ONLY_FULL_GROUP_BY，避免读者墙查询在严格模式下 1055 崩溃
     $result = $db->fetchAll($sql);
     \Typecho\Cookie::set('readerdata',json_encode($result));
 }
@@ -1688,13 +1689,6 @@ class Widget_Post_hot extends \Widget\Base\Contents
                 $ret[] = $row[$col];
             }
         }
-        $db = \Typecho\Db::get();
-        $adapter = $db->getAdapterName();
-        // ponytail: 默认 right join，仅 SQLite/Pgsql 用 left，避免未知适配器下 $db_query 未定义告警
-        $db_query = 'right';
-        if ("Pdo_SQLite" === $adapter || "SQLite" === $adapter || "pgsql" === $adapter || "Pdo_Pgsql" === $adapter) {
-            $db_query = 'left';
-        }
         $mid = array_unique($ret);
         \Typecho\Widget::widget('Widget\User')->to($user);
         if(empty($mid) || ($user->hasLogin())){
@@ -1707,21 +1701,24 @@ $select  = $this->select()->from('table.contents')
           ->order('table.contents.created', \Typecho\Db::SORT_DESC);
         }
         else{
-$select  = $this->select()->from('table.contents')
-->join('table.relationships','table.relationships.cid = table.contents.cid',''.$db_query.'')
-->join('table.metas','table.relationships.mid = table.metas.mid',''.$db_query.'')
-->where('table.metas.type=?','category')
+            // ponytail: 两步查询排除加密分类文章（旧 join + mid!= 写法会让同时属于加密与普通分类的文章漏出，
+            // 且 GROUP BY 下携带 relationships 列在 ONLY_FULL_GROUP_BY 严格模式 1055/500）。
+            // 注意不能用 NOT IN (SELECT ...) 子查询：Typecho 1.3 Query->where 的 filterColumn 分词器
+            // 会把子查询里的 SELECT/FROM 等词当列名加反引号（KEYWORDS 白名单不含它们），核心也从不在 where 用子查询。
+            $mids = array_map('intval', $mid);
+            $cids = array_map('intval', array_column($this->db->fetchAll(
+                $this->db->select('cid')->from('table.relationships')->where('mid IN ?', $mids)
+            ), 'cid'));
+            $select = $this->select()->from('table.contents')
           ->where("table.contents.password IS NULL OR table.contents.password = ''")
           ->where('table.contents.status = ?','publish')
           ->where('table.contents.created <= ?', time())
-          ->where('table.contents.type = ?', 'post')
-          ->limit($this->parameter->pageSize)
-          ->order('table.contents.created', \Typecho\Db::SORT_DESC)
-          ->group('table.contents.cid');
-         foreach ($mid as  $k=>$v) {
-            $select->where('table.relationships.mid != '.intval($mid[$k]));//确保每个值都是数字
-        }    
-         
+          ->where('table.contents.type = ?', 'post');
+            if (!empty($cids)) {
+                $select->where('table.contents.cid NOT IN ?', $cids);
+            }
+            $select->limit($this->parameter->pageSize)
+          ->order('table.contents.created', \Typecho\Db::SORT_DESC);
         }
 
      $this->db->fetchAll($select, array($this, 'push'));
