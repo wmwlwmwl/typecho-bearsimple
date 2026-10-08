@@ -720,7 +720,7 @@ function bs_style(){
       .sm-sub-link:hover,
       .sm-sub-link:active,
       .sm-sub-link.sm-expanded{
-          color:#EF711D!important;
+          color:var(--bs-primary,#EF711D)!important;
       }
       .sm-nav-link--split.sm-sub-toggler::after,.sm-sub-link--split.sm-sub-toggler::after{
           color:gray;
@@ -886,8 +886,17 @@ echo '
           font-family: CustomFont !important;
         }
         ';
-    }
- 
+ }
+
+
+    /* ponytail: CJK 排版与可访问性基线（保守增量，渐进增强旧浏览器自动忽略）。
+       注：暗色模式为 html[data-theme=dark] 全页 invert 滤镜实现，链接色无需单独覆盖；
+       scroll-behavior:smooth 有意不加——pjax 导航路径存在 scrollTo，避免页面切换变成动画滚动。 */
+    echo '
+    :root{--bs-primary:#EF711D}
+    #post-content{word-break:break-word;overflow-wrap:break-word}
+    :focus-visible{outline:2px solid var(--bs-primary,#EF711D);outline-offset:2px}
+    ';
 
 echo '
     </style>';

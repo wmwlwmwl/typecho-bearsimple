@@ -262,7 +262,7 @@ function billboard($ads,$type){
     echo '
     <div class="ui cards"><a class="gray card" '.$target.' href="'.$str[1].'">
     <div class="image">
-      <img src="';if(empty($str[0])){ echo AssetsDir().'assets/image/white-image.png'; }else{ echo $str[0];} echo'">
+      <img loading="lazy" decoding="async" src="';if(empty($str[0])){ echo AssetsDir().'assets/image/white-image.png'; }else{ echo $str[0];} echo'">
        
     </div>
   </a>
@@ -278,7 +278,7 @@ function billboard($ads,$type){
     echo '
     <div class="ui cards"><a class="gray card" '.$target.' href="'.$str[1].'">
     <div class="image">
-      <img src="';if(empty($str[0])){ echo AssetsDir().'assets/image/white-image.png'; }else{ echo $str[0];} echo'">
+      <img loading="lazy" decoding="async" src="';if(empty($str[0])){ echo AssetsDir().'assets/image/white-image.png'; }else{ echo $str[0];} echo'">
        
     </div>
   </a>
@@ -294,7 +294,7 @@ elseif($type == 'sidebar2'){
     echo '
     <div class="ui cards"><a class="gray card" '.$target.' href="'.$str[1].'">
     <div class="image">
-      <img src="';if(empty($str[0])){ echo AssetsDir().'assets/image/white-image.png'; }else{ echo $str[0];} echo'">
+      <img loading="lazy" decoding="async" src="';if(empty($str[0])){ echo AssetsDir().'assets/image/white-image.png'; }else{ echo $str[0];} echo'">
        
     </div>
   </a>
@@ -310,7 +310,7 @@ elseif($type == 'sidebar2'){
     echo '
     <div class="ui cards"><a class="gray card" '.$target.' href="'.$str[1].'">
     <div class="image">
-      <img src="';if(empty($str[0])){ echo AssetsDir().'assets/image/white-image.png'; }else{ echo $str[0];} echo'">
+      <img loading="lazy" decoding="async" src="';if(empty($str[0])){ echo AssetsDir().'assets/image/white-image.png'; }else{ echo $str[0];} echo'">
        
     </div>
   </a>
@@ -328,7 +328,7 @@ elseif($type == 'index'){
     echo '
      <div class="bs_ads_cont">
     <a  href="'.$str[1].'" '.$target.'>
-      <img class="bs_ads_img ui fluid image" src="'.$str[0].'">
+      <img class="bs_ads_img ui fluid image" loading="lazy" decoding="async" src="'.$str[0].'">
   </a>
   </div>
     ';
@@ -342,7 +342,7 @@ elseif($type == 'index'){
     echo '
      <div class="bs_ads_cont">
     <a  href="'.$str[1].'" '.$target.'>
-      <img class="bs_ads_img ui fluid image" src="'.$str[0].'">
+      <img class="bs_ads_img ui fluid image" loading="lazy" decoding="async" src="'.$str[0].'">
   </a>
   </div>
     ';            
@@ -362,7 +362,7 @@ elseif($type == 'other'){
     echo '
      <div class="bs_ads_cont">
     <a  href="'.$str[1].'" '.$target.'>
-      <img class="bs_ads_img ui fluid image" src="'.$str[0].'">
+      <img class="bs_ads_img ui fluid image" loading="lazy" decoding="async" src="'.$str[0].'">
   </a>
   </div>
     ';
@@ -376,7 +376,7 @@ elseif($type == 'other'){
     echo '
      <div class="bs_ads_cont">
     <a  href="'.$str[1].'" '.$target.'>
-      <img class="bs_ads_img ui fluid image" src="'.$str[0].'">
+      <img class="bs_ads_img ui fluid image" loading="lazy" decoding="async" src="'.$str[0].'">
   </a>
   </div>
     ';            

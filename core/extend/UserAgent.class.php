@@ -40,7 +40,7 @@ else{
           $img = '<i class="weixin green icon"></i>';     
            }
            else{
-        $img = "<img style='vertical-align: middle;' src='" . $imgurl.$code.$type .  ".svg' height='15' width='15' />";
+        $img = "<img loading='lazy' decoding='async' style='vertical-align: middle;' src='" . $imgurl.$code.$type .  ".svg' height='15' width='15' />";
            }
 }
 else{
@@ -48,7 +48,7 @@ else{
         $img = '<i class="weixin green icon"></i> <small>发自微信公众号</small>';      
            }
            else{
-    $img = "<img style='vertical-align: middle;' src='" . $imgurl.$code.$type .  ".svg'  alt='" . $title . "' height='15' width='15' />";
+    $img = "<img loading='lazy' decoding='async' style='vertical-align: middle;' src='" . $imgurl.$code.$type .  ".svg'  alt='" . $title . "' height='15' width='15' />";
            }
 }
         return $img;

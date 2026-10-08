@@ -1,4 +1,2 @@
-@import url('./lxgwwenkaigbscreen.css');
-@import url('./lxgwwenkaigbscreenr.css');
+/* ponytail: 仅保留实际被 bearsimple.min.css 引用的 'LXGW WenKai Screen'；其余 3 个变体家族全仓零引用，已于 2026-10-09 删除（约 14MB） */
 @import url('./lxgwwenkaiscreen.css');
-@import url('./lxgwwenkaiscreenr.css');

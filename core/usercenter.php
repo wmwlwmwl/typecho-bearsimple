@@ -82,7 +82,7 @@ function user_tier($coin){
             if($coin >= $rank['UserCenter_rank_min'] && $rank['UserCenter_rank_max'] >= $coin){
                 $res = $rank['UserCenter_rank_Name'];
                 if($rank['UserCenter_rank_Pic']){
-                $res .=  '<img src="'.$rank['UserCenter_rank_Pic'].'" style="display:inline;max-width:100%;height:30px;vertical-align: middle;">';  
+                $res .=  '<img loading="lazy" decoding="async" src="'.$rank['UserCenter_rank_Pic'].'" style="display:inline;max-width:100%;height:30px;vertical-align: middle;">';  
                 }
                 return $res;
             }

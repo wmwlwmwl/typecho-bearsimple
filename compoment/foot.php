@@ -227,9 +227,9 @@ $(document).ready(function () {
     &copy; <?php echo date('Y'); ?> <a href="<?php $this->options->siteUrl(); ?>"><?php $this->options->title(); ?></a><?php if(Bsoptions('allOfCharacters') == true): ?> （<i class="pencil alternate icon"></i>本站总字数:<?php echo allOfCharacters(); ?>字）<?php endif; ?>
 
 <br>
-    <?php _e('Powered by <a href="http://www.typecho.org" target="_blank">Typecho</a> & <a href="https://github.com/whitebearcode/typecho-bearsimple" target="_blank"> BearSimple</a>  '); ?>
+    <?php _e('Powered by <a href="http://www.typecho.org" target="_blank">Typecho</a> & <a href="https://github.com/wmwlwmwl/typecho-bearsimple" target="_blank"> BearSimple</a>  '); ?>
     <?php if (Bsoptions('IcpBa') || Bsoptions('PoliceBa')): ?><br><?php endif; ?>
-     <?php if (Bsoptions('PoliceBa')): ?><img style="vertical-align: middle;" src="<?php AssetsDir();?>assets/images/beian.png" alt=""> <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=<?php echo parseNumber(Bsoptions('PoliceBa')); ?>" target="_blank"><?php echo Bsoptions('PoliceBa'); ?></a><?php endif; ?><?php if (Bsoptions('IcpBa') && Bsoptions('PoliceBa')): ?>  |  <?php endif; ?><?php if (Bsoptions('IcpBa')): ?><img style="vertical-align: middle;" src="<?php AssetsDir();?>assets/images/icp.png" alt=""> <a href="https://beian.miit.gov.cn/" target="_blank"><?php echo Bsoptions('IcpBa'); ?></a><?php endif; ?>
+     <?php if (Bsoptions('PoliceBa')): ?><img loading="lazy" style="vertical-align: middle;" src="<?php AssetsDir();?>assets/images/beian.png" alt=""> <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=<?php echo parseNumber(Bsoptions('PoliceBa')); ?>" target="_blank"><?php echo Bsoptions('PoliceBa'); ?></a><?php endif; ?><?php if (Bsoptions('IcpBa') && Bsoptions('PoliceBa')): ?>  |  <?php endif; ?><?php if (Bsoptions('IcpBa')): ?><img style="vertical-align: middle;" src="<?php AssetsDir();?>assets/images/icp.png" alt=""> <a href="https://beian.miit.gov.cn/" target="_blank"><?php echo Bsoptions('IcpBa'); ?></a><?php endif; ?>
      <?php if(Bsoptions('load_Time') == '1'): ?><br><?php echo loadtime();?><?php endif; ?>
      <?php if(Bsoptions('blogsclub_shuttle') == true): ?>
      <br><a href="https://www.blogsclub.org/go"> <img src="<?php AssetsDir();?>assets/images/blogsclub-shuttle.svg" loading="lazy" alt="BlogsClub 穿梭机"></a>

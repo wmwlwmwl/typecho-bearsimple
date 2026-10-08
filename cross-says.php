@@ -47,7 +47,7 @@
  ?>
 <div class="bs-timeline-block" id="<?php $comments->theId(); ?>">
 			<div class="bs-timeline-img">
-	<img src="<?php echo imgravatarq($comments->mail); ?>">		    
+	<img loading="lazy" decoding="async" src="<?php echo imgravatarq($comments->mail); ?>">		    
      	</div>
 			<div class="bs-timeline-content break">
 			    <?php $comments->date('Y-m-d H:i'); ?>

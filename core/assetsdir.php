@@ -6,7 +6,7 @@ function AssetsDir(){
         $dir = $options->themeUrl.'/';
     }
     else if($options1['Assets'] == '2'){
-        $dir = 'https://deliver.application.pub/gh/whitebearcode/typecho-bearsimple@v'.themeVersionOnly().'/';
+        $dir = 'https://deliver.application.pub/gh/wmwlwmwl/typecho-bearsimple@v'.themeVersionOnly().'/';
     }
     else{
         $dir = $options1['Assets_Custom'];
@@ -28,7 +28,7 @@ function AssetsDir_Backend(){
         $dir = $options->themeUrl.'/';
     }
     else if($options1['Assets'] == '2'){
-        $dir = 'https://deliver.application.pub/gh/whitebearcode/typecho-bearsimple@v'.themeVersionOnly().'/';
+        $dir = 'https://deliver.application.pub/gh/wmwlwmwl/typecho-bearsimple@v'.themeVersionOnly().'/';
     }
     else{
         $dir = $options1['Assets_Custom'];
