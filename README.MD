@@ -3,8 +3,6 @@
 一款简洁大方的Typecho主题<br>
 <a>若主题目录名为typecho-bearsimple-v2.x，则需改为bearsimple，配套插件目录中的BsCore需放入/usr/plugins中，否则无法正常使用。</a><br>
 <a>特别声明:本主题仅适用于单纯的博客日志，请勿用于违法站点，在遵守国家法律法规的前提下合理使用，谢谢~</a><br>
-<a href = "https://github.com/wmwlwmwl/typecho-bearsimple/releases/download/v2.9.9/Bearsimple_v2.9.9.release.zip">最新版本[v2.9.9]下载</a>
-<a href = "https://blog.662662.xyz/">演示站</a>
 <a href = "https://blog.662662.xyz/">我的博客</a><br>
 <h2>主题功能</h2>
 <li>Pjax、图片灯箱、隐私评论、用户中心、投稿、微海报、切换文章字体等实用的功能</li>

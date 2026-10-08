@@ -63,8 +63,8 @@ class Application extends ServiceContainer
      */
     public function officialAccount(
         string $appId,
-        string $refreshToken = null,
-        AccessToken $accessToken = null
+        ?string $refreshToken = null,
+        ?AccessToken $accessToken = null
     ): OfficialAccount {
         $application = new OfficialAccount(
             $this->getAuthorizerConfig($appId, $refreshToken),
@@ -106,8 +106,8 @@ class Application extends ServiceContainer
      */
     public function miniProgram(
         string $appId,
-        string $refreshToken = null,
-        AccessToken $accessToken = null
+        ?string $refreshToken = null,
+        ?AccessToken $accessToken = null
     ): MiniProgram {
         return new MiniProgram(
             $this->getAuthorizerConfig($appId, $refreshToken),
@@ -198,7 +198,7 @@ class Application extends ServiceContainer
      *
      * @return array
      */
-    protected function getAuthorizerConfig(string $appId, string $refreshToken = null): array
+    protected function getAuthorizerConfig(string $appId, ?string $refreshToken = null): array
     {
         return $this['config']->merge(
             [
@@ -215,7 +215,7 @@ class Application extends ServiceContainer
      *
      * @return array
      */
-    protected function getReplaceServices(AccessToken $accessToken = null): array
+    protected function getReplaceServices(?AccessToken $accessToken = null): array
     {
         $services = [
             'access_token' => $accessToken ?: function ($app) {

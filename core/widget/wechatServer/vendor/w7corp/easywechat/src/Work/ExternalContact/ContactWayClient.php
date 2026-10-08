@@ -109,7 +109,7 @@ class ContactWayClient extends BaseClient
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function list(string $cursor = '', int $limit = 100, int $startTime = null, int $endTime = null)
+    public function list(string $cursor = '', int $limit = 100, ?int $startTime = null, ?int $endTime = null)
     {
         $data = [
             'cursor' => $cursor,

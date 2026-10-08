@@ -50,7 +50,7 @@ class MercurialProcessor
             return self::$cache;
         }
 
-        $result = explode(' ', trim(`hg id -nb`));
+        $result = explode(' ', trim(shell_exec('hg id -nb')));
         if (count($result) >= 3) {
             return self::$cache = array(
                 'branch' => $result[1],

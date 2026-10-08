@@ -32,7 +32,7 @@ class RetryMiddleware
     public function __construct(
         callable $decider,
         callable $nextHandler,
-        callable $delay = null
+        ?callable $delay = null
     ) {
         $this->decider = $decider;
         $this->nextHandler = $nextHandler;
@@ -103,7 +103,7 @@ class RetryMiddleware
         };
     }
 
-    private function doRetry(RequestInterface $request, array $options, ResponseInterface $response = null)
+    private function doRetry(RequestInterface $request, array $options, ?ResponseInterface $response = null)
     {
         $options['delay'] = call_user_func($this->delay, ++$options['retries'], $response);
 

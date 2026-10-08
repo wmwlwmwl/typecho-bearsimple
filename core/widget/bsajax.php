@@ -5,7 +5,6 @@ if(!class_exists('CSF')){
 }
 use Typecho\Db;
 use Utils\Helper;
-use CSF;
 ob_clean();
 header("HTTP/1.1 200 OK");
     header("Access-Control-Allow-Origin: *");

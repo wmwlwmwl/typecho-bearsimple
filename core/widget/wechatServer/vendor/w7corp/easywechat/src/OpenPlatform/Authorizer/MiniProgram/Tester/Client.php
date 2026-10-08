@@ -48,7 +48,7 @@ class Client extends BaseClient
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function unbind(string $wechatId = null, string $userStr = null)
+    public function unbind(?string $wechatId = null, ?string $userStr = null)
     {
         return $this->httpPostJson('wxa/unbind_tester', [
                 ($userStr ? 'userstr' : 'wechatid') => $userStr ?? $wechatId,

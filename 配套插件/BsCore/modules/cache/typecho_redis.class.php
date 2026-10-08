@@ -1,5 +1,4 @@
 <?php
-use Redis;
 class typecho_redis implements BsCache
 {
 	private static $_instance = null;

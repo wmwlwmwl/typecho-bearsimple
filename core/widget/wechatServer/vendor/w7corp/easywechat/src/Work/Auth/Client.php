@@ -33,7 +33,7 @@ class Client extends BaseClient
      * @return string
      * @throws \Exception
      */
-    public function getOAuthRedirectUrl(string $redirectUri = '', string $scope = 'snsapi_privateinfo', string $agentId = '', string $state = null)
+    public function getOAuthRedirectUrl(string $redirectUri = '', string $scope = 'snsapi_privateinfo', string $agentId = '', ?string $state = null)
     {
         $redirectUri || $redirectUri = $this->app->config['redirect_uri_oauth'];
         $state || $state = random_bytes(64);

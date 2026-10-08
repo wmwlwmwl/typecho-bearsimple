@@ -477,34 +477,21 @@ if(json_decode(json_encode($db->fetchAll($db->query("SHOW FULL COLUMNS FROM ".$t
         }
     }
     public static function send_request($url, $postdata,$sendtype,$header = 'Content-type: application/x-www-form-urlencoded') {
-     if($postdata){
-         if(is_array($postdata)){
-    $data = http_build_query($postdata);
-         }
-         else{
-           $data = $postdata;
-         }
-    $options    = array(
-        'http' => array(
-            'method'  => $sendtype,
-            'header'  => $header,
-            'content' => $data,
-            'timeout' => 5
-        )
-    );
-     }
-     else{
-     $options    = array(
-        'http' => array(
-            'method'  => $sendtype,
-            'header'  => "Content-type: application/x-www-form-urlencoded",
-            'timeout' => 5
-        )
-    );    
-     }
-    $context = stream_context_create($options);
-    $result    = file_get_contents($url, false, $context);
-    if($http_response_header[0] !== 'HTTP/1.1 200 OK'){
+    // ponytail: PHP 8.5 弃用 $http_response_header，改用 curl 取状态码；同时修复原 HTTP/1.1 精确比对对 HTTP/2 失效的问题
+    $ch = curl_init($url);
+    curl_setopt_array($ch, array(
+        CURLOPT_CUSTOMREQUEST  => $sendtype,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 5,
+        CURLOPT_HTTPHEADER     => $postdata ? array($header) : array('Content-type: application/x-www-form-urlencoded'),
+    ));
+    if ($postdata) {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, is_array($postdata) ? http_build_query($postdata) : $postdata);
+    }
+    $result    = curl_exec($ch);
+    $statuscode = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    curl_close($ch);
+    if ($result === false || $statuscode !== 200){
         $result = array(
             "result" => "success",
             "reason" => "request fail"
@@ -6763,18 +6750,19 @@ if(($obj->mail==$commentsMail && $obj->authorId==0)||(!empty($parentmail) && in_
  
 
  public static function post_request($url, $postdata) {
-    $data = http_build_query($postdata);
-    $options    = array(
-        'http' => array(
-            'method'  => 'POST',
-            'header'  => "Content-type: application/x-www-form-urlencoded",
-            'content' => $data,
-            'timeout' => 5
-        )
-    );
-    $context = stream_context_create($options);
-    $result    = file_get_contents($url, false, $context);
-    if($http_response_header[0] != 'HTTP/1.1 200 OK'){
+    // ponytail: PHP 8.5 弃用 $http_response_header，改用 curl 取状态码；同时修复原 HTTP/1.1 精确比对对 HTTP/2 失效的问题
+    $ch = curl_init($url);
+    curl_setopt_array($ch, array(
+        CURLOPT_POST           => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 5,
+        CURLOPT_POSTFIELDS     => http_build_query($postdata),
+        CURLOPT_HTTPHEADER     => array('Content-type: application/x-www-form-urlencoded'),
+    ));
+    $result    = curl_exec($ch);
+    $statuscode = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    curl_close($ch);
+    if ($result === false || $statuscode !== 200){
         $result = array(
             "result" => "success",
             "reason" => "request geetest api fail"

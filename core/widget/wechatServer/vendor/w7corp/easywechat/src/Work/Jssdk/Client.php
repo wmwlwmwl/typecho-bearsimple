@@ -24,7 +24,7 @@ use EasyWeChat\Kernel\Support;
  */
 class Client extends BaseClient
 {
-    public function __construct(ServiceContainer $app, AccessTokenInterface $accessToken = null)
+    public function __construct(ServiceContainer $app, ?AccessTokenInterface $accessToken = null)
     {
         parent::__construct($app, $accessToken);
 
@@ -63,7 +63,7 @@ class Client extends BaseClient
         bool $debug = false,
         bool $beta = false,
         array $openTagList = [],
-        string $url = null
+        ?string $url = null
     ) {
         return $this->buildAgentConfig($apis, $agentId, $debug, $beta, false, $openTagList, $url);
     }
@@ -94,7 +94,7 @@ class Client extends BaseClient
         bool $beta = false,
         bool $json = true,
         array $openTagList = [],
-        string $url = null
+        ?string $url = null
     ) {
         $config = array_merge(compact('debug', 'beta', 'jsApiList', 'openTagList'), $this->agentConfigSignature($agentId, $url));
 
@@ -115,7 +115,7 @@ class Client extends BaseClient
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    protected function agentConfigSignature($agentId, string $url = null, string $nonce = null, $timestamp = null): array
+    protected function agentConfigSignature($agentId, ?string $url = null, ?string $nonce = null, $timestamp = null): array
     {
         $url = $url ?: $this->getUrl();
         $nonce = $nonce ?: Support\Str::quickRandom(10);

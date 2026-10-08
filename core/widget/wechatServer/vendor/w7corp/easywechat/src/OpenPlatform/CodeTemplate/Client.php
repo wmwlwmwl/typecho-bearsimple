@@ -64,7 +64,7 @@ class Client extends BaseClient
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function list(int $templateType = null)
+    public function list(?int $templateType = null)
     {
         $params = [
             'template_type' => $templateType,

@@ -69,7 +69,7 @@ class SdkStreamHandler
         array $options,
         RequestInterface $request,
         $startTime,
-        ResponseInterface $response = null,
+        ?ResponseInterface $response = null,
         $error = null
     ) {
         if (isset($options['on_stats'])) {
@@ -301,9 +301,11 @@ class SdkStreamHandler
         );
 
         return $this->createResource(
-            function () use ($uri, &$http_response_header, $context, $options) {
+            function () use ($uri, $context, $options) {
                 $resource = fopen((string) $uri, 'r', null, $context);
-                $this->lastHeaders = $http_response_header;
+                // ponytail: PHP 8.5 编译期弃用 $http_response_header 字面引用；8.4 以下无 http_get_last_response_headers()，故用动态变量名读取以兼容 8.2 下限
+                $responseHeaderVar = 'http_response_header';
+                $this->lastHeaders = isset(${$responseHeaderVar}) ? ${$responseHeaderVar} : null;
 
                 if (isset($options['read_timeout'])) {
                     $readTimeout = $options['read_timeout'];

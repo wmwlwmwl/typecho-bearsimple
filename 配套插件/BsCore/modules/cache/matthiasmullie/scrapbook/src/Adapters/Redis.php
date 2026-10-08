@@ -60,7 +60,7 @@ class Redis implements KeyValueStore
         return $value;
     }
 
-    public function getMulti(array $keys, array &$tokens = null): array
+    public function getMulti(array $keys, ?array &$tokens = null): array
     {
         $tokens = [];
         if (empty($keys)) {

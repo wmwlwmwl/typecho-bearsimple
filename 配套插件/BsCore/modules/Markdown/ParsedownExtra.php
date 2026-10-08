@@ -301,7 +301,7 @@ class ParsedownExtra extends Parsedown
     #
     # Setext
 
-    protected function blockSetextHeader($Line, array $Block = null)
+    protected function blockSetextHeader($Line, ?array $Block = null)
     {
         $Block = parent::blockSetextHeader($Line, $Block);
 
@@ -583,7 +583,9 @@ class ParsedownExtra extends Parsedown
         $DOMDocument = new DOMDocument;
 
         # http://stackoverflow.com/q/11309194/200145
-        $elementMarkup = mb_convert_encoding($elementMarkup, 'HTML-ENTITIES', 'UTF-8');
+        # ponytail: mb_convert_encoding(..., 'HTML-ENTITIES') 自 PHP 8.0 起为静默 no-op 且 8.5 弃用，
+        # 改用 mb_encode_numericentity 将非 ASCII 转为数字实体，保持 loadHTML 输入 ASCII 安全（DOM 结构不变）
+        $elementMarkup = mb_encode_numericentity($elementMarkup, array(0x80, 0x10FFFF, 0, 0x1FFFFF), 'UTF-8');
 
         # http://stackoverflow.com/q/4879946/200145
         $DOMDocument->loadHTML($elementMarkup);

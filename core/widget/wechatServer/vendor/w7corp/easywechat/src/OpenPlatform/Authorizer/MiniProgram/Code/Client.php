@@ -49,7 +49,7 @@ class Client extends BaseClient
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getQrCode(string $path = null)
+    public function getQrCode(?string $path = null)
     {
         return $this->requestRaw('wxa/get_qrcode', 'GET', [
             'query' => ['path' => $path],
@@ -86,7 +86,7 @@ class Client extends BaseClient
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function submitAudit(array $data, string $feedbackInfo = null, string $feedbackStuff = null)
+    public function submitAudit(array $data, ?string $feedbackInfo = null, ?string $feedbackStuff = null)
     {
         if (isset($data['item_list'])) {
             return $this->httpPostJson('wxa/submit_audit', $data);

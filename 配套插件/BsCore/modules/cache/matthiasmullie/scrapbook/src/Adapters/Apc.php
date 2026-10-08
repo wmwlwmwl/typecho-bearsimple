@@ -57,7 +57,7 @@ class Apc implements KeyValueStore
         return $value;
     }
 
-    public function getMulti(array $keys, array &$tokens = null): array
+    public function getMulti(array $keys, ?array &$tokens = null): array
     {
         $tokens = [];
         if (empty($keys)) {
@@ -536,7 +536,7 @@ class Apc implements KeyValueStore
      *
      * @return mixed|false
      */
-    protected function fetch(string|array $key, bool &$success = null): mixed
+    protected function fetch(string|array $key, ?bool &$success = null): mixed
     {
         /*
          * $key can also be numeric, in which case APC is able to retrieve it,

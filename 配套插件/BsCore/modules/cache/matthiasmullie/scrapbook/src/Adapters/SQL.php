@@ -70,7 +70,7 @@ abstract class SQL implements KeyValueStore
         return $this->unserialize($result['v']);
     }
 
-    public function getMulti(array $keys, array &$tokens = null): array
+    public function getMulti(array $keys, ?array &$tokens = null): array
     {
         $tokens = [];
         if (empty($keys)) {

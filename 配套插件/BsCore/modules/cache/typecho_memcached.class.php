@@ -1,5 +1,4 @@
 <?php
-use Memcached;
 class typecho_memcached implements BsCache
 {
 	private static $_instance = null;
