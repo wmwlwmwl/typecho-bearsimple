@@ -145,7 +145,7 @@ if (!class_exists('CSF_Setup')) {
                 if (self::$render_static_style) return $header;
                 $style = '<link rel="stylesheet" href="'.$fas1.'">' .
                     '<link rel="stylesheet" href="'.$fas2.'">'.
-                    '<link rel="stylesheet" href="' . self::include_plugin_url2('assets/css/style.min.css') . '?v=4">'.
+                    '<link rel="stylesheet" href="' . self::include_plugin_url2('assets/css/style.min.css') . '?v=7">'.
                     '<link rel="stylesheet" href="' . self::include_plugin_url2('assets/css/color-picker.min.css') . '">'.
                     '<link href="'.$sem.'" rel="stylesheet">' .
                     '<link href="' . self::include_plugin_url2('assets/vendors/toastr.js/toastr.min.css') . '" type="text/css" rel="stylesheet" />' .
