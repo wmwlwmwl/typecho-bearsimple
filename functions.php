@@ -13,7 +13,7 @@ if (!class_exists('bsOptions')){
 require_once('core/func.php');
 function themeVersion()
         {
-            return '2.9.9.20250803';
+            return '2.9.9.20261008';
         }
 
 

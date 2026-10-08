@@ -2,6 +2,10 @@
 /**
  * BearSimple 后台配置（CSF）定义块，自 functions.php 拆分而来，内容未做任何修改
  */
+// ponytail: 拆分时原 functions.php 顶部的 use 别名未随迁，裸类名 Common/Options 会解析失败导致整站 500，此处补回
+use Typecho\Common;
+use Widget\Options;
+
 if( class_exists( 'CSF' ) ) {
     $Tyoptions = Helper::options();
     $db = \Typecho\Db::get();
