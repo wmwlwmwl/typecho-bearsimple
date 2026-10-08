@@ -6,22 +6,6 @@ header("HTTP/1.1 200 OK");
 
 $cid = $_POST["id"];
 
-function getCustomx($cid, $key){
-    $db = \Typecho\Db::get();
-    $rows = $db->fetchAll($db->select('table.fields.str_value')->from('table.fields')
-        ->where('table.fields.cid = ?', $cid)
-        ->where('table.fields.name = ?', $key)
-    );
-    // 如果有多个值则存入数组
-    foreach ($rows as $row) {
-        $img = $row['str_value'];
-        if (!empty($img)) {
-            $values[] = $img;
-        }
-    }
-    return $values;
-}
-
 function posterPic($cid) {
     $options = bsOptions::getInstance()::get_option( 'bearsimple' );
     $db = \Typecho\Db::get();
@@ -31,7 +15,7 @@ function posterPic($cid) {
    preg_match_all("/\<img.*?src\=\"(.*?)\"[^>]*>/i", $content, $pic);  //通过正则式获取图片地址
    $img_src = $pic[1][0];
 	// 获取文章封面
-	$cover = getCustomx($cid, 'cover');
+	$cover = getCustomFields($cid, 'cover');
 if($cover){
 	    $thumb = $cover[0];
 	}else if($img_src){
@@ -79,7 +63,7 @@ if(isset($cid) && $cid){
                 $targetTitle = $result->title;
                 $targetUrl = $result->permalink;
                 $targetDate = $result->created;
-                $expert = getCustomFields($cid, 'excerpt');
+	$expert = getCustomFields($cid, 'excerpt');
                 if($expert){
                     $targetSummary = $expert[0];
                 }

@@ -4,7 +4,7 @@ header("HTTP/1.1 200 OK");
     date_default_timezone_set('PRC');
     $options = Helper::options();
     $removeChar = ["https://", "http://", "/"]; 
-    $refer = str_replace($removeChar, "", $_SERVER['HTTP_REFERER']);
+    $refer = htmlspecialchars(str_replace($removeChar, "", $_SERVER['HTTP_REFERER'] ?? ''), ENT_QUOTES, 'UTF-8');
      echo <<<EOF
 <!DOCTYPE html>
 <html>

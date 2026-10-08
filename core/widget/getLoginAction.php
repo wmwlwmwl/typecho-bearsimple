@@ -9,7 +9,7 @@ $options = Helper::options();
     $temoptions = bsOptions::getInstance()::get_option( 'bearsimple' );
     $removeChar = ["https://", "http://"]; 
     \Typecho\Widget::widget('Widget\User')->to($user);
-if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) {     
+if (bs_same_origin_check()) {
 if($_POST['action'] == 'login'){
 
 echo Helper::options()->loginAction;

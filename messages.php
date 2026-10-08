@@ -43,12 +43,12 @@ if($readerData):?>
 <div class="readers-wall">
     <?php foreach($readerData as $index => $reader):?>
     <div class="reader-card <?php echo $index < 3 ? 'top-'.($index+1) : ''; ?>">
-        <img src="<?php echo imgravatarq($reader['mail']); ?>" 
-             loading="lazy" 
+        <img src="<?php echo imgravatarq($reader['mail']); ?>"
+             loading="lazy"
              class="reader-avatar"
-             alt="<?php echo $reader['author'];?>的头像">
-        
-        <div class="reader-name"><?php echo $reader['author'];?></div>
+             alt="<?php echo htmlspecialchars($reader['author'], ENT_QUOTES, 'UTF-8');?>的头像">
+
+        <div class="reader-name"><?php echo htmlspecialchars($reader['author'], ENT_QUOTES, 'UTF-8');?></div>
         
         <div class="reader-stats">
             <span><?php echo $reader['num'];?> 条评论</span>

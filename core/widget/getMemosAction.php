@@ -8,13 +8,11 @@ header("HTTP/1.1 200 OK");
 header("Access-Control-Allow-Origin: *");
 date_default_timezone_set('PRC');
 
-$options = Helper::options();
     $temoptions = array(
         'memos_url' => Bsoptions('memos_url'),
         'memos_Url' => Bsoptions('memos_Url'),
         'memos_Username' => Bsoptions('memos_Username'),
     );
-    $removeChar = ["https://", "http://"]; 
 
 
 
@@ -78,7 +76,7 @@ function memos_getTime($time)
 }
 
 
-if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) {   
+if (bs_same_origin_check()) {
     $db = \Typecho\Db::get();
     \Typecho\Widget::widget('Widget\User')->to($user);
 if($_POST['action'] == 'getmemo'){

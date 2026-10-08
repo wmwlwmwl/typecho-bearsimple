@@ -29,7 +29,7 @@ echo json_encode($result);
 exit;
 } 
  $removeChar = ["https://", "http://"]; 
-    if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $optionss->siteUrl)) !== false) {   
+    if (bs_same_origin_check()) {
 $options = bsOptions::getInstance()::get_option( 'bearsimple' );
 $str = $options['github_accountid'];
     $status = json_decode(curl_get('https://api.github.com/users/'.$options['github_accountid'].'/repos?per_page=99999'),true);

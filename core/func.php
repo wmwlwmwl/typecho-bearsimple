@@ -2,13 +2,28 @@
 // ponytail: BsCore 未启用时配置降级为空数组，避免 fatal；升级路径：要求启用 BsCore
 $options = class_exists('bsOptions') ? bsOptions::getInstance()::get_option( 'bearsimple' ) : array();
 \Widget\Security::alloc()->to($security);
+
+// ponytail: 同源校验，替代旧 strpos(HTTP_REFERER) 子串匹配（可被 evil.com/?站点域名 绕过）；
+// 仅校验来源 host，无一次性 token；升级路径：引入 CSRF token
+function bs_same_origin_check(): bool {
+    if (empty($_SERVER['HTTP_REFERER'])) {
+        return false;
+    }
+    $refererHost = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST);
+    $siteHost = parse_url(\Utils\Helper::options()->siteUrl, PHP_URL_HOST);
+    if (!$refererHost || !$siteHost) {
+        return false;
+    }
+    $stripWww = function ($host) { return preg_replace('/^www\./i', '', strtolower($host)); };
+    return $stripWww($refererHost) === $stripWww($siteHost);
+}
+
 require_once('general.php');
 require_once('assetsdir.php');
 require_once('compresshtml.php');
 require_once('getcheck.php');
 require_once('gravatar.php');
 require_once('replyview.php');
-require_once('tongji.php');
 require_once('parse.php');
 require_once('extend/UserAgent.class.php');
 require_once('extend/Comments.php');
@@ -186,19 +201,28 @@ function syncDb(){
         }
 }
 function get_hito(){
+    // ponytail: cookie 缓存一句一言，原先每页请求外部 API 15s 超时阻塞渲染（与 parse.php yiyan 方案对齐）
+    $cached = \Typecho\Cookie::get('bs_hito');
+    if ($cached !== null && $cached !== '') {
+        return $cached;
+    }
  $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, 'https://v1.hitokoto.cn/');
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
     curl_setopt($curl, CURLOPT_TIMEOUT, 15);
     curl_setopt($curl, CURLOPT_POST, false);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
     $data = curl_exec($curl);
     curl_close($curl);
-    // ponytail: 请求失败返回空串，调用方按空句子串渲染
+    // ponytail: 请求失败返回空串，调用方按空句子串渲染；空结果不缓存，下次请求重试
     $datas = $data === false ? [] : (json_decode($data,true) ?: []);
-    return $datas['hitokoto'] ?? '';
+    $hito = $datas['hitokoto'] ?? '';
+    if ($hito !== '') {
+        \Typecho\Cookie::set('bs_hito', $hito);
+    }
+    return $hito;
 }
 function get_friendlink($type = NULL){
      $db = \Typecho\Db::get();
@@ -449,8 +473,8 @@ curl_setopt($ch, CURLOPT_HEADER, FALSE);
 curl_setopt($ch, CURLOPT_NOBODY, FALSE);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, FALSE);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 curl_exec($ch);
 $httpCode = curl_getinfo($ch,CURLINFO_HTTP_CODE);
@@ -754,7 +778,8 @@ function addPostView($widget,$post_id,$post_type){
             'msg' => '缺少参数',
     ]);
 
-   $views=\Typecho\Widget::widget('Widget\Archive@'.$post_id,'pageSize=1&type='.$post_type, 'cid='.$post_id);
+   // ponytail: 死赋值删除——结果立即被下行 getCustom() 覆盖，且此处初始化整个 Archive Widget 开销大
+
         $views = (!empty(getCustom($post_id, 'views'))) ? intval(getCustom($post_id, 'views')) : 0;
    
     
@@ -780,228 +805,9 @@ function addPostView($widget,$post_id,$post_type){
 }
 
 
-function page_fetch(String $type, Array $ids,String $cachetype, Int $page = 1, Int $limit = 6){
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    $cache_name = '';
-   if($type=='movie'){
-        $cache_name = 'movie_';
-        $cache_name2 = 'movie_';
-    }
-    elseif($type=='book'){
-       $cache_name = 'book_'; 
-       $cache_name2 = 'book_'; 
-    }
-    elseif($type=='music'){
-       $cache_name = 'music_'; 
-       $cache_name2 = 'music_'; 
-    }
-    $cache_dir = __TYPECHO_ROOT_DIR__.__TYPECHO_THEME_DIR__.'/bearsimple/vendors/Douban/';
-    if(!is_dir($cache_dir)) @mkdir($cache_dir);
-    $cache_dir .= 'cache/';
-    if(!is_dir($cache_dir)) @mkdir($cache_dir);
-    $neelde = [];
-    $offset = ($page - 1) * $limit;
-    $end = $offset + $limit;
-    $total = count($ids);
-    $end > $total && $end = $total;
-    $stars = [];
-        switch($type){
-     case 'movie':
-         $rating_ch = $options['douban_movie_rating'];
-       switch($cachetype){
-          case '1':
-              $cachetypenr = $options['douban_movie1'];
-              break;
-          case '2':
-              $cachetypenr = $options['douban_movie2'];
-              break;
-          case '3':
-              $cachetypenr = $options['douban_movie3'];
-              break;
-       }
-         break;
-     case 'book':
-         $rating_ch = $options['douban_rating'];
-                switch($cachetype){
-          case '1':
-              $cachetypenr = $options['douban_book1'];
-              break;
-          case '2':
-              $cachetypenr = $options['douban_book2'];
-              break;
-          case '3':
-              $cachetypenr = $options['douban_book3'];
-              break;
-       }
-         break;
-     case 'music':
-         $rating_ch = $options['douban_music_rating'];
-                switch($cachetype){
-          case '1':
-              $cachetypenr = $options['douban_music1'];
-              break;
-          case '2':
-              $cachetypenr = $options['douban_music2'];
-              break;
-          case '3':
-              $cachetypenr = $options['douban_music3'];
-              break;
-       }
-         break;
-         default:;
-    }
-    for($i = $offset; $i < $end; $i++){
-        $id = explode('*', $ids[$i]);
-        $neelde[] = $id[0];
-        if(!empty($id[1])){
-            $stars[$id[0]] = $id[1];
-        }else{
-            $stars[$id[0]] = 0;
-        }
-    }
-    $cache_name .= md5(implode(',', $neelde)) . '.json';
-    $cache_name2 .= $cachetype.'.config';
-    $cache_file = $cache_dir . $cache_name;
-    $cache_file2 = $cache_dir . $cache_name2;
-    if(file_exists($cache_file) && filectime($cache_file) + (5 * 24 * 3600) >= time() && $cachetypenr == @file_get_contents($cache_file2)){
-        // 5天时间
-        $result = json_decode(@file_get_contents($cache_file), true);
-    }else{
-        unlink($cache_file2);
-        switch($type){
-            case 'movie':
-        foreach($neelde as $k => $v){
-            $Getdata = douban_getdata($v, 'movie');
-            $result[$v] = [
-        	    'url' => $Getdata["url"],
-        	    'cover' => $Getdata['cover'],
-        	    'title' => $Getdata['moviename'],
-        	    'summary' => $Getdata['summary'],
-        	    'episode' => $Getdata['episode'],
-        	    'duration' => $Getdata['movie_duration'],
-        	];
-        }
-        break;
-        case 'book':
-         foreach($neelde as $k => $v){
-            $Getdata = douban_getdata($v, 'book');
-            $result[$v] = [
-        	 'url' => $Getdata["url"],
-        	 'cover' => $Getdata['cover'],
-        	 'title' => $Getdata['bookname'],
-        	 'author' => $Getdata['author'],
-        	];
-        }  
-        break;
-        case 'music':
-         foreach($neelde as $k => $v){
-            $Getdata = douban_getdata($v, 'music');
-            $result[$v] = [
-        	 'url' => $Getdata["url"],
-        	 'cover' => $Getdata['cover'],
-        	 'title' => $Getdata['musicname'],
-        	 'singer' => $Getdata['singer'],
-        	];
-        }   
-        break;
-        default:;
-        }
-        file_put_contents($cache_file, json_encode($result));
-        file_put_contents($cache_file2, $cachetypenr);
-    }
-    $results = [];
-    foreach ($result as $k=>$v){
-        if(!empty($stars[$k])){
-            $result[$k]['rating'] = $stars[$k];
-        }else{
-            $result[$k]['rating'] = 0;
-        }
-        $results[] = $result[$k];
-    }
-    return $results;
-}
-function douban_getdata($id,$type){
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    $Apikey = array('apikey'=>'0df993c66c0c636e29ecbb5344252a4a');
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, 'https://api.douban.com/v2/'.$type.'/'.$id);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 15);
-    curl_setopt($curl, CURLOPT_POST, TRUE);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, $Apikey);
-    $data = curl_exec($curl);
-    curl_close($curl);
-    $datas = json_decode($data,true);
-    if (!is_array($datas)) {
-        return []; // ponytail: 请求失败统一返回空数组，下游按空数据渲染
-    }
-    $result = [];
-    switch($type){
-    case 'book':
-$result['url'] = $datas['alt'];
-    $result['cover'] = $datas['image'];
-    $result['bookname'] = $datas['title'];
-    $result['author'] = $datas['author'][0];
-    break;
-    case 'movie':
-    $result['url'] = str_replace('/movie/', '/subject/', $datas['alt']);
-    $result['cover'] = $datas['image'];
-    $result['moviename'] = $datas['title'];
-    $result['summary'] = $datas['alt_title'];
-    $result['episode'] = !empty($datas['attrs']['episodes'])?(is_array($datas['attrs']['episodes'])?$datas['attrs']['episodes'][0]:$datas['attrs']['episodes']):1;
-    // var_dump($datas);exit;
-    $result['movie_duration'] = !empty($datas['attrs']['movie_duration'])?$datas['attrs']['movie_duration'][0]:'120';
-    break;
-    case 'music':
-$result['url'] = $datas['alt'];
-    $result['cover'] = $datas['image'];
-    $result['musicname'] = $datas['title'];
-    if(count($datas['attrs']['singer'])>1){
-    $result['singer'] = $datas['attrs']['singer'][0].'...等'.count($datas['attrs']['singer']).'位';
-    }
-    else{
-       $result['singer'] = $datas['attrs']['singer'][0];    
-    }
-    break;
-    }
-    return $result;
-}
 
-function bilibili_getpage(){
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    $ctx = stream_context_create(['http' => ['timeout' => 15]]);
-    $json = file_get_contents('https://api.bilibili.com/x/space/bangumi/follow/list?vmid='.$options['bilibili_accountid'].'&type=1&follow_status=0&pn=1&ps=15', false, $ctx);
-    $status = $json === false ? [] : (json_decode($json,true) ?: []);
-    return $status['data']['total'] ?? 0;
-}
 
-function bilibili_getlist(){
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    // ponytail: 加 15s 超时的 stream context，避免无超时直连
-    $ctx = stream_context_create(['http' => ['timeout' => 15]]);
-    $json = file_get_contents('https://api.bilibili.com/x/space/bangumi/follow/list?vmid='.$options['bilibili_accountid'].'&type=1&follow_status=0&pn=1&ps=15', false, $ctx);
-    $status = $json === false ? [] : (json_decode($json,true) ?: []);
-    return $status['data']['list'] ?? [];
-}
 
-function bilibili_getdata($i){
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, 'https://api.bilibili.com/x/space/bangumi/follow/list?vmid='.$options['bilibili_accountid'].'&type=1&follow_status=0&pn='.$i.'&ps=15');
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 15);
-    curl_setopt($curl, CURLOPT_POST, false);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
-    $data = curl_exec($curl);
-    curl_close($curl);
-    $datas = $data === false ? [] : (json_decode($data,true) ?: []);
-    return $datas;
-}
 
 
 function cut_str($sourcestr,$cutlength){

@@ -7,8 +7,8 @@ function GetCheck()
     curl_setopt($curl, CURLOPT_POST, false);
     curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
     curl_setopt($curl, CURLOPT_TIMEOUT, 15);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
     $data = curl_exec($curl);
     curl_close($curl);
     $output = json_decode($data,true);

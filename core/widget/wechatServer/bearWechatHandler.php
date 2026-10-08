@@ -38,8 +38,8 @@ function requestPost($url = '', $post_data = array())
     curl_setopt($ch, CURLOPT_POST, 1);
     //post提交方式
     curl_setopt($ch, CURLOPT_POSTFIELDS, $curlPost);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, '0');
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, '0');
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);  // 连接等待时间  
     curl_setopt($ch, CURLOPT_TIMEOUT, 120);         // curl允许执行时间
     $data = curl_exec($ch);

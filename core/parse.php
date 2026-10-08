@@ -6,138 +6,14 @@ use Btools\Curl;
 $playerID = 0;
 function excerpt_content($content)
     {
-        if (strpos($content, '[bsgallery') !== false) {
-            $pattern = get_shortcode_regex(array('bsgallery'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bstimes') !== false) {
-            $pattern = get_shortcode_regex(array('bstimes'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bsgit') !== false) {
-            $pattern = get_shortcode_regex(array('bsgit'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bscopy') !== false) {
-            $pattern = get_shortcode_regex(array('bscopy'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bsmusic') !== false) {
-            $pattern = get_shortcode_regex(array('bsmusic'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[todo-t') !== false) {
-            $pattern = get_shortcode_regex(array('todo-t'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[todo-f') !== false) {
-            $pattern = get_shortcode_regex(array('todo-f'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bseva') !== false) {
-            $pattern = get_shortcode_regex(array('bseva'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bsaudio') !== false) {
-            $pattern = get_shortcode_regex(array('bsaudio'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bspost') !== false) {
-            $pattern = get_shortcode_regex(array('bspost'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bsruby') !== false) {
-            $pattern = get_shortcode_regex(array('bsruby'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bsprog') !== false) {
-            $pattern = get_shortcode_regex(array('bsprog'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bsmark') !== false) {
-            $pattern = get_shortcode_regex(array('bsmark'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bsbtn') !== false) {
-            $pattern = get_shortcode_regex(array('bsbtn'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bsdate') !== false) {
-            $pattern = get_shortcode_regex(array('bsdate'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-          if (strpos($content, '[bspaper') !== false) {
-            $pattern = get_shortcode_regex(array('bspaper'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bsmessage') !== false) {
-            $pattern = get_shortcode_regex(array('bsmessage'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bsplayer') !== false) {
-            $pattern = get_shortcode_regex(array('bsplayer'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bsmp3') !== false) {
-            $pattern = get_shortcode_regex(array('bsmp3'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '{bs-hide') !== false) {
-            $pattern = get_shortcode_regex2(array('bs-hide'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '{bs-todo') !== false) {
-            $pattern = get_shortcode_regex2(array('bs-todo'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '{bs-accord') !== false) {
-            $pattern = get_shortcode_regex2(array('bs-accord'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '{bs-font') !== false) {
-            $pattern = get_shortcode_regex2(array('bs-font'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bstag') !== false || strpos($content, '[tag') !== false) {
-            $pattern = get_shortcode_regex(array('bstag','tag'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '{bs-iframe') !== false) {
-            $pattern = get_shortcode_regex2(array('bs-iframe'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bsfra') !== false) {
-            $pattern = get_shortcode_regex(array('bsfra'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '{bs-card') !== false) {
-            $pattern = get_shortcode_regex2(array('bs-card'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '{bs-audio') !== false) {
-            $pattern = get_shortcode_regex2(array('bs-audio'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-if (strpos($content, '[bstabs') !== false) {
-            $pattern = get_shortcode_regex(array('bstabs'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bsopc') !== false) {
-            $pattern = get_shortcode_regex(array('bsopc'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bstip') !== false) {
-            $pattern = get_shortcode_regex(array('bstip'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[bskbd') !== false) {
-            $pattern = get_shortcode_regex(array('bskbd'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
-        if (strpos($content, '[e') !== false) {
-            $pattern = get_shortcode_regex(array('e'));
-            $content = preg_replace("/$pattern/", '', $content);
-        }
+        // ponytail: 原为 30+ 个逐标签剥离块，改为清单驱动（剥离集合与原实现一致，[] 语法先于 {} 语法）；
+        // replyview.php 与 general.php 各有语法混用差异（bsfra/bspaper 走 {} 正则、bshide/bslogin 隐藏逻辑），未强行合并
+        $squareTags = ['bsgallery','bstimes','bsgit','bscopy','bsmusic','todo-t','todo-f','bseva','bsaudio','bspost','bsruby','bsprog','bsmark','bsbtn','bsdate','bspaper','bsmessage','bsplayer','bsmp3','bstag','tag','bsfra','bstabs','bsopc','bstip','bskbd','e'];
+        $curlyTags = ['bs-hide','bs-todo','bs-accord','bs-font','bs-iframe','bs-card','bs-audio'];
+        $pattern = get_shortcode_regex($squareTags);
+        $content = preg_replace("/$pattern/", '', $content);
+        $pattern = get_shortcode_regex2($curlyTags);
+        $content = preg_replace("/$pattern/", '', $content);
         return $content;
     }
 function parseNumber($str){
@@ -341,9 +217,10 @@ function quotePostCallback($matches){
         if (!empty($cid)){
             $db = \Typecho\Db::get();
             $prefix = $db->getPrefix();
+            // ponytail: 原先 orWhere 生成 cid=X OR (公开条件)，可引用出未发布/加密文章，收紧为 AND
             $posts = $db->fetchAll($db
                 ->select()->from('table.contents')
-                ->orWhere('table.contents.cid = ?', $cid)
+                ->where('table.contents.cid = ?', $cid)
                 ->where('table.contents.type = ? AND table.contents.status = ? AND table.contents.password IS NULL', 'post', 'publish'));
             if (count($posts) == 0) {
                 $targetTitle = "文章不存在或文章存在密码";
@@ -578,8 +455,8 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36');
 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 $result = curl_exec($ch);
 curl_close($ch);

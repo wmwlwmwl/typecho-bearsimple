@@ -23,8 +23,8 @@ function curl_getToken($url, $email = '', $password = '')
     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36');
 
     $output = curl_exec($ch);
@@ -50,7 +50,7 @@ function curl_getToken($url, $email = '', $password = '')
 }
 
 
-    if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false  && $user->hasLogin()) {   
+    if (bs_same_origin_check() && $user->hasLogin()) {
         if($_POST['type'] == 'getLskyProToken'){
             if(get_option('bearsimple')["lskypro_api"] == null || get_option('bearsimple')["lskypro_api"] == ''){
                 exit(json_encode([
@@ -334,7 +334,7 @@ else{
 }
 }
     }
- if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) {   
+ if (bs_same_origin_check()) {
 if($_POST['type'] == 'getsays_index'){
           
                       if(empty($_POST['page'])){

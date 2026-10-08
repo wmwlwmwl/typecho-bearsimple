@@ -545,7 +545,7 @@ MathJax = {
 <?php if(Bsoptions('Pjax') == true) :?>
 <script src="<?php AssetsDir();?>assets/js/jquery.pjax.js"></script>
 <?php endif;?>
-<script src="<?php AssetsDir();?>assets/js/qrcode.min.js"></script>
+<!-- ponytail: qrcode.min.js 移除全局加载——打赏二维码为 <img> 不需要 JS，海报功能在 modules/poster.php 内自行加载 -->
 <!-- 引入全局控制 -->
 <script type="text/javascript" src="<?php AssetsDir();?>assets/vendors/fomantic-ui/semantic.min.js?v=4" defer></script>
 <script src="<?php AssetsDir();?>assets/js/funlazy.min.js?v=1"></script>
@@ -622,7 +622,7 @@ $(document).on('pjax:success', function () {
 window.history.onpushstate=function(t){tianliGPT(!0)};
 <?php endif;?>
     <?php endif;?>
-if (document.getElementById('echarts_pie')) EchartsInit();
+<!-- ponytail: echarts 全局调用删除——EchartsInit 无定义、echarts_pie 元素全站不存在，图表实际使用 chart.umd.min.js（archived.php） -->
 <?php if(Bsoptions('CustomizationFooterJsPjaxCode')): ?><?php echo Bsoptions('CustomizationFooterJsPjaxCode'); ?><?php endif; ?>
     <?php if(Bsoptions('Scroll') == true): ?>
 window.tocManager.displayDisableTocTips = false;

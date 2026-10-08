@@ -195,7 +195,7 @@ case '2':
 
 </div>
 
-<?php if(categorynum(categoryid($this->getArchiveSlug())) > Bsoptions('infinite_pageSize') && $this->is('archive')): ?>
+<?php if(categorynum(categeid($this->getArchiveSlug())) > Bsoptions('infinite_pageSize') && $this->is('archive')): ?>
 <center><button class="ui right labeled icon button" id="bsnext" style="margin-top:20px;">
   <i class="right arrow icon"></i>
   加载更多

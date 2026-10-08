@@ -17,8 +17,8 @@ class Curl {
 		CURLOPT_RETURNTRANSFER => true, // 输出数据流
 		CURLOPT_FOLLOWLOCATION => true, // 自动跳转追踪
 		CURLOPT_AUTOREFERER=> true, // 自动设置来路信息
-		CURLOPT_SSL_VERIFYPEER => false,// ponytail: 证书校验保持关闭以兼容部分主机环境；升级路径：服务器配置 CA 证书后开启
-		CURLOPT_SSL_VERIFYHOST => false,// 检查SSL加密算法
+		CURLOPT_SSL_VERIFYPEER => true,// ponytail: TLS 校验已开启；若主机缺 CA 证书导致请求失败，需在 php.ini 配置 curl.cainfo
+		CURLOPT_SSL_VERIFYHOST => 2,// 检查SSL加密算法
 		CURLOPT_NOSIGNAL => true, // 忽略所有传递的信号
 		CURLOPT_HTTPHEADER => [], // 请求头
 		CURLINFO_HEADER_OUT=> true, // 获取请求头

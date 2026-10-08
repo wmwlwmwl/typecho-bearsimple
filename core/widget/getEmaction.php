@@ -4,10 +4,8 @@ header("HTTP/1.1 200 OK");
     header("Access-Control-Allow-Origin: *");
     date_default_timezone_set('PRC');
     header('Content-type: application/json');
-    $options = Helper::options();
-    $removeChar = ["https://", "http://"]; 
     \Typecho\Widget::widget('Widget\User')->to($user);
-    if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) {   
+    if (bs_same_origin_check()) {
    $db = \Typecho\Db::get();
    $data = json_decode(file_get_contents('php://input'),true);
   switch($data['action']){
@@ -27,9 +25,21 @@ header("HTTP/1.1 200 OK");
   break;
       
       case 'updateReact':
-                   $targetId = $data['targetId'];
+	                   $targetId = $data['targetId'];
     $reactionName = $data['reaction_name'];
     $diff = $data['diff'];
+    // ponytail: cookie 去重仅防普通重复点击，清 cookie 可绕过；升级路径：插件级 IP 限流
+    $markKey = 'emaction_' . md5((string)$targetId . '|' . (string)$reactionName);
+    if ((int)$diff === -1) {
+        if (\Typecho\Cookie::get($markKey) != '1') {
+            exit(json_encode(['code' => 500, 'msg' => '您尚未点过该表情，无法取消']));
+        }
+    } else {
+        if (\Typecho\Cookie::get($markKey) == '1') {
+            exit(json_encode(['code' => 500, 'msg' => '您已点过该表情，请勿重复点击']));
+        }
+        \Typecho\Cookie::set($markKey, '1');
+    }
    if (!in_array($diff, [1, -1])) {
         $diff = $diff > 0 ? 1 : -1;
     }

@@ -11,12 +11,11 @@ ini_set('memory_limit',-1);
 // ponytail: mysql.connect_timeout 为 PHP-INI_SYSTEM 且已废弃，运行时设置无效，已移除
 ini_set('default_socket_timeout', 900);
 session_start();
-    $options = Helper::options();
-    $removeChar = ["https://", "http://"]; 
     \Typecho\Widget::widget('Widget\User')->to($user);
     $db = \Typecho\Db::get();
 $id = $this->user->uid;
-    if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false  && $user->hasLogin()) {   
+    // ponytail: 批量改写全站文章字段，收紧为管理员权限；Referer 改用严格同源校验
+    if (bs_same_origin_check() && $user->hasLogin() && $user->pass('administrator', true)) {
        switch($_POST["action"]){ 
            case "openCopyright":
              $db->query($db->update('table.fields')->where('name = ?', 'copyright_cc')->rows(array('str_value' =>$_POST['type'])));

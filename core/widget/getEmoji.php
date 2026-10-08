@@ -20,7 +20,7 @@ $opts = array(
 );
 
 $context = stream_context_create($opts);
-    if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) {   
+    if (bs_same_origin_check()) {
         $result = [];
         if(Bsoptions('Emoji_HideDefault') == false || Bsoptions('Emoji_HideDefault') == ''){
         $res = json_decode(file_get_contents(str_replace("/core","",dirname(__DIR__)).'/assets/vendors/bs-emoji/bs-emoji.json', false, $context),true);

@@ -4,10 +4,8 @@ header("HTTP/1.1 200 OK");
     header("Access-Control-Allow-Origin: *");
     date_default_timezone_set('PRC');
     header('Content-type: application/json');
-    $options = Helper::options();
-    $removeChar = ["https://", "http://"]; 
     \Typecho\Widget::widget('Widget\User')->to($user);
-    if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) {   
+    if (bs_same_origin_check()) {
    $db = \Typecho\Db::get();
     switch($_POST['action']){
        case 'like':

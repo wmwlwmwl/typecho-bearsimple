@@ -12,7 +12,8 @@ header("HTTP/1.1 200 OK");
     header('Content-type: application/json');
     date_default_timezone_set('PRC');
 $user = \Typecho\Widget::widget('Widget\User');
-        if (!$user->hasLogin()) {
+        // ponytail: 该端点可改写全站主题配置，属高危操作，收紧为管理员权限（原先任意登录用户均可）
+        if (!$user->hasLogin() || !$user->pass('administrator', true)) {
             $data = [
                 'data' => [
                     'notice' => '未登录',

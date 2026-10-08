@@ -36,7 +36,7 @@ function checkLinks($url) {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_USERAGENT, $headers['User-Agent']);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
@@ -63,7 +63,8 @@ function checkLinks($url) {
     }
 }
 if ($argc > 1 && $argv[1] === Helper::options()->cronKey) {
-$links = $db->fetchAll($db->select()->from('table.bscore_friendlinks')->where('status != ?', 'waiting')->where('checkurl != ?', '0')->orWhere('checkurl != ?', '暂无')->orWhere('checkurl != ?', '')->order('id',Typecho\Db::SORT_DESC));
+// ponytail: 原先 orWhere 使 status/checkurl 条件失效，改为全部 AND
+$links = $db->fetchAll($db->select()->from('table.bscore_friendlinks')->where('status != ?', 'waiting')->where('checkurl != ?', '0')->where('checkurl != ?', '暂无')->where('checkurl != ?', '')->order('id',Typecho\Db::SORT_DESC));
 if($links){
 $total = count($links);
 }
@@ -71,7 +72,7 @@ else{
 $total = 0;    
 }
 if($temoptions['friendtab']['checkFailedAction'] == true){
-$failedLinks = $db->fetchAll($db->select()->from('table.bscore_friendlinks')->where('status = ?', 'approved')->where('checkurl != ?', '0')->orWhere('checkurl != ?', '暂无')->orWhere('checkurl != ?', '')->order('id',Typecho\Db::SORT_DESC));
+$failedLinks = $db->fetchAll($db->select()->from('table.bscore_friendlinks')->where('status = ?', 'approved')->where('checkurl != ?', '0')->where('checkurl != ?', '暂无')->where('checkurl != ?', '')->order('id',Typecho\Db::SORT_DESC));
 $failedNumber = 0;
 if($failedLinks){
     foreach($failedLinks as $f){
@@ -87,7 +88,7 @@ if($failedLinks){
 
 }
 if($temoptions['friendtab']['checkSuccessAction'] == true){
-$successLinks = $db->fetchAll($db->select()->from('table.bscore_friendlinks')->where('status = ?', 'reject')->where('checkurl != ?', '0')->orWhere('checkurl != ?', '暂无')->orWhere('checkurl != ?', '')->order('id',Typecho\Db::SORT_DESC));
+$successLinks = $db->fetchAll($db->select()->from('table.bscore_friendlinks')->where('status = ?', 'reject')->where('checkurl != ?', '0')->where('checkurl != ?', '暂无')->where('checkurl != ?', '')->order('id',Typecho\Db::SORT_DESC));
 $successNumber = 0;
 if($successLinks){
     foreach($successLinks as $s){

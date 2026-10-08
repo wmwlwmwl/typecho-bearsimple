@@ -6,7 +6,6 @@ header("HTTP/1.1 200 OK");
     header("Access-Control-Allow-Origin: *");
     date_default_timezone_set('PRC');
     $options = Helper::options();
-    $removeChar = ["https://", "http://"]; 
     $temoptions = bsOptions::getInstance()::get_option( 'bearsimple' );
     \Typecho\Widget::widget('Widget\User')->to($user);
     function buildResult($code, $data, $message) {
@@ -16,7 +15,7 @@ header("HTTP/1.1 200 OK");
         'message' => $message
     ];
 }
-    if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false && $user->hasLogin() && $user->pass('administrator', true)) {   
+    if (bs_same_origin_check() && $user->hasLogin() && $user->pass('administrator', true)) {
         $db = \Typecho\Db::get();
         if($_POST['type'] == 'approved'){
         $db->query($db->update('table.bscore_friendlinks')->rows(array('status' => 'approved'))
@@ -105,7 +104,7 @@ $result['list'] = $links;
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_USERAGENT, $headers['User-Agent']);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);

@@ -38,7 +38,7 @@ switch(Bsoptions('IframeProtect')){
     <meta http-equiv="x-dns-prefetch-control" content="on">
     <?php foreach(Bsoptions('DNSYJX_AR') as $dnsyjx): ?>
     <?php if($dnsyjx['DNSADDRESS_Preconnect'] == true):?>
-    <link rel="preconnect" href="<?php echo $dnsyjx['DNSADDRESS'] ?>" <?php if($dnsyjx['DNSADDRESS_Crossorign'] == true):?>crossorign<?php endif; ?>>
+    <link rel="preconnect" href="<?php echo $dnsyjx['DNSADDRESS'] ?>" <?php if($dnsyjx['DNSADDRESS_Crossorign'] == true):?>crossorigin<?php endif; ?>>
     <?php endif; ?>
 <link rel="dns-prefetch" href="<?php echo $dnsyjx['DNSADDRESS'] ?>">
     <?php endforeach; ?>
@@ -176,7 +176,7 @@ switch(Bsoptions('IframeProtect')){
 		menu_style: "2",
 		<?php if(Bsoptions('Like') == true): ?>
 		Like: "true",
-		Likenum: "<?php echo agreeNum($this->cid)['recording']; ?>",
+		Likenum: "<?php echo agreeNum($this->cid)['agree']; ?>",
 		getPostLikeFile:"<?php echo getPostLikeFile();?>",
 		<?php endif; ?>
 		<?php if(Bsoptions('Comment_like') == true): ?>

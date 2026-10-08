@@ -176,8 +176,8 @@ function curl($url,$data=0,$header_array=0,$referer=0,$time=30,$code=0) {
 	curl_setopt($curl,CURLOPT_TIMEOUT,$time);
 	curl_setopt($curl,CURLOPT_FOLLOWLOCATION,1);
 	curl_setopt($curl,CURLOPT_RETURNTRANSFER,1);
-	curl_setopt($curl,CURLOPT_SSL_VERIFYPEER, FALSE);
-	curl_setopt($curl,CURLOPT_SSL_VERIFYHOST, FALSE);
+	curl_setopt($curl,CURLOPT_SSL_VERIFYPEER, true);
+curl_setopt($curl,CURLOPT_SSL_VERIFYHOST, 2);
 	curl_setopt($curl,CURLOPT_ENCODING,'gzip,deflate');
 	if($code) {
 		curl_setopt($curl, CURLOPT_HEADER, 1);

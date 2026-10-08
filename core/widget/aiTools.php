@@ -12,7 +12,7 @@ use Widget\Options;
         'AIService_Blacklist_Page' => Bsoptions('AIService_Blacklist_Page'),
     );
     $removeChar = ["https://", "http://"]; 
-    if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) { 
+    if (bs_same_origin_check()) {
 $data = [];
 
 $i = 0;

@@ -10,7 +10,7 @@ use Widget\Options;
     $options = Helper::options();
     $temoptions = bsOptions::getInstance()::get_option( 'bearsimple' );
     $removeChar = ["https://", "http://"]; 
-    if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) {   
+    if (bs_same_origin_check()) {
         if(!$_POST['SecurityToken']){
  $this->response->throwJson([
             'code'=> 0,
@@ -154,6 +154,14 @@ if (!$response_data['success']){
             'msg' => "抱歉，系统检测到您的验证密钥已失效，需重新验证！",
     ]);
      }
+ // ponytail: SSRF 防护，验证服务器仅允许 vaptcha 官方域名
+ $urlHost = parse_url($_POST['vaptcha_server'], PHP_URL_HOST);
+ if (!$urlHost || !preg_match('/(^|\.)vaptcha\.com$/i', $urlHost)) {
+     $this->response->throwJson([
+         'code' => 0,
+         'msg' => "验证服务器地址不合法",
+     ]);
+ }
  $url = $_POST['vaptcha_server'];
  $data = array(
      'id'=> $temoptions['vid'],
@@ -170,9 +178,7 @@ if (!$response_data['success']){
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type'=>'application/json'));
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    $handles = curl_exec($ch);  
+    $handles = curl_exec($ch);
     curl_close($ch);  
     $result = json_decode($handles,true);
     if($result['success'] == 0){

@@ -11,7 +11,7 @@ $options = Helper::options();
     $temoptions = bsOptions::getInstance()::get_option( 'bearsimple' );
     $removeChar = ["https://", "http://"]; 
     
-    if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) {   
+    if (bs_same_origin_check()) {
 if($_POST['action'] == 'getCommentToken'){
     if (!isset($_SESSION['token'])) {
     $_SESSION['token'] = bin2hex(random_bytes(32));

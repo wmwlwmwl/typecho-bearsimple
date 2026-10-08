@@ -2,10 +2,8 @@
 header("HTTP/1.1 200 OK");
     header("Access-Control-Allow-Origin: *");
     date_default_timezone_set('PRC');
-    $options = Helper::options();
-    $removeChar = ["https://", "http://"]; 
-    
-    if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) {   
+
+    if (bs_same_origin_check()) {
 if (isset($_POST['agree'])) {
     $result = array(
     'code' => 1,

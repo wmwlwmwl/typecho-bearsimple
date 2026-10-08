@@ -6,7 +6,7 @@ header("HTTP/1.1 200 OK");
     $options = Helper::options();
     $removeChar = ["https://", "http://"]; 
     \Typecho\Widget::widget('Widget\User')->to($user);
-    if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false  && $user->hasLogin() && $user->pass('administrator', true)) {   
+    if (bs_same_origin_check() && $user->hasLogin() && $user->pass('administrator', true)) {
         $db = \Typecho\Db::get();
         
         //待审核

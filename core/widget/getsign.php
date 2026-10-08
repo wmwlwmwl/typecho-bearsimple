@@ -6,7 +6,7 @@ header("HTTP/1.1 200 OK");
     $temoptions = bsOptions::getInstance()::get_option( 'bearsimple' );
     $removeChar = ["https://", "http://"]; 
     
-    if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) {   
+    if (bs_same_origin_check()) {
         $db= \Typecho\Db::get();
         if($this->user->uid == '' || $temoptions['UserCenter_sign'] == ''||  $temoptions['UserCenter_sign'] == false){
             $result = array(

@@ -39,7 +39,7 @@ session_start();
     <meta http-equiv="x-dns-prefetch-control" content="on">
     <?php foreach(Bsoptions('DNSYJX_AR') as $dnsyjx): ?>
     <?php if($dnsyjx['DNSADDRESS_Preconnect'] == true):?>
-    <link rel="preconnect" href="<?php echo $dnsyjx['DNSADDRESS'] ?>" <?php if($dnsyjx['DNSADDRESS_Crossorign'] == true):?>crossorign<?php endif; ?>>
+    <link rel="preconnect" href="<?php echo $dnsyjx['DNSADDRESS'] ?>" <?php if($dnsyjx['DNSADDRESS_Crossorign'] == true):?>crossorigin<?php endif; ?>>
     <?php endif; ?>
 <link rel="dns-prefetch" href="<?php echo $dnsyjx['DNSADDRESS'] ?>">
     <?php endforeach; ?>
@@ -79,14 +79,20 @@ session_start();
    
     <?php $this->header('commentReply=1&description='.$keywords.'&pingback=0&xmlrpc=0&wlw=0&generator=&template=&atom='); ?>
 <script src="<?php AssetsDir();?>assets/js/jquery.min.js" type="application/javascript"></script>
+<?php /* ponytail: jQuery 不能 defer——body 内联脚本直接调用 $()，defer 会破坏执行顺序 */ ?>
 <link href="<?php AssetsDir();?>assets/css/bearsimple.min.css?v=<?php echo themeVersion(); ?>" rel="stylesheet">
 <link href="<?php AssetsDir();?>assets/vendors/fomantic-ui/semantic.min.css?v=2" rel="stylesheet">
 <link href="<?php AssetsDir();?>assets/css/modules/global_custom.min.css?v=<?php echo themeVersion(); ?>" rel="stylesheet">
 <link rel="preload" href="<?php AssetsDir();?>assets/vendors/fontawesome/all.min.css?ver=5.15.4" as="style" onload="this.rel='stylesheet'" crossorigin>
 <link rel="preload" href="<?php AssetsDir();?>assets/vendors/fontawesome/v4-shims.min.css?ver=5.15.4" as="style" onload="this.rel='stylesheet'" crossorigin>
+<?php if(Bsoptions('GoogleSerifFont') == true): ?>
+<?php /* ponytail: Google 思源宋体按开关加载（默认关），仅保留本地霞鹜文楷；开启时补 gstatic 预连接 */ ?>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;500;600;700;900&display=swap" as="style" onload="this.rel='stylesheet'" crossorigin>
+<?php endif; ?>
 <link rel="preload" href="<?php AssetsDir();?>assets/css/lxgw/style.css" as="style" onload="this.rel='stylesheet'" crossorigin>
-<script src="<?php AssetsDir();?>assets/js/toastr.min.js"></script>
+<script src="<?php AssetsDir();?>assets/js/toastr.min.js" defer></script>
 <?php bs_style(); ?>
 <?php echo Bsoptions('CustomizationCode'); ?>
 <?php if((Bsoptions('menu_style') !== "3") && Bsoptions('menu_tem') == "2" || Bsoptions('menu_tem') == ""):?>
@@ -101,14 +107,20 @@ session_start();
 <?php if(Bsoptions('Slidersss') == true) :?>
 <link href="<?php AssetsDir();?>assets/vendors/slider/bearslider.min.css?v=2" rel="stylesheet" type="text/css">
 <?php endif; ?>
+<?php if(Bsoptions('Scroll') == true): ?>
+<?php /* ponytail: TOC 样式仅目录树功能开启时输出，与 foot.php 的 TOC JS 条件一致 */ ?>
 <link href="<?php AssetsDir2();?>assets/vendors/bs-toc/bs-toc.min.css" rel="stylesheet" type="text/css">
 <link href="<?php AssetsDir2();?>assets/vendors/bs-toc/bs-toc2.min.css" rel="stylesheet" type="text/css">
+<?php endif; ?>
   <?php if (Bsoptions('Translate') == "11"): ?>
   <script src="<?php AssetsDir();?>assets/vendors/translate/translate.js"></script>
   <?php endif; ?>
 <link href="<?php AssetsDir();?>assets/vendors/sweetalert2/sweetalert2.min.css" type="text/css" rel="stylesheet" />
 
+<?php if($this->is('single')): ?>
+<?php /* ponytail: 音频播放器样式仅文章/独立页面输出（bs-audio 短代码只在正文出现） */ ?>
 <link rel="stylesheet" href="<?php AssetsDir();?>assets/vendors/bs-audio/audio.css">
+<?php endif; ?>
 <link href="<?php AssetsDir();?>assets/vendors/bs-emoji/bs-emoji.css?v=<?php echo themeVersion(); ?>" rel="stylesheet" type="text/css">
  <?php if(Bsoptions('AIService') == true && Bsoptions('AIService_Key') !== ''): ?> 
 <link rel="stylesheet" href="<?php AssetsDir();?>assets/vendors/aiTool/ai.min.css">
@@ -194,7 +206,7 @@ session_start();
 		menu_style: "2",
 		<?php if(Bsoptions('Like') == true): ?>
 		Like: "true",
-		Likenum: "<?php echo agreeNum($this->cid)['recording']; ?>",
+		Likenum: "<?php echo agreeNum($this->cid)['agree']; ?>",
 		getPostLikeFile:"<?php echo getPostLikeFile();?>",
 		<?php endif; ?>
 		<?php if(Bsoptions('Comment_like') == true): ?>

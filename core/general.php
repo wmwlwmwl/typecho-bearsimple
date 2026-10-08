@@ -11,7 +11,7 @@ function posterPic($cid) {
    preg_match_all("/\<img.*?src\=\"(.*?)\"[^>]*>/i", $content, $pic);  //通过正则式获取图片地址
    $img_src = $pic[1][0];
 	// 获取文章封面
-	$cover = getCustomx($cid, 'cover');
+	$cover = getCustomFields($cid, 'cover');
 if($cover){
 	    $thumb = $cover[0];
 	}else if($img_src){
@@ -25,40 +25,6 @@ if(!$cover && $options['Poster__AttChoose'] == true){
 	  $thumb = $options['Poster__AttUrl'];   
 	}	 
 	return $thumb;
-}
-function getCustomx($cid, $key){
-    $db = \Typecho\Db::get();
-    $rows = $db->fetchAll($db->select('table.fields.str_value')->from('table.fields')
-        ->where('table.fields.cid = ?', $cid)
-        ->where('table.fields.name = ?', $key)
-    );
-    // 如果有多个值则存入数组
-    foreach ($rows as $row) {
-        $img = $row['str_value'];
-        if (!empty($img)) {
-            $values[] = $img;
-        }
-    }
-    return $values;
-}
-//获取Bangumi信息
-function getBangumi(){
-    $headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:33.0) Gecko/20100101 Firefox/33.0';
-foreach( $headers as $n => $v )
-{ $headerArr[] = $n .':' . $v; }
-$curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, 'https://api.bgm.tv/v0/users/'.BsOptions('bangumi_accountid').'/collections?limit=99&offset=0');
-        curl_setopt($curl, CURLOPT_USERAGENT, $headerArr);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 15);
-        $content = curl_exec($curl);
-        curl_close($curl);
-        $arr = $content === false ? [] : (json_decode($content,true) ?: []);
-        return $arr['data'] ?? [];
 }
 function getTitle(\Widget\Archive $var)
     {
@@ -219,17 +185,6 @@ return json_encode($arr);
 
 }
 
-//获取随机文章
-function getArchived(){
-    $db = \Typecho\Db::get();      
-    $result = $db->fetchAll($db->select()
-    ->from('table.contents')
-            ->where('table.contents.status = ?', 'publish')
-            ->where('table.contents.created < ?', Helper::options()->time)
-            ->where('table.contents.type = ?', 'post')
-            ->order('table.contents.created', \Typecho\Db::SORT_DESC));
-return $result;
-}
 //获取随机文章
 function getRandomPosts($cid = 0){
 $db = \Typecho\Db::get();
@@ -488,11 +443,6 @@ function ishttps()
 }
 
 
-function imgtobase64($img='', $imgHtmlCode=true){
-    $imageInfo = getimagesize($img);
-    $base64 = "" . chunk_split(base64_encode(file_get_contents($img)));
-    return 'data:' . $imageInfo['mime'] . ';base64,' . chunk_split(base64_encode(file_get_contents($img)));
-}
 
 function CommentAuthor($obj, $autoLink = NULL, $noFollow = NULL) {
     $options = Helper::options();
@@ -510,12 +460,6 @@ $db = \Typecho\Db::get();
 $num=$db->fetchRow($db->select()->from('table.metas')
         ->where('mid = ?',$id));
 return $num['count'];
-}
-
-function categoryid($slug){  //获取栏目id
-   $db = \Typecho\Db::get();
-   $postnum=$db->fetchRow($db->select()->from ('table.metas')->where ('slug=?',$slug)->where('type=?', 'category'));
-   return  $postnum['mid']; 
 }
 
 //截断文字
@@ -623,11 +567,6 @@ function strFilter($str){
     return trim($str);
 }
 
-function strtitle(){
-    $title = bsOptions::getInstance()::get_option( 'bearsimple' )->title;
-    $title = strFilter($title);
-    return $title;
-}
 
 function readModeContent($th,$content){
  $author = $th->author->screenName;
@@ -686,13 +625,18 @@ function agreeNum($cid) {
     $db = \Typecho\Db::get();
     $prefix = $db->getPrefix();
     $adapter = $db->getAdapterName();
-    if (!array_key_exists('agree', $db->fetchRow($db->select()->from('table.contents')))) {
+    // ponytail: 字段探测进程内只做一次并加 LIMIT，原先每次调用都全表 SELECT *
+    static $contentsAgreeChecked = false;
+    if (!$contentsAgreeChecked) {
+        if (!array_key_exists('agree', $db->fetchRow($db->select()->from('table.contents')->limit(1)))) {
          if("pgsql" === $adapter || "Pdo_Pgsql" === $adapter){
         $db->query('ALTER TABLE ' . $prefix . 'contents ADD agree TEXT NOT NULL DEFAULT 0;');
          }
          else{
-        $db->query('ALTER TABLE `' . $prefix . 'contents` ADD `agree` INT(10) NOT NULL DEFAULT 0;');     
+        $db->query('ALTER TABLE `' . $prefix . 'contents` ADD `agree` INT(10) NOT NULL DEFAULT 0;');
          }
+        }
+        $contentsAgreeChecked = true;
     }
     $agree = $db->fetchRow($db->select('table.contents.agree')->from('table.contents')->where('cid = ?', $cid));
     
@@ -714,13 +658,18 @@ function agreeNumforcomment($coid) {
     $db = \Typecho\Db::get();
     $prefix = $db->getPrefix();
     $adapter = $db->getAdapterName();
-    if (!array_key_exists('agree', $db->fetchRow($db->select()->from('table.comments')))) {
+    // ponytail: 字段探测进程内只做一次并加 LIMIT
+    static $commentsAgreeChecked = false;
+    if (!$commentsAgreeChecked) {
+        if (!array_key_exists('agree', $db->fetchRow($db->select()->from('table.comments')->limit(1)))) {
         if("pgsql" === $adapter || "Pdo_Pgsql" === $adapter){
         $db->query('ALTER TABLE ' . $prefix . 'comments ADD agree INT(10) NOT NULL DEFAULT 0;');
          }
          else{
-        $db->query('ALTER TABLE `' . $prefix . 'comments` ADD `agree` INT(10) NOT NULL DEFAULT 0;');     
+        $db->query('ALTER TABLE `' . $prefix . 'comments` ADD `agree` INT(10) NOT NULL DEFAULT 0;');
          }
+        }
+        $commentsAgreeChecked = true;
     }
     $agree = $db->fetchRow($db->select('table.comments.agree')->from('table.comments')->where('coid = ?', $coid));
     
@@ -1258,6 +1207,8 @@ function tagcloudnum(){
 
 // 简洁图文获取图片
 function thumb($obj) {
+    // ponytail: 列表缩略图直接返回原图 URL，本地图无缩放能力，故不在此强加缩放参数以免破坏本地图站；
+    // 升级路径：站点使用支持参数缩放的 CDN（OSS/又拍等）时，可在此按 $thumb 后缀追加缩放参数
     //获取附件首张图片
 	$attach = $obj->attachments(1)->attachment;
 	//获取文章首张图片
@@ -1478,10 +1429,15 @@ function get_post_view($archive){
 	$cid    = $archive->cid;
 	$db     = \Typecho\Db::get();
 	$prefix = $db->getPrefix();
-	if (!array_key_exists('views', $db->fetchRow($db->select()->from('table.contents')))) {
-		$db->query('ALTER TABLE `' . $prefix . 'contents` ADD `views` INT(10) DEFAULT 0;');
-		echo 0;
-		return;
+	// ponytail: 字段探测进程内只做一次并加 LIMIT
+	static $contentsViewsChecked = false;
+	if (!$contentsViewsChecked) {
+		if (!array_key_exists('views', $db->fetchRow($db->select()->from('table.contents')->limit(1)))) {
+			$db->query('ALTER TABLE `' . $prefix . 'contents` ADD `views` INT(10) DEFAULT 0;');
+			echo 0;
+			return;
+		}
+		$contentsViewsChecked = true;
 	}
 	$row = $db->fetchRow($db->select('views')->from('table.contents')->where('cid = ?', $cid));
 	if ($archive->is('single')) {
@@ -1566,8 +1522,8 @@ function lastComments(){
     $search_Crosspage = $db->fetchAll($db->select('cid')->from('table.contents')
         ->where('status = ?','publish')
         ->where('type = ?', 'page')
-        ->where('template = ?','cross.php')
-        ->orwhere('template = ?','friendcircle.php')
+        // ponytail: 原先 orwhere 使 status/type 条件对 friendcircle.php 失效，收进同一括号组
+        ->where('(template = ? OR template = ?)', 'cross.php', 'friendcircle.php')
         );
         $ids = array_column($search_Crosspage, 'cid'); 
         if($search_Crosspage[0]['cid']){
@@ -1592,21 +1548,29 @@ function lastComments(){
       echo '
             <div class="card-body">
     <ul class="recent-comments-list">';
-    foreach($result as $comment){
-        $post = $db->fetchAll($db->select()->from('table.contents')
-            ->where('status = ?','publish')
+    // ponytail: 一次 IN 查询取回 5 条评论对应文章，原先循环内逐条查询（N+1）；cid 经 intval 白名单化拼接
+    $postsMap = array();
+    $cids = array_map('intval', array_unique(array_column($result, 'cid')));
+    if ($cids) {
+        $postRows = $db->fetchAll($db->select()->from('table.contents')
+            ->where('status = ?', 'publish')
             ->where('type = ?', 'post')
-            ->where('cid  = ?',$comment['cid'])
-            ->order('cid', \Typecho\Db::SORT_DESC)        
+            ->where('cid IN (' . implode(',', $cids) . ')')
         );
-if($post){
-            $i=1;
-            foreach($post as $val){                
-                $val = \Typecho\Widget::widget('Widget\Base\Contents')->push($val);
-                $post_title = htmlspecialchars($val['title']);
-                $permalink = $val['permalink'];
-                $post_url = '<div class="recent-comments-meta-article">评论于：<a href="'.$permalink.'#comment-'.$comment['coid'].'" title="评论于：'.$post_title.'" target="_blank">'.$post_title.'</a></div>';
-            }
+        foreach ($postRows as $val) {
+            $val = \Typecho\Widget::widget('Widget\Base\Contents')->push($val);
+            $postsMap[$val['cid']] = array(
+                'title' => htmlspecialchars($val['title']),
+                'permalink' => $val['permalink'],
+            );
+        }
+    }
+    foreach($result as $comment){
+        $post_url = '';
+        if (isset($postsMap[$comment['cid']])) {
+            $post_title = $postsMap[$comment['cid']]['title'];
+            $permalink = $postsMap[$comment['cid']]['permalink'];
+            $post_url = '<div class="recent-comments-meta-article">评论于：<a href="'.$permalink.'#comment-'.$comment['coid'].'" title="评论于：'.$post_title.'" target="_blank">'.$post_title.'</a></div>';
         }
 
         
@@ -1725,11 +1689,10 @@ class Widget_Post_hot extends \Widget\Base\Contents
         }
         $db = \Typecho\Db::get();
         $adapter = $db->getAdapterName();
+        // ponytail: 默认 right join，仅 SQLite/Pgsql 用 left，避免未知适配器下 $db_query 未定义告警
+        $db_query = 'right';
         if ("Pdo_SQLite" === $adapter || "SQLite" === $adapter || "pgsql" === $adapter || "Pdo_Pgsql" === $adapter) {
             $db_query = 'left';
-        }
-        if ("Pdo_Mysql" === $adapter || "Mysql" === $adapter) {
-            $db_query = 'right';
         }
         $mid = array_unique($ret);
         \Typecho\Widget::widget('Widget\User')->to($user);
