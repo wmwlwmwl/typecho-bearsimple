@@ -63,7 +63,7 @@ switch(Bsoptions('IframeProtect')){
     <?php $this->header('commentReply=1&description='.$keywords.'&pingback=0&xmlrpc=0&wlw=0&generator=&template=&atom='); ?>
 <script src="<?php AssetsDir();?>assets/js/jquery.min.js" type="application/javascript"></script>
 <link href="<?php AssetsDir();?>assets/css/bearsimple.min.css?v=<?php echo themeVersion(); ?>" rel="stylesheet">
-<link href="<?php AssetsDir();?>assets/vendors/fomantic-ui/semantic.min.css?v=2" rel="stylesheet">
+<link href="<?php AssetsDir();?>assets/vendors/fomantic-ui/semantic.subset.min.css?v=1" rel="stylesheet">
 <link href="<?php AssetsDir();?>assets/css/modules/global_custom.min.css?v=<?php echo themeVersion(); ?>" rel="stylesheet">
 <link rel="preload" href="//lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/5.15.4/css/all.min.css?ver=5.15.4" as="style" onload="this.rel='stylesheet'" crossorigin>
 <link rel="preload" href="//lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/5.15.4/css/v4-shims.min.css?ver=5.15.4" as="style" onload="this.rel='stylesheet'" crossorigin>

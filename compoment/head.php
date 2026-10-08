@@ -28,7 +28,7 @@ session_start();
 <!DOCTYPE html>
 <html lang="zh-CN" data-theme="light"<?php if (Bsoptions('Mournmode') == true): ?> class="gray"<?php endif; ?>>
     <head>
-    <meta name="referrer" content="unsafe-url">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
     <?php if(is_https()):?>
@@ -47,7 +47,8 @@ session_start();
 <?php if (Bsoptions('DNSYJX') == '' || Bsoptions('DNSYJX') == false): ?>
 <meta http-equiv="x-dns-prefetch-control" content="off">
 <?php endif; ?>
- <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no, viewport-fit=cover" />
+ <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
+ <?php /* ponytail: 移除 maximum-scale/user-scalable=no（WCAG 1.4.4 要求允许用户缩放） */ ?>
  <?php if(Bsoptions('favicon') !== ''): ?>
  <link rel="shortcut icon" href="<?php echo Bsoptions('favicon') ?>" />
  <?php endif; ?>
@@ -76,12 +77,31 @@ session_start();
     
     <meta property="article:published_time" content="<?php echo date('c', $this->created); ?>" />
     <meta property="article:modified_time" content="<?php echo date('c', $this->modified); ?>" />
-   
+    <?php if ($this->is('post') || $this->is('page')):
+        /* ponytail: og:image 复用 thumb() 取文章封面；相对路径补全为绝对 URL，无图则不输出，避免空 content */
+        $bsOgImage = thumb($this);
+        if ($bsOgImage !== '' && $bsOgImage[0] === '/') {
+            $bsOgImage = $this->options->siteUrl . ltrim($bsOgImage, '/');
+        }
+        if ($bsOgImage !== ''): ?>
+    <meta property="og:image" content="<?php echo $bsOgImage; ?>" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="<?php echo $bsOgImage; ?>" />
+    <?php else: ?>
+    <meta name="twitter:card" content="summary" />
+    <?php endif; ?>
+    <?php /* ponytail: 文章页轻量 Article 结构化数据，利于搜索引擎摘要 */ ?>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"<?php $this->permalink(); ?>"},"headline":"<?php echo htmlspecialchars(getTitle($this), ENT_QUOTES, 'UTF-8'); ?>","datePublished":"<?php echo date('c', $this->created); ?>","dateModified":"<?php echo date('c', $this->modified); ?>","author":{"@type":"Person","name":"<?php $this->author(); ?>"}<?php if ($bsOgImage !== ''): ?>,"image":"<?php echo $bsOgImage; ?>"<?php endif; ?>}
+    </script>
+    <?php endif; ?>
+
     <?php $this->header('commentReply=1&description='.$keywords.'&pingback=0&xmlrpc=0&wlw=0&generator=&template=&atom='); ?>
 <script src="<?php AssetsDir();?>assets/js/jquery.min.js" type="application/javascript"></script>
 <?php /* ponytail: jQuery 不能 defer——body 内联脚本直接调用 $()，defer 会破坏执行顺序 */ ?>
 <link href="<?php AssetsDir();?>assets/css/bearsimple.min.css?v=<?php echo themeVersion(); ?>" rel="stylesheet">
-<link href="<?php AssetsDir();?>assets/vendors/fomantic-ui/semantic.min.css?v=2" rel="stylesheet">
+<link href="<?php AssetsDir();?>assets/vendors/fomantic-ui/semantic.subset.min.css?v=1" rel="stylesheet">
+<?php /* ponytail: Fomantic 全量 1679KB→子集 568KB，组件清单见子集文件头注释；缺失组件时从官方发布包 components/ 补拼 */ ?>
 <link href="<?php AssetsDir();?>assets/css/modules/global_custom.min.css?v=<?php echo themeVersion(); ?>" rel="stylesheet">
 <link rel="preload" href="<?php AssetsDir();?>assets/vendors/fontawesome/all.min.css?ver=5.15.4" as="style" onload="this.rel='stylesheet'" crossorigin>
 <link rel="preload" href="<?php AssetsDir();?>assets/vendors/fontawesome/v4-shims.min.css?ver=5.15.4" as="style" onload="this.rel='stylesheet'" crossorigin>
@@ -308,8 +328,10 @@ session_start();
 
 </script>
 <script src="<?php AssetsDir();?>assets/js/modules/darkmode.js"></script>
+<style>.bs-skip{position:absolute;left:-9999px;top:0;z-index:99999;background:#fff;color:#0086b3;padding:8px 14px;border-radius:0 0 4px 0;box-shadow:0 2px 8px rgba(0,0,0,.15)}.bs-skip:focus{left:0}</style>
  </head>
  <body <?php if(Bsoptions('CopyProtect') == true) :?>oncontextmenu='return false' ondragstart='return false' onselectstart ='return false' onselect='document.selection.empty()' oncopy='document.selection.empty()' onbeforecopy='return false'<?php endif; ?> <?php if (Bsoptions('DNSYJX') == true): ?>data-instant-allow-external-links<?php endif;?>>
+ <a class="bs-skip" href="#bs-main">跳到主要内容</a>
      <?php if(Bsoptions('Read_Process') == true) :?>
  
 <div class="read_progress">
@@ -329,13 +351,13 @@ session_start();
 <?php if(!empty((array)Bsoptions('Search')) && in_array('header',(array)Bsoptions('Search'))) :?>   
         <form name="pcsearch" role="search" method="get" id="searchform1">
  <div class="bearmargin" style="float:right;"><div class="ui category search"><div class="ui large icon input pc">
-      <input class="prompt" id="pcsearch" type="text" name="s" placeholder="输入关键词实时搜索">
-      <i class="search link icon"></i>
+      <input class="prompt" id="pcsearch" type="text" name="s" placeholder="输入关键词实时搜索" aria-label="站内搜索">
+      <i class="search link icon" aria-hidden="true"></i>
 </div></div></div>
 </form> 
 <?php endif; ?>
                  <?php if(Bsoptions('header_choose') == 'image') :?>
-    <a id="logo" href="<?php $this->options->siteUrl(); ?>"><img id="sitelogo" width="250" height="70" src="<?php echo Bsoptions('imagelogo') ?>"></a>
+    <a id="logo" href="<?php $this->options->siteUrl(); ?>"><img id="sitelogo" width="250" height="70" src="<?php echo Bsoptions('imagelogo') ?>" alt="<?php $this->options->title(); ?>"></a>
         	    <p class="description"></p>
         	    <?php else :?>
         	     <a id="logo" href="<?php $this->options->siteUrl(); ?>"><?php echo Bsoptions('textlogo_text') ?>	     </a>
@@ -352,8 +374,8 @@ session_start();
  <div style="text-align:center">
 <div class="ui category search">
 <div class="ui icon input phone">
-      <input class="prompt" id="phonesearch" type="text" name="s" placeholder="输入关键词实时搜索">
-      <i class="search link icon"></i>
+      <input class="prompt" id="phonesearch" type="text" name="s" placeholder="输入关键词实时搜索" aria-label="站内搜索">
+      <i class="search link icon" aria-hidden="true"></i>
 </div>
 </div></div>
 </form>

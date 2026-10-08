@@ -14,9 +14,9 @@
 <div class="pure-g" id="layout">
            
       <div class="pure-u-1 pure-u-md-<?php if(Bsoptions('site_style') == '1' || Bsoptions('site_style') == ''):?>3<?php endif;?><?php if(Bsoptions('site_style') == '2'):?>4<?php endif;?>-4">
-          <div class="content_container">
+          <div class="content_container" id="bs-main">
          <div id="bearsimple-scroll">
-   
+
           <article class="post">
               
                          <?php if($this->fields->articleplo !== null && $this->fields->articleplo !== '1'): ?>

@@ -139,7 +139,7 @@ if (!class_exists('CSF_Setup')) {
             $loads_statics = self::load_statics();
             $fas1 = Helper::options()->themeUrl.'/assets/vendors/fontawesome/all.min.css';
             $fas2 = Helper::options()->themeUrl.'/assets/vendors/fontawesome/v4-shims.min.css';
-            $sem = Helper::options()->themeUrl.'/assets/vendors/fomantic-ui/semantic.min.css';
+            $sem = Helper::options()->themeUrl.'/assets/vendors/fomantic-ui/semantic.subset.min.css';
             // 仅在插件页或者主题页添加
             if ($loads_statics) { // if is plugin
                 if (self::$render_static_style) return $header;

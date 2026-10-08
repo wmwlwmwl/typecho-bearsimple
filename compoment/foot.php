@@ -105,22 +105,22 @@ if (!empty($active_methods)) {
 <?php endif; ?>
 
 <?php if(Bsoptions('Top') == true) :?>
-  <button id="back-to-top" class="fixed-button">
+  <button id="back-to-top" class="fixed-button" aria-label="回到顶部">
     <i class="<?php if(empty(Bsoptions('TopSrc'))){echo 'fas fa-chevron-up';}else{echo Bsoptions('TopSrc');}; ?>"></i>
   </button>
 <?php endif;?>
 <?php if(Bsoptions('Control_Panel') == true) :?>
   <!-- 设置按钮 -->
-  <button id="foot-settings-button" class="fixed-button">
-    <i class="fas fa-cogs"></i>
+  <button id="foot-settings-button" class="fixed-button" aria-label="打开设置面板">
+    <i class="fas fa-cogs" aria-hidden="true"></i>
   </button>
 
 <!-- 设置面板 -->
 <div id="foot-settings-panel" class="foot-settings-panel ignore">
   <div class="foot-panel-header">
     <h3>设置</h3>
-    <button id="foot-close-panel" class="foot-close-button">
-      <i class="fas fa-times"></i>
+    <button id="foot-close-panel" class="foot-close-button" aria-label="关闭设置面板">
+      <i class="fas fa-times" aria-hidden="true"></i>
     </button>
   </div>
   <div class="foot-panel-content">
@@ -229,10 +229,10 @@ $(document).ready(function () {
 <br>
     <?php _e('Powered by <a href="http://www.typecho.org" target="_blank">Typecho</a> & <a href="https://github.com/whitebearcode/typecho-bearsimple" target="_blank"> BearSimple</a>  '); ?>
     <?php if (Bsoptions('IcpBa') || Bsoptions('PoliceBa')): ?><br><?php endif; ?>
-     <?php if (Bsoptions('PoliceBa')): ?><img style="vertical-align: middle;" src="<?php AssetsDir();?>assets/images/beian.png"> <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=<?php echo parseNumber(Bsoptions('PoliceBa')); ?>" target="_blank"><?php echo Bsoptions('PoliceBa'); ?></a><?php endif; ?><?php if (Bsoptions('IcpBa') && Bsoptions('PoliceBa')): ?>  |  <?php endif; ?><?php if (Bsoptions('IcpBa')): ?><img style="vertical-align: middle;" src="<?php AssetsDir();?>assets/images/icp.png"> <a href="https://beian.miit.gov.cn/" target="_blank"><?php echo Bsoptions('IcpBa'); ?></a><?php endif; ?>
+     <?php if (Bsoptions('PoliceBa')): ?><img style="vertical-align: middle;" src="<?php AssetsDir();?>assets/images/beian.png" alt=""> <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=<?php echo parseNumber(Bsoptions('PoliceBa')); ?>" target="_blank"><?php echo Bsoptions('PoliceBa'); ?></a><?php endif; ?><?php if (Bsoptions('IcpBa') && Bsoptions('PoliceBa')): ?>  |  <?php endif; ?><?php if (Bsoptions('IcpBa')): ?><img style="vertical-align: middle;" src="<?php AssetsDir();?>assets/images/icp.png" alt=""> <a href="https://beian.miit.gov.cn/" target="_blank"><?php echo Bsoptions('IcpBa'); ?></a><?php endif; ?>
      <?php if(Bsoptions('load_Time') == '1'): ?><br><?php echo loadtime();?><?php endif; ?>
      <?php if(Bsoptions('blogsclub_shuttle') == true): ?>
-     <br><a href="https://www.blogsclub.org/go"> <img src="<?php AssetsDir();?>assets/images/blogsclub-shuttle.svg" loading="lazy"></a>
+     <br><a href="https://www.blogsclub.org/go"> <img src="<?php AssetsDir();?>assets/images/blogsclub-shuttle.svg" loading="lazy" alt="BlogsClub 穿梭机"></a>
      <?php endif;?>
 </footer>    
 
@@ -547,7 +547,8 @@ MathJax = {
 <?php endif;?>
 <!-- ponytail: qrcode.min.js 移除全局加载——打赏二维码为 <img> 不需要 JS，海报功能在 modules/poster.php 内自行加载 -->
 <!-- 引入全局控制 -->
-<script type="text/javascript" src="<?php AssetsDir();?>assets/vendors/fomantic-ui/semantic.min.js?v=4" defer></script>
+<script type="text/javascript" src="<?php AssetsDir();?>assets/vendors/fomantic-ui/semantic.subset.min.js?v=1" defer></script>
+<?php /* ponytail: Fomantic JS 全量 399KB→子集 255KB，组件清单见文件头注释 */ ?>
 <script src="<?php AssetsDir();?>assets/js/funlazy.min.js?v=1"></script>
 <script type="text/javascript" src="<?php AssetsDir();?>assets/js/app.bundle.min.js?v=<?php echo themeVersion(); ?>" defer></script>
  <?php if(Bsoptions('AIService') == true && Bsoptions('AIService_Key') !== ''): ?> 

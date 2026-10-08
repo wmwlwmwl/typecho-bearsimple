@@ -22,28 +22,31 @@ if (!function_exists('bs_decode_option_value')) {
     }
 }
 
+// ponytail: per-request 选项整包缓存，消除 AssetsDir 等高频调用的重复 SQL；update_option/delete_option 写后失效
+if (!function_exists('bs_option_cache')) {
+    function bs_option_cache($name, $reset = false): array
+    {
+        static $cache = array();
+        if ($reset || !array_key_exists($name, $cache)) {
+            $db = Db::get();
+            $row = $db->fetchRow($db->select()->from('table.options')
+                ->where('name = ?', $name));
+            $cache[$name] = empty($row) ? array() : bs_decode_option_value($row['value']);
+        }
+        return $cache[$name];
+    }
+}
+
 if (!function_exists('get_option')) {
 
 // get option for framework
     function get_option($option, $default = false)
     {
-        $db = Db::get();
-        $pluginName = FRAMEWORK_PLUGIN_NAME;
-        $select = $db->select()->from('table.options')
-            ->where('name = ?', $pluginName);
-
-        $options = $db->fetchRow($select);
-        if (empty($options)) {
-            return $default;
-        } else {
-
-            $options = bs_decode_option_value($options['value']);
-            if (array_key_exists($option, $options)) {
-                return $options[$option];
-            } else {
-                return $default;
-            }
+        $options = bs_option_cache(FRAMEWORK_PLUGIN_NAME);
+        if (array_key_exists($option, $options)) {
+            return $options[$option];
         }
+        return $default;
     }
 }
 
@@ -74,6 +77,8 @@ if (!function_exists('update_option')) {
                 ->where('user = ?', 0));
         }
 
+        bs_option_cache($pluginName, true);
+
         return true;
     }
 }
@@ -102,6 +107,8 @@ if (!function_exists('update_bs_key_params')) {
                 ->where('name = ?', $pluginName)
                 ->where('user = ?', 0));
         }
+
+        bs_option_cache($pluginName, true);
     }
 }
 if (!function_exists('get_bs_key_params')) {
@@ -109,22 +116,11 @@ if (!function_exists('get_bs_key_params')) {
 // get option for framework
     function get_bs_key_params($option, $default = false)
     {
-        $db = Db::get();
-        $pluginName = FRAMEWORK_KEY_PARMAS_NAME;
-        $select = $db->select()->from('table.options')
-            ->where('name = ?', $pluginName);
-
-        $options = $db->fetchRow($select);
-        if (empty($options)) {
-            return $default;
-        } else {
-            $options = bs_decode_option_value($options['value']);
-            if (array_key_exists($option, $options)) {
-                return $options[$option];
-            } else {
-                return $default;
-            }
+        $options = bs_option_cache(FRAMEWORK_KEY_PARMAS_NAME);
+        if (array_key_exists($option, $options)) {
+            return $options[$option];
         }
+        return $default;
     }
 }
 if (!function_exists('delete_option')) {
@@ -154,6 +150,7 @@ if (!function_exists('delete_option')) {
 
         $result = $db->query($db->delete('table.options')->where('name = ?', 'plugin:' . $pluginName));
 
+        bs_option_cache($pluginName, true);
 
         if ($result) {
 
