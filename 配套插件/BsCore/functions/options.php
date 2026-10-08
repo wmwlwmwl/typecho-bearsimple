@@ -6,6 +6,22 @@ use Typecho\Db;
 const FRAMEWORK_PLUGIN_NAME = 'plugin:BsCore_';
 const FRAMEWORK_KEY_PARMAS_NAME = 'plugin:bsOF_key_params';
 
+// ponytail: Typecho 1.3.0 升级脚本把 plugin:/theme: 选项值由 serialize 转为 JSON，此处双格式兼容读取；升级路径：确认不再有 serialize 存量后移除回退分支
+if (!function_exists('bs_decode_option_value')) {
+    function bs_decode_option_value($value): array
+    {
+        if (!is_string($value) || $value === '') {
+            return array();
+        }
+        $decoded = json_decode($value, true);
+        if (is_array($decoded)) {
+            return $decoded;
+        }
+        $unserialized = @unserialize($value);
+        return is_array($unserialized) ? $unserialized : array();
+    }
+}
+
 if (!function_exists('get_option')) {
 
 // get option for framework
@@ -21,7 +37,7 @@ if (!function_exists('get_option')) {
             return $default;
         } else {
 
-            $options = unserialize($options['value']);
+            $options = bs_decode_option_value($options['value']);
             if (array_key_exists($option, $options)) {
                 return $options[$option];
             } else {
@@ -46,14 +62,14 @@ if (!function_exists('update_option')) {
             $db->query($db->insert('table.options')
                 ->rows([
                     'name' => $pluginName,
-                    'value' => serialize($settings),
+                    'value' => json_encode($settings),
                     'user' => 0
                 ]));
         } else {
-            $options = unserialize($options['value']);
+            $options = bs_decode_option_value($options['value']);
             $options[$option] = $value;
             $db->query($db->update('table.options')
-                ->rows(['value' => serialize($options)])
+                ->rows(['value' => json_encode($options)])
                 ->where('name = ?', $pluginName)
                 ->where('user = ?', 0));
         }
@@ -75,14 +91,14 @@ if (!function_exists('update_bs_key_params')) {
             $db->query($db->insert('table.options')
                 ->rows([
                     'name' => $pluginName,
-                    'value' => serialize($settings),
+                    'value' => json_encode($settings),
                     'user' => 0
                 ]));
         } else {
-            $options = unserialize($options['value']);
+            $options = bs_decode_option_value($options['value']);
             $options[$option] = $value;
             $db->query($db->update('table.options')
-                ->rows(['value' => serialize($options)])
+                ->rows(['value' => json_encode($options)])
                 ->where('name = ?', $pluginName)
                 ->where('user = ?', 0));
         }
@@ -102,7 +118,7 @@ if (!function_exists('get_bs_key_params')) {
         if (empty($options)) {
             return $default;
         } else {
-            $options = unserialize($options['value']);
+            $options = bs_decode_option_value($options['value']);
             if (array_key_exists($option, $options)) {
                 return $options[$option];
             } else {
