@@ -1,6 +1,6 @@
 <?php
 ob_clean();
-error_reporting(0);
+
 date_default_timezone_set('Asia/Shanghai');
 require __DIR__ . '/vendor/autoload.php';
 use EasyWeChat\OfficialAccount\Application;
@@ -126,7 +126,7 @@ function parseCircleContent($data, $options,$openid,$type)
 
 // 获取MD5加密后的内容
 function getEncryptToken(){
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     return md5(md5("bearsimple!@#$%^&*()-=+@#$%$" . Helper::options()->openId . "bearsimple!@#$%^&*()-=+@#$%$@#$%^&*"));
 
 }
@@ -141,7 +141,7 @@ switch($_POST['action']){
         $encryptToken = getEncryptToken();
         if (md5($postEncryptToken) == $encryptToken) {
             $msgid = $_POST['msgid'];
-                $db = Typecho_Db::get();
+                $db = \Typecho\Db::get();
 $checkMsgidSql = $db->select()->from('table.bscore_wechat_msgids')->where('msgid = ?', $msgid);
 $exists = $db->fetchRow($checkMsgidSql);
 
@@ -189,7 +189,7 @@ if ($exists) {
             $encryptToken = getEncryptToken();
 
             if (md5($postEncryptToken) == $encryptToken) {
-					$db = Typecho_Db::get();
+					$db = \Typecho\Db::get();
 					$getAdminSql = $db->select()->from('table.users')->limit(1);
 					$user = $db->fetchRow($getAdminSql);
 					$insert = $db->insert('table.comments')->rows(array('cid' => $cid, 'created' => time(), 'author' => $user['screenName'], 'authorId' => $user['uid'], 'ownerId' => $user['uid'], 'text' => $thisText, 'url' => $user['url'], 'mail' => $user['mail'], 'agent' => $agent, 'ip' => '1.1.1.1'));

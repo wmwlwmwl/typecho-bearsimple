@@ -1,6 +1,9 @@
 <?php
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
-class BearSimple_Widget_Friendcircle_Archive extends Widget_Abstract_Comments
+use Widget\Base\Comments;
+use Widget\Base\Contents;
+use Widget\Contents\From;
+class BearSimple_Widget_Friendcircle_Archive extends Comments
 {
      /**
      * 当前页
@@ -65,13 +68,15 @@ class BearSimple_Widget_Friendcircle_Archive extends Widget_Abstract_Comments
         parent::__construct($request, $response, $params);
         $this->parameter->setDefault('parentId=0&commentPage=0&commentsNum=0&allowComment=1');
         
-        Typecho_Widget::widget('Widget_Security')->to($this->_security);
+        \Typecho\Widget::widget('Widget\Security')->to($this->_security);
 
         /** 初始化回调函数 */
         if (function_exists('threadedComments')) {
             $this->_customThreadedCommentsCallback = true;
         }
     }
+
+
     public static function updateLocation(int $coid, $location,$type)
     {
         $db = \Typecho\Db::get();
@@ -165,7 +170,7 @@ class BearSimple_Widget_Friendcircle_Archive extends Widget_Abstract_Comments
 $lazyload = 'class="lazy" data-';
 } 
 $db = \Typecho\Db::get();
-Typecho_Widget::widget('Widget_User')->to($user);
+\Typecho\Widget::widget('Widget\User')->to($user);
 $circle_data = $db->fetchRow($db->select()->from('table.bscore_friendcircle_data')->where('coid = ?', $this->coid));
 if(($circle_data['private'] == 1 && (!$this->user->hasLogin() && $this->user->uid !== $this->authorId))){
     $hidden = 'style="display:none;"';
@@ -184,9 +189,10 @@ $avatar = Bsoptions('fcircle_Avatar');
 }
 ?>
         
-        <li class="scrollFriend" id="<?php $this->theId(); ?>" <?php echo $hidden;?>><div class="friendcircle-main-level"><div class="friendcircle-avatar"><img data-funlazy="<?php echo $avatar; ?>"></div><div class="friendcircle-box"><div class="friendcircle-head"><h3 class="friendcircle-name by-author"><?php echo $this->author; ?></h3> </div>
+        <li id="<?php $this->theId(); ?>" <?php echo $hidden;?>><div class="friendcircle-main-level"><div class="friendcircle-avatar"><img src="<?php AssetsDir();?>assets/images/load.gif" data-src="<?php echo $avatar; ?>"></div><div class="friendcircle-box"><div class="friendcircle-head"><h3 class="friendcircle-name by-author"><?php echo $this->author; ?></h3> </div>
         <div class="friendcircle-content">
-
+            
+            
             <?php echo reEmo($this->content,"circle"); ?>
         <?php if(!empty(self::circle_getInfo($this)['resources'])):
         
@@ -223,13 +229,13 @@ if($searchIfVideo == true){
 </video>  
 </div>
 <?php elseif($type == 'wechat'):?>
-<div class="circle_player" style="margin-top:10px;display: flex;align-items: center;justify-content: flex-start;flex-wrap: nowrap;">
+<div class="circle_player" style="margin-top:10px">
  <button id="amr-begin-<?php echo $this->coid; ?>" class="ui small label amr-begin" data-circleid="<?php echo $this->coid; ?>" data-amrfile="<?php echo $resources[0];?>">加载</button>
         <button id="amr-play-<?php echo $this->coid; ?>" class="ui small green icon label" style="display:none" disabled><i class="play icon"></i></button>
         <button id="amr-stop-<?php echo $this->coid; ?>" class="ui small red icon label" style="display:none" disabled><i class="stop icon"></i></button>
         <input id="amr-progress-<?php echo $this->coid; ?>" type="range" min="0" max="1" step="any" value="0"  class="ui range" disabled>
         <label for="amr-progress-<?php echo $this->coid; ?>" style="vertical-align:middle">
-            <span id="amr-cur-<?php echo $this->coid; ?>"> 0'</span>
+            <span id="amr-cur-<?php echo $this->coid; ?>">0'</span>
             <span>/</span>
             <span id="amr-duration-<?php echo $this->coid; ?>">0'</span>
         </label>
@@ -254,7 +260,7 @@ else{
         <?php
         foreach(json_decode(self::circle_getInfo($this)['resources'],true) as $resource):?>
       <a href="<?php echo $resource;?>" class="circle-picture">
-            <img data-fancybox="circle-<?php echo $this->coid; ?>" data-funlazy="<?php echo $resource;?>"> 
+            <img data-fancybox="circle-<?php echo $this->coid; ?>" src="<?php AssetsDir();?>assets/images/load.gif" data-src="<?php echo $resource;?>"> 
    </a>
         
        <?php endforeach;?>
@@ -330,7 +336,7 @@ else{
 
         if ($this->options->commentsPageBreak) {            
             $pageRow = array('permalink' => $this->parentContent['pathinfo'], 'commentPage' => $this->_currentPage);
-            return Typecho_Router::url('comment_page',
+            return \Typecho\Router::url('comment_page',
                         $pageRow, $this->options->index) . '#' . $this->theId;
         }
         
@@ -366,9 +372,9 @@ else{
      * @access protected
      * @return void
      */
-    protected function ___parentContent(): Array
+    protected function ___parentContent(): Contents
     {
-        return $this->parameter->parentContent;
+        return From::allocWithAlias($this->cid, ['cid' => $this->cid]);
     }
 
     /**
@@ -405,8 +411,8 @@ else{
         if (!$this->parameter->parentId) {
             return;
         }
-$commentsAuthor = Typecho_Cookie::get('__typecho_remember_author');
-        $commentsMail = Typecho_Cookie::get('__typecho_remember_mail');
+$commentsAuthor = \Typecho\Cookie::get('__typecho_remember_author');
+        $commentsMail = \Typecho\Cookie::get('__typecho_remember_mail');
 
 
         // 对已登录用户显示待审核评论，方便前台管理
@@ -550,10 +556,10 @@ $commentsAuthor = Typecho_Cookie::get('__typecho_remember_author');
             $pageRow = $this->parameter->parentContent;
             $pageRow['permalink'] = $pageRow['pathinfo'];
 
-            $query = Typecho_Router::url('comment_page', $pageRow, $this->options->index);
+            $query = \Typecho\Router::url('comment_page', $pageRow, $this->options->index);
 
             /** 使用盒状分页 */
-            $nav = new Typecho_Widget_Helper_PageNavigator_Box($this->_total,
+            $nav = new \Typecho\Widget\Helper\PageNavigator\Box($this->_total,
                 $this->_currentPage, $this->options->commentsPageSize, $query);
             $nav->setPageHolder('commentPage');
             $nav->setAnchor('comments');
@@ -587,7 +593,7 @@ $commentsAuthor = Typecho_Cookie::get('__typecho_remember_author');
 
             foreach ($children as $child) {
                 $this->row = $child;
-                echo '<div class="circle-comment-children" data-coid="'.$this->coid.'" data-parentName="'.$this->author.'"><div id="circle-children-'.$this->coid.'" class="circle-comment-tain">'.$this->author.$this->getParent().'<span style="color:black;font-weight:400"> : '.reEmo($this->text,"circle").'</span></div></div>';
+                echo '<div id="circle-children-'.$this->coid.'" class="circle-comment-tain">'.$this->author.$this->getParent().'<span style="color:black;font-weight:400" class="circle-comment-children" data-coid="'.$this->coid.'" data-parentName="'.$this->author.'"> : '.reEmo($this->text,"circle").'</span></div>';
                 $this->row = $tmp;
             }
 
@@ -608,7 +614,7 @@ $commentsAuthor = Typecho_Cookie::get('__typecho_remember_author');
     public function listComments($singleCommentOptions = NULL)
     {
         //初始化一些变量
-        $this->_singleCommentOptions = Typecho_Config::factory($singleCommentOptions);
+        $this->_singleCommentOptions = \Typecho\Config::factory($singleCommentOptions);
         $this->_singleCommentOptions->setDefault(array(
             'before'        =>  '<ol class="comment-list">',
             'after'         =>  '</ol>',
@@ -676,16 +682,16 @@ $commentsAuthor = Typecho_Cookie::get('__typecho_remember_author');
      * @param string $word 回复链接文字
      * @return void
      */
-    public function reply($word = '')
+    public function reply(string $word = '')
     {
         if ($this->options->commentsThreaded && $this->parameter->allowComment) {
-            $word = empty($word) ? '回复' : $word;
-            $this->pluginHandle()->trigger($plugged)->reply($word, $this);
-            
+            $word = empty($word) ? _t('回复') : $word;
+            self::pluginHandle()->trigger($plugged)->call('reply', $word, $this);
+
             if (!$plugged) {
-                echo '<a no-pjax  href="' . substr($this->permalink, 0, - strlen($this->theId) - 1) . '?replyTo=' . $this->coid .
+                echo '<a no-pjax href="' . substr($this->permalink, 0, - strlen($this->theId) - 1) . '?replyTo=' . $this->coid .
                     '#' . $this->parameter->respondId . '" rel="nofollow" onclick="return TypechoComment.reply(\'' .
-                    $this->theId . '\', ' . $this->coid . ');">' . $word . '</a>';
+                    $this->theId . '\', ' . $this->coid . ', this);">' . $word . '</a>';
             }
         }
     }

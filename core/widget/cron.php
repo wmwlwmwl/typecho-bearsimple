@@ -1,6 +1,6 @@
 <?php
 require_once str_replace("/usr/themes/bearsimple/core","",dirname(__DIR__)).'/config.inc.php';
-error_reporting(0);
+
 use \Utils\Helper;
 if(!class_exists('CSF')){
     require_once Helper::options()->pluginDir('BsCore').'/bsoptions-framework.php';
@@ -17,11 +17,11 @@ header("HTTP/1.1 200 OK");
 ignore_user_abort(true);
 set_time_limit(0);
 ini_set('memory_limit',-1);
-ini_set('mysql.connect_timeout', 900);
+// ponytail: mysql.connect_timeout 为 PHP-INI_SYSTEM 且已废弃，运行时设置无效，已移除
 ini_set('default_socket_timeout', 900);
 session_start();
     $removeChar = ["https://", "http://"]; 
-    Typecho_Widget::widget('Widget_User')->to($user);
+    \Typecho\Widget::widget('Widget\User')->to($user);
     $db = \Typecho\Db::get();
 $temoptions = bsOptions::getInstance()::get_option( 'bearsimple' );
    
@@ -39,6 +39,8 @@ function checkLinks($url) {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
         $response = curl_exec($ch);
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);

@@ -5,7 +5,7 @@ header("HTTP/1.1 200 OK");
     $options = Helper::options();
     $removeChar = ["https://", "http://"]; 
     $temoptions = bsOptions::getInstance()::get_option( 'bearsimple' );
-    Typecho_Widget::widget('Widget_User')->to($user);
+    \Typecho\Widget::widget('Widget\User')->to($user);
     if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false && $user->hasLogin() && $user->pass('administrator', true)) {   
         $db = \Typecho\Db::get();
         if($_POST['type'] == 'notify'){

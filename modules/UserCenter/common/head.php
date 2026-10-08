@@ -161,13 +161,13 @@ switch(Bsoptions('IframeProtect')){
         geetest_id: "<?php echo Bsoptions('geeid'); ?>",
 	<?php endif; ?>
 		search:"<?php if(!empty(Bsoptions('Search')[0]&& is_array(Bsoptions('Search')))){echo count(Bsoptions('Search'));}else{echo 0;}; ?>",
-		<?php if(!empty(Bsoptions('Search')[0]) && @in_array('header',Bsoptions('Search'))) :?>
+		<?php if(!empty((array)Bsoptions('Search')) && in_array('header',(array)Bsoptions('Search'))) :?>
 		header_search: "true",
 		<?php endif; ?>
-		<?php if(!empty(Bsoptions('Search')[0]) && @in_array('phone',Bsoptions('Search'))) :?>
+		<?php if(!empty((array)Bsoptions('Search')) && in_array('phone',(array)Bsoptions('Search'))) :?>
 		phone_search: "true",
 		<?php endif; ?>
-		<?php if(!empty(Bsoptions('Search')[0]) && @in_array('sidebar',Bsoptions('Search'))) :?>
+		<?php if(!empty((array)Bsoptions('Search')) && in_array('sidebar',(array)Bsoptions('Search'))) :?>
 		sidebar_search: "true",
 		<?php endif; ?>
 <?php if(Bsoptions('Slidersss') == '1' && Bsoptions('SliderIndexs') == '1' || Bsoptions('SliderOthers') == '1') :?>
@@ -240,7 +240,7 @@ switch(Bsoptions('IframeProtect')){
     <?php endif; ?>
     <?php if(Bsoptions('Share') == true): ?>
         Share:'true',
-    <?php if(!empty(Bsoptions('Shares')[0]) && @in_array('wechat',Bsoptions('Shares'))) :?>
+    <?php if(!empty((array)Bsoptions('Shares')) && in_array('wechat',(array)Bsoptions('Shares'))) :?>
         Sharewechat:'true',
     <?php endif; ?>
     <?php endif; ?>
@@ -296,7 +296,7 @@ switch(Bsoptions('IframeProtect')){
          
          <div id="header">
              <div class="site-name">
-<?php if(!empty(Bsoptions('Search')[0]) && @in_array('header',Bsoptions('Search'))) :?>   
+<?php if(!empty((array)Bsoptions('Search')) && in_array('header',(array)Bsoptions('Search'))) :?>   
         <form name="pcsearch" role="search" method="get" id="searchform1">
  <div class="bearmargin" style="float:right;"><div class="ui category search"><div class="ui large icon input pc">
       <input class="prompt" id="pcsearch" type="text" name="s" placeholder="输入关键词实时搜索">
@@ -317,7 +317,7 @@ switch(Bsoptions('IframeProtect')){
         
         	     
         	    </div>
-        	    <?php if(!empty(Bsoptions('Search')[0]) && @in_array('phone',Bsoptions('Search'))) :?> 
+        	    <?php if(!empty((array)Bsoptions('Search')) && in_array('phone',(array)Bsoptions('Search'))) :?> 
 <form name="phonesearch" role="search" method="get" id="searchformbyphone">
  <div style="text-align:center">
 <div class="ui category search">
@@ -342,7 +342,7 @@ switch(Bsoptions('IframeProtect')){
     <li>
       <a  <?php if($this->is('category')): ?> class="current"<?php endif; ?>>分类 <i class="angle double right icon"></i></a>
       <ul>
-          <?php $this->widget('Widget_Metas_Category_List')->to($categorys); ?>
+          <?php $this->widget('Widget\Metas\Category\Rows')->to($categorys); ?>
           <?php while($categorys->next()): ?>
 
 <?php if ($categorys->levels === 0): ?>
@@ -372,7 +372,7 @@ switch(Bsoptions('IframeProtect')){
 
 
 <?php if(Bsoptions('PageMenu') !== "3"): ?>
-<?php $this->widget('Widget_Contents_Page_List')->to($pages); ?>
+<?php $this->widget('Widget\Contents\Page\Rows')->to($pages); ?>
 <?php if($pages->have()): ?>
 <?php if(Bsoptions('PageMenu') == null || Bsoptions('PageMenu') == "1"): ?>
         <li><a<?php if($this->is('page')): ?> class="current"<?php endif; ?>>页面 <i class="angle double right icon"></i></a>
@@ -448,7 +448,7 @@ switch(Bsoptions('IframeProtect')){
     <ul class="sm-nav">
       <li class="sm-nav-item"><a class="sm-nav-link<?php if($this->is('index')):?> current<?php endif;?>" href="<?php $this->options->siteUrl(); ?>">首页</a></li>
       <?php if(Bsoptions('CategoryMenu') == null || Bsoptions('CategoryMenu') == true): ?>
-      <?php $this->widget('Widget_Metas_Category_List')->to($categorys); ?>
+      <?php $this->widget('Widget\Metas\Category\Rows')->to($categorys); ?>
       <li class="sm-nav-item">
           <a class="sm-nav-link sm-sub-toggler<?php if($this->is('category')): ?> current<?php endif;?>">分类</a>
     
@@ -485,7 +485,7 @@ switch(Bsoptions('IframeProtect')){
  <?php endif; ?>
         
         <?php if(Bsoptions('PageMenu') !== "3"): ?>
-        <?php $this->widget('Widget_Contents_Page_List')->to($pages); ?>
+        <?php $this->widget('Widget\Contents\Page\Rows')->to($pages); ?>
         <?php if($pages->have()): ?>
 <?php if(Bsoptions('PageMenu') == null || Bsoptions('PageMenu') == "1"): ?>
 <li class="sm-nav-item">

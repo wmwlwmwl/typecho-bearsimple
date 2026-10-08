@@ -2,7 +2,7 @@
 header("HTTP/1.1 200 OK");
     header("Access-Control-Allow-Origin: *");
     date_default_timezone_set('PRC');
-error_reporting(0);
+
 
 require_once 'Dom.php';
 
@@ -18,6 +18,8 @@ function curl_file_get_contents($_url, $type='www')
     curl_setopt($ch, CURLOPT_REFERER, 'https://'.$type.'.douban.com/');
     curl_setopt($ch, CURLOPT_COOKIE, $cookie);
     curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36');
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 
     $output = curl_exec($ch);
     curl_close($ch);

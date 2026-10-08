@@ -8,7 +8,7 @@ header("HTTP/1.1 200 OK");
     $options = Helper::options();
     $removeChar = ["https://", "http://"]; 
     $temoptions = bsOptions::getInstance()::get_option( 'bearsimple' );
-    Typecho_Widget::widget('Widget_User')->to($user);
+    \Typecho\Widget::widget('Widget\User')->to($user);
     function buildResult($code, $data, $message) {
     return [
         'code' => $code,
@@ -108,6 +108,8 @@ $result['list'] = $links;
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     $response = curl_exec($ch);
     $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);

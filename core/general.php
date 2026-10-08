@@ -1,7 +1,7 @@
 <?php
 function posterPic($cid) {
     $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     $md = new Markdown();
    $post = $db->fetchRow($db->select()
        ->from('table.contents')
@@ -27,7 +27,7 @@ if(!$cover && $options['Poster__AttChoose'] == true){
 	return $thumb;
 }
 function getCustomx($cid, $key){
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     $rows = $db->fetchAll($db->select('table.fields.str_value')->from('table.fields')
         ->where('table.fields.cid = ?', $cid)
         ->where('table.fields.name = ?', $key)
@@ -53,9 +53,12 @@ $curl = curl_init();
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_HEADER, false);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 15);
         $content = curl_exec($curl);
         curl_close($curl);
-        return json_decode($content,true)['data'];
+        $arr = $content === false ? [] : (json_decode($content,true) ?: []);
+        return $arr['data'] ?? [];
 }
 function getTitle(\Widget\Archive $var)
     {
@@ -95,22 +98,22 @@ else{
 
 //获取读者墙信息
 function getReaders(){
-$result = Typecho_Cookie::get('readerdata');
+$result = \Typecho\Cookie::get('readerdata');
 if($result){
  $result = json_decode($result,true);   
 }
 else{
 
-    $db = Typecho_Db::get();      
+    $db = \Typecho\Db::get();      
     $sql = $db->select('COUNT(author) AS num', 'author', 'url', 'mail')      
               ->from('table.comments')      
               ->where('status = ?', 'approved')      
               ->where('type = ?', 'comment')      
               ->where('authorId = ?', '0') 
               ->group('author')      
-              ->order('num', Typecho_Db::SORT_DESC);
+              ->order('num', \Typecho\Db::SORT_DESC);
     $result = $db->fetchAll($sql);
-    Typecho_Cookie::set('readerdata',json_encode($result));
+    \Typecho\Cookie::set('readerdata',json_encode($result));
 }
 
     return $result;
@@ -119,8 +122,8 @@ else{
 
 //获取标签
 function getTags(){
-$db = Typecho_Db::get();
-$select = $db->fetchAll($db->select()->from('table.metas')->where('type = ?', 'tag')->order('mid', Typecho_Db::SORT_DESC));
+$db = \Typecho\Db::get();
+$select = $db->fetchAll($db->select()->from('table.metas')->where('type = ?', 'tag')->order('mid', \Typecho\Db::SORT_DESC));
 $arr = array();
 foreach($select as $value){
     $val = \Typecho\Widget::widget('Widget\Base\Metas')->push($value);
@@ -132,7 +135,7 @@ $arr[] = $val;
 
 //获取作者指定字段
 function getAuthorInfo($uid,$value){
-$db = Typecho_Db::get();
+$db = \Typecho\Db::get();
 $result = $db->fetchAll($db->select()->from('table.users')
 ->where('uid = ?',$uid)
 );
@@ -165,7 +168,7 @@ if (strpos($options->siteUrl, "https://") !== false) {
 }
 //通过分类mid获取到分类名字
 function getCategoryName($category) {
-$db = Typecho_Db::get();
+$db = \Typecho\Db::get();
 $prefix = $db->getPrefix();
 $rs = $db->fetchRow($db->select()->from($prefix.'metas')->where('mid = ?', $category)->limit(1));
 return $rs['name'];
@@ -177,7 +180,7 @@ function monweek(){
 }
 // 获取所有分类和分类文章数量
 function getPostAndNum(){
-    $db = Typecho_Db::get();     
+    $db = \Typecho\Db::get();     
     $a = array();
     $result = $db->fetchAll($db->select()
     ->from('table.metas')
@@ -194,7 +197,7 @@ return json_encode($a);
 
 // 获取所有标签和标签文章数量
 function getTagAndNum($type){
-    $db = Typecho_Db::get();     
+    $db = \Typecho\Db::get();     
     $arr = array();
     $result = $db->fetchAll($db->select()
     ->from('table.metas')
@@ -218,13 +221,13 @@ return json_encode($arr);
 
 //获取随机文章
 function getArchived(){
-    $db = Typecho_Db::get();      
+    $db = \Typecho\Db::get();      
     $result = $db->fetchAll($db->select()
     ->from('table.contents')
             ->where('table.contents.status = ?', 'publish')
             ->where('table.contents.created < ?', Helper::options()->time)
             ->where('table.contents.type = ?', 'post')
-            ->order('table.contents.created', Typecho_Db::SORT_DESC));
+            ->order('table.contents.created', \Typecho\Db::SORT_DESC));
 return $result;
 }
 //获取随机文章
@@ -256,7 +259,7 @@ if($result){
    $i = 1;
 foreach($result as $val){
 
-$val = Typecho_Widget::widget('Widget_Abstract_Contents')->push($val);
+$val = \Typecho\Widget::widget('Widget\Base\Contents')->push($val);
 if(!$val['hidden']){
 $post_title = htmlspecialchars($val['title']);
 $permalink = $val['permalink'];
@@ -316,7 +319,7 @@ function tags($widget, $split = '', $default = NULL)
 
 //获取分类ID
 function categeid($slug){
-   $db = Typecho_Db::get();
+   $db = \Typecho\Db::get();
    $postnum=$db->fetchRow($db->select()->from ('table.metas')->where ('slug=?',$slug)->where('type=?', 'category'));
    return $postnum['mid']; 
 }
@@ -396,10 +399,10 @@ foreach($result as $k=>$v){
 
 //统计全站字数
 function allOfCharacters() {
-    $Characters = Typecho_Cookie::get('site_Characters');
+    $Characters = \Typecho\Cookie::get('site_Characters');
     if(!$Characters){
     $chars = 0;
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     $select = $db ->select('text')->from('table.contents');
     $rows = $db->fetchAll($select);
     foreach ($rows as $row) { $chars += mb_strlen(trim($row['text']), 'UTF-8'); }
@@ -407,7 +410,7 @@ function allOfCharacters() {
     if($chars >= 10000)     { $chars /= 10000; $unit = '万'; } 
     else if($chars >= 1000) { $chars /= 1000;  $unit = '千'; }
     $out = sprintf('%.2lf %s',$chars, $unit);
-    Typecho_Cookie::set('site_Characters',$out);
+    \Typecho\Cookie::set('site_Characters',$out);
     $Characters = $out;
     }
  
@@ -420,7 +423,7 @@ function historyToday($created)
     $date_m = date('m月', $created);
     $date_d = date('d日', $created);
     $time = time();
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     $prefix = $db->getPrefix();
     $options = bsOptions::getInstance()::get_option( 'bearsimple' );
     if(empty($options['history_Today_Limit'])){
@@ -444,7 +447,7 @@ function historyToday($created)
     $historyTodaylist = [];
     if ($result instanceof Traversable) {
             foreach ($result as $item) {
-                $item = Typecho_Widget::widget('Widget_Abstract_Contents')->push($item);
+                $item = \Typecho\Widget::widget('Widget\Base\Contents')->push($item);
                 $title = htmlspecialchars($item['title']);
             $permalink = $item['permalink'];
             $date = date('Y年m月d日',$created);
@@ -503,14 +506,14 @@ function CommentAuthor($obj, $autoLink = NULL, $noFollow = NULL) {
 }
 
 function categorynum($id){
-$db = Typecho_Db::get();
+$db = \Typecho\Db::get();
 $num=$db->fetchRow($db->select()->from('table.metas')
         ->where('mid = ?',$id));
 return $num['count'];
 }
 
 function categoryid($slug){  //获取栏目id
-   $db = Typecho_Db::get();
+   $db = \Typecho\Db::get();
    $postnum=$db->fetchRow($db->select()->from ('table.metas')->where ('slug=?',$slug)->where('type=?', 'category'));
    return  $postnum['mid']; 
 }
@@ -680,7 +683,7 @@ $avatar = imgravatarq($th->author->mail);
 EOF;
 }
 function agreeNum($cid) {
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     $prefix = $db->getPrefix();
     $adapter = $db->getAdapterName();
     if (!array_key_exists('agree', $db->fetchRow($db->select()->from('table.contents')))) {
@@ -699,7 +702,7 @@ function agreeNum($cid) {
 }
 
 function agree($cid) {
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     $agree = $db->fetchRow($db->select('table.contents.agree')->from('table.contents')->where('cid = ?', $cid));
     
     $db->query($db->update('table.contents')->rows(array('agree' => (int)$agree['agree'] + 1))->where('cid = ?', $cid));
@@ -708,7 +711,7 @@ function agree($cid) {
 }
 
 function agreeNumforcomment($coid) {
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     $prefix = $db->getPrefix();
     $adapter = $db->getAdapterName();
     if (!array_key_exists('agree', $db->fetchRow($db->select()->from('table.comments')))) {
@@ -727,7 +730,7 @@ function agreeNumforcomment($coid) {
 }
 
 function agreeforcomment($coid) {
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     $agree = $db->fetchRow($db->select('table.comments.agree')->from('table.comments')->where('coid = ?', $coid));
     
     $db->query($db->update('table.comments')->rows(array('agree' => (int)$agree['agree'] + 1))->where('coid = ?', $coid));
@@ -737,7 +740,7 @@ function agreeforcomment($coid) {
 
 function theAllViews()
         {
-            $db = Typecho_Db::get();
+            $db = \Typecho\Db::get();
             $prefix = $db->getPrefix();
             $row = $db->fetchAll('SELECT SUM(VIEWS) FROM `' . $prefix . 'contents`');
                 echo number_format($row[0]['SUM(VIEWS)']);
@@ -974,28 +977,28 @@ function article_module_output($thi) {
             <div class="bstbutton_button bstbutton_dropdown bstbutton_share" id="share-btn">
                 <i class="fas fa-share-square"></i> 分享
                 <div class="bstbutton_dropdown-content">';
-            if (!empty($options['Shares'][0]) && @in_array('qq', $options['Shares'])) {
+            if (!empty($options['Shares'][0]) && in_array('qq', (array)($options['Shares'] ?? []))) {
                 echo '<div class="bstbutton_dropdown-item bstbutton_qqshare" id="qqshare"><i class="fab fa-qq"></i> QQ</div>';
             }
-            if (!empty($options['Shares'][0]) && @in_array('qzone', $options['Shares'])) {
+            if (!empty($options['Shares'][0]) && in_array('qzone', (array)($options['Shares'] ?? []))) {
                 echo '<div class="bstbutton_dropdown-item bstbutton_qzoneshare" id="qzoneshare"><i class="fab fa-qq"></i> QQ空间</div>';
             }
-            if (!empty($options['Shares'][0]) && @in_array('wechat', $options['Shares'])) {
+            if (!empty($options['Shares'][0]) && in_array('wechat', (array)($options['Shares'] ?? []))) {
                 echo '<div class="bstbutton_dropdown-item bstbutton_wechatshare" id="wechatshare"><i class="fab fa-weixin"></i> 微信</div>';
             }
-            if (!empty($options['Shares'][0]) && @in_array('weibo', $options['Shares'])) {
+            if (!empty($options['Shares'][0]) && in_array('weibo', (array)($options['Shares'] ?? []))) {
                 echo '<div class="bstbutton_dropdown-item bstbutton_weiboshare" id="weiboshare"><i class="fab fa-weibo"></i> 微博</div>';
             }
-            if (!empty($options['Shares'][0]) && @in_array('facebook', $options['Shares'])) {
+            if (!empty($options['Shares'][0]) && in_array('facebook', (array)($options['Shares'] ?? []))) {
                 echo '<div class="bstbutton_dropdown-item bstbutton_facebookshare" id="facebookshare"><i class="fab fa-facebook"></i> Facebook</div>';
             }
-            if (!empty($options['Shares'][0]) && @in_array('twitter', $options['Shares'])) {
+            if (!empty($options['Shares'][0]) && in_array('twitter', (array)($options['Shares'] ?? []))) {
                 echo '<div class="bstbutton_dropdown-item bstbutton_twittershare" id="twittershare"><i class="fab fa-twitter"></i> Twitter</div>';
             }
-            if (!empty($options['Shares'][0]) && @in_array('google', $options['Shares'])) {
+            if (!empty($options['Shares'][0]) && in_array('google', (array)($options['Shares'] ?? []))) {
                 echo '<div class="bstbutton_dropdown-item bstbutton_googleshare" id="googleshare"><i class="fab fa-google"></i> Google</div>';
             }
-            if (!empty($options['Shares'][0]) && @in_array('linkedin', $options['Shares'])) {
+            if (!empty($options['Shares'][0]) && in_array('linkedin', (array)($options['Shares'] ?? []))) {
                 echo '<div class="bstbutton_dropdown-item bstbutton_linkedinshare" id="linkedinshare"><i class="fab fa-linkedin"></i> Linkedin</div>';
             }
             
@@ -1216,7 +1219,7 @@ function autoPage($array,$pagesize,$current){
   $start=($current-1)*$pagesize;
   $end=($start+$pagesize)<count($array) ? ($start+$pagesize) : count($array);
   for($i=$start;$i<$end;$i++){
-    @array_push($_return,$array[$i]);
+    array_push($_return,$array[$i]);
   }
   $pagearray["ret"]=$_return;
   $page = '<div class="ui labels" style="margin-top:20px"><div style="text-align:center"><a class="ui large label" href="?page=1">首页</a>';
@@ -1466,14 +1469,14 @@ function getOs($agent)
 
 //**字数统计**/
 function art_count ($cid){ 
-    $db=Typecho_Db::get (); $rs=$db->fetchRow ($db->select ('table.contents.text')->from ('table.contents')->where ('table.contents.cid=?',$cid)->order ('table.contents.cid',Typecho_Db::SORT_ASC)->limit (1)); $text = preg_replace("/[^\x{4e00}-\x{9fa5}]/u", "", $rs['text']); 
+    $db=\Typecho\Db::get (); $rs=$db->fetchRow ($db->select ('table.contents.text')->from ('table.contents')->where ('table.contents.cid=?',$cid)->order ('table.contents.cid',\Typecho\Db::SORT_ASC)->limit (1)); $text = preg_replace("/[^\x{4e00}-\x{9fa5}]/u", "", $rs['text']); 
     
     echo mb_strlen($text,'UTF-8'); }
 
 // 统计阅读数
 function get_post_view($archive){
 	$cid    = $archive->cid;
-	$db     = Typecho_Db::get();
+	$db     = \Typecho\Db::get();
 	$prefix = $db->getPrefix();
 	if (!array_key_exists('views', $db->fetchRow($db->select()->from('table.contents')))) {
 		$db->query('ALTER TABLE `' . $prefix . 'contents` ADD `views` INT(10) DEFAULT 0;');
@@ -1482,7 +1485,7 @@ function get_post_view($archive){
 	}
 	$row = $db->fetchRow($db->select('views')->from('table.contents')->where('cid = ?', $cid));
 	if ($archive->is('single')) {
-        $views = Typecho_Cookie::get('extend_contents_views');
+        $views = \Typecho\Cookie::get('extend_contents_views');
 		if(empty($views)){
 			$views = array();
 		}else{
@@ -1492,7 +1495,7 @@ function get_post_view($archive){
 	        $db->query($db->update('table.contents')->rows(array('views' => (int) $row['views'] + 1))->where('cid = ?', $cid));
             array_push($views, $cid);
 			$views = implode(',', $views);
-			Typecho_Cookie::set('extend_contents_views', $views); //记录查看cookie
+			\Typecho\Cookie::set('extend_contents_views', $views); //记录查看cookie
 		}
 	}
 	echo $row['views'];
@@ -1501,7 +1504,7 @@ function get_post_view($archive){
 
 // 留言加@
 function getPermalinkFromCoid($coid) {
-	$db = Typecho_Db::get();
+	$db = \Typecho\Db::get();
 	$row = $db->fetchRow($db->select('author')->from('table.comments')->where('coid = ? AND status = ?', $coid, 'approved'));
 	if (empty($row)) return '';
 	return '<a href="#comment-'.$coid.'">@'.$row['author'].'</a>';
@@ -1509,14 +1512,14 @@ function getPermalinkFromCoid($coid) {
 
 //获取文章标题
 function get_article_title($cid){
- $db = Typecho_Db::get();
+ $db = \Typecho\Db::get();
 	$row = $db->fetchRow($db->select('title')->from('table.contents')->where('cid = ?', $cid));
  return $row['title'];
 }
 
 //获取文章URL
 function get_article_link($cid){    
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
 
     $result = $db->fetchAll($db->select()->from('table.contents')
         ->where('status = ?','publish')
@@ -1525,7 +1528,7 @@ function get_article_link($cid){
         ->where('cid = ?', $cid));
     if($result){
         foreach($result as $val){
-            $val = Typecho_Widget::widget('Widget_Abstract_Contents')->push($val);
+            $val = \Typecho\Widget::widget('Widget\Base\Contents')->push($val);
             $post_title = htmlspecialchars($val['title']);
             $permalink = $val['permalink'];
             return $permalink;
@@ -1558,7 +1561,7 @@ function lazyload($haveClass = 0,$url = ''){
 }
 //侧边栏最新回复
 function lastComments(){
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     $options = Helper::options();
     $search_Crosspage = $db->fetchAll($db->select('cid')->from('table.contents')
         ->where('status = ?','publish')
@@ -1574,7 +1577,7 @@ function lastComments(){
         foreach ($ids as $k => $v) {
         $result = $result->where('cid != '.intval($ids[$k]));
         }
-        $result = $db->fetchAll($result->order('created', Typecho_Db::SORT_DESC)
+        $result = $db->fetchAll($result->order('created', \Typecho\Db::SORT_DESC)
         ->limit(5));
         
         }
@@ -1582,7 +1585,7 @@ function lastComments(){
             $result = $db->fetchAll($db->select()->from('table.comments')
         ->where('status = ?','approved')
         ->where('type = ?', 'comment')
-        ->order('created', Typecho_Db::SORT_DESC)
+        ->order('created', \Typecho\Db::SORT_DESC)
         ->limit(5)
         );
         }
@@ -1594,12 +1597,12 @@ function lastComments(){
             ->where('status = ?','publish')
             ->where('type = ?', 'post')
             ->where('cid  = ?',$comment['cid'])
-            ->order('cid', Typecho_Db::SORT_DESC)        
+            ->order('cid', \Typecho\Db::SORT_DESC)        
         );
 if($post){
             $i=1;
             foreach($post as $val){                
-                $val = Typecho_Widget::widget('Widget_Abstract_Contents')->push($val);
+                $val = \Typecho\Widget::widget('Widget\Base\Contents')->push($val);
                 $post_title = htmlspecialchars($val['title']);
                 $permalink = $val['permalink'];
                 $post_url = '<div class="recent-comments-meta-article">评论于：<a href="'.$permalink.'#comment-'.$comment['coid'].'" title="评论于：'.$post_title.'" target="_blank">'.$post_title.'</a></div>';
@@ -1615,7 +1618,7 @@ if($post){
         }
         echo '<li><div class="recent-comments-author">'.$comment['author'].'</div>
                       ';
-      if(!Typecho_Widget::widget('Widget_User')->hasLogin()){
+      if(!\Typecho\Widget::widget('Widget\User')->hasLogin()){
       if(Bsoptions('Comment_private') == true && strpos($comment['text'],'@私密@') !== false ){
       echo '<div class="recent-comments-text">此评论为私密评论</p></div>';
       }
@@ -1637,7 +1640,7 @@ if($post){
 
 //获取动态数目
 function crossnum(){
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     $crossnum = $db->fetchAll($db->select('commentsNum')->from('table.contents')
         ->where('status = ?','publish')
         ->where('type = ?', 'page')
@@ -1699,7 +1702,7 @@ function loadtime( $display = 0, $precision = 3 ) {
 }
 
 
-class Widget_Post_hot extends Widget_Abstract_Contents
+class Widget_Post_hot extends \Widget\Base\Contents
 {
     public function __construct($request, $response, $params = NULL)
     {
@@ -1729,7 +1732,7 @@ class Widget_Post_hot extends Widget_Abstract_Contents
             $db_query = 'right';
         }
         $mid = array_unique($ret);
-        Typecho_Widget::widget('Widget_User')->to($user);
+        \Typecho\Widget::widget('Widget\User')->to($user);
         if(empty($mid) || ($user->hasLogin())){
 $select  = $this->select()->from('table.contents')
           ->where("table.contents.password IS NULL OR table.contents.password = ''")
@@ -1737,7 +1740,7 @@ $select  = $this->select()->from('table.contents')
           ->where('table.contents.created <= ?', time())
           ->where('table.contents.type = ?', 'post')
           ->limit($this->parameter->pageSize)
-          ->order('table.contents.created', Typecho_Db::SORT_DESC);
+          ->order('table.contents.created', \Typecho\Db::SORT_DESC);
         }
         else{
 $select  = $this->select()->from('table.contents')
@@ -1749,7 +1752,7 @@ $select  = $this->select()->from('table.contents')
           ->where('table.contents.created <= ?', time())
           ->where('table.contents.type = ?', 'post')
           ->limit($this->parameter->pageSize)
-          ->order('table.contents.created', Typecho_Db::SORT_DESC)
+          ->order('table.contents.created', \Typecho\Db::SORT_DESC)
           ->group('table.contents.cid');
          foreach ($mid as  $k=>$v) {
             $select->where('table.relationships.mid != '.intval($mid[$k]));//确保每个值都是数字

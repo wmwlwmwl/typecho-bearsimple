@@ -62,7 +62,7 @@
   <?php endif;?>
 
   <?php if(Bsoptions('FourTotalHidden') == true) :?>
-    <?php Typecho_Widget::widget('Widget_Stat')->to($stat); ?>
+    <?php \Typecho\Widget::widget('Widget\Stat')->to($stat); ?>
     <!-- 统计信息 -->
     <div class="blogger-stats">
       <div class="stat-item">
@@ -89,7 +89,7 @@
 
 
 <!--搜索模块-->
-<?php if(!empty(Bsoptions('Search')[0]) && @in_array('sidebar',Bsoptions('Search'))) :?>
+<?php if(!empty((array)Bsoptions('Search')) && in_array('sidebar',(array)Bsoptions('Search'))) :?>
 
 <!-- 搜索框 -->
 <form name="sidesearch" role="search" method="get" id="searchform2">
@@ -103,7 +103,7 @@
   <?php if(Bsoptions('Cate') == true) :?>
 <div class="sidebar-card">
   <div class="card-header"><i class="folder open outline icon"></i> 文章分类</div>
-  <?php $this->widget('Widget_Metas_Category_List')->to($categorys); ?>
+  <?php $this->widget('Widget\Metas\Category\Rows')->to($categorys); ?>
         <div class="card-body">
   <ul class="tree-view">
     
@@ -186,7 +186,7 @@ toggleIcons.forEach(icon => {
 </div>
 <?php endif;?>
 <?php if(Bsoptions('tagcloud') == true) :?>
-<?php Typecho_Widget::widget('Widget_Metas_Tag_Cloud','ignoreZeroCount=0&limit='.tagcloudnum())->to($tags); ?>
+<?php \Typecho\Widget::widget('Widget\Metas\Tag\Cloud','ignoreZeroCount=0&limit='.tagcloudnum())->to($tags); ?>
 <div class="tag-cloud-card">
        <div class="card-header"><i class="tags icon"></i> 文章标签</div>
              <div class="card-body">

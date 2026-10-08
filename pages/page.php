@@ -99,7 +99,7 @@
   
 <?php if($this->hidden||$this->titleshow): ?>
 
-<form action="<?php echo Typecho_Widget::widget('Widget_Security')->getTokenUrl($this->permalink); ?>" method="post" id="form">
+<form action="<?php echo \Typecho\Widget::widget('Widget\Security')->getTokenUrl($this->permalink); ?>" method="post" id="form">
 <div class="ui form warning">
   <div class="field">
     <label>本文已设定密码保护，请输入密码访问</label>
@@ -123,7 +123,7 @@
 <?php else:?>
 <?php echo reEmoPost(ShortCode($this->content,$this,$this->user->hasLogin(),$this->fields->ArticleType)); ?>
 <?php endif;?>
-<?php if (array_key_exists('TePass', Typecho_Plugin::export()['activated'])){echo TePass_Plugin::getTePass();} ?>
+<?php if (array_key_exists('TePass', \Typecho\Plugin::export()['activated'])){echo TePass_Plugin::getTePass();} ?>
 </div>
 <?php endif;?></p></div></div> </article>
 
@@ -153,7 +153,7 @@
 
 
 <?php article_module_output($this); ?>
-<?php if (Bsoptions('RewardOpen_tepass') == true && array_key_exists('TePass', Typecho_Plugin::export()['activated'])) :?> 
+<?php if (Bsoptions('RewardOpen_tepass') == true && array_key_exists('TePass', \Typecho\Plugin::export()['activated'])) :?> 
 <?php echo TePass_Plugin::getReward(); ?>
 <?php endif; ?>
 <?php if(Bsoptions('Poster') == true): ?>

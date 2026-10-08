@@ -7,9 +7,13 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/usr/plugins/BsCore/modules/Markdown/Par
 header("HTTP/1.1 200 OK");
 header("Access-Control-Allow-Origin: *");
 date_default_timezone_set('PRC');
-error_reporting(0);
+
 $options = Helper::options();
-    $temoptions = bsOptions::getInstance()::get_option( 'bearsimple' );
+    $temoptions = array(
+        'memos_url' => Bsoptions('memos_url'),
+        'memos_Url' => Bsoptions('memos_Url'),
+        'memos_Username' => Bsoptions('memos_Username'),
+    );
     $removeChar = ["https://", "http://"]; 
 
 
@@ -32,7 +36,7 @@ function memos_getRequest($url, $type,$postdata = '') {
     $context = stream_context_create($options);
 
     $result    = file_get_contents($url, false, $context);
-    if($http_response_header[0] != 'HTTP/1.1 200 OK'){
+    if($result === false || ($http_response_header[0] ?? '') != 'HTTP/1.1 200 OK'){
         $result = array(
             "result" => "success",
             "reason" => "memos error"
@@ -76,7 +80,7 @@ function memos_getTime($time)
 
 if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) {   
     $db = \Typecho\Db::get();
-    \Typecho\Widget::widget('Widget_User')->to($user);
+    \Typecho\Widget::widget('Widget\User')->to($user);
 if($_POST['action'] == 'getmemo'){
 
 $result = array(

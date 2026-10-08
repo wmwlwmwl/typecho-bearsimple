@@ -7,22 +7,25 @@ use Typecho\Common;
 use Widget\Options;
 
     $options = Helper::options();
-    $temoptions = bsOptions::getInstance()::get_option('bearsimple');
+    $temoptions = array(
+        'AIService_Blacklist' => Bsoptions('AIService_Blacklist'),
+        'AIService_Blacklist_Page' => Bsoptions('AIService_Blacklist_Page'),
+    );
     $removeChar = ["https://", "http://"]; 
     if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) { 
 $data = [];
 
 $i = 0;
-if($temoptions['AIService_Blacklist'] !== '' && @is_array($temoptions['AIService_Blacklist'])){
+if(Bsoptions('AIService_Blacklist') !== '' && is_array(Bsoptions('AIService_Blacklist'))){
 foreach($temoptions['AIService_Blacklist'] as $val){
-$this->widget('Widget_Archive@aitools'.$i.'post', 'pageSize=1&type=post', 'cid='.$val)->to($arr);
+$this->widget('Widget\Archive@aitools'.$i.'post', 'pageSize=1&type=post', 'cid='.$val)->to($arr);
 $data['blackurls'][] = $arr->permalink;
 $i++;
 }
 }
-if($temoptions['AIService_Blacklist_Page'] !== '' && @is_array($temoptions['AIService_Blacklist_Page'])){
+if(Bsoptions('AIService_Blacklist_Page') !== '' && is_array(Bsoptions('AIService_Blacklist_Page'))){
 foreach($temoptions['AIService_Blacklist_Page'] as $val){
-$this->widget('Widget_Archive@aitools'.$i.'page', 'pageSize=1&type=page', 'cid='.$val)->to($arrs);
+$this->widget('Widget\Archive@aitools'.$i.'page', 'pageSize=1&type=page', 'cid='.$val)->to($arrs);
 $data['blackurls'][] = $arrs->permalink;
 $i++;
 }

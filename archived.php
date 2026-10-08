@@ -20,7 +20,7 @@
         <canvas id="categoryChart"></canvas>
     </div>
 <?php
-$categories = $this->widget('Widget_Metas_Category_List');
+$categories = $this->widget('Widget\Metas\Category\Rows');
 $categoryData = [];
 while ($categories->next()) {
     $categoryData[] = [
@@ -38,7 +38,7 @@ while ($categories->next()) {
     $years = [];
     $page = $this->request->get('page', 1);
     $pageSize = 5; 
-    $archives = $this->widget('Widget_Contents_Post_Recent', 'pageSize=10000');
+    $archives = $this->widget('Widget\Contents\Post\Recent', 'pageSize=10000');
     while ($archives->next()) {
         $year = date('Y', $archives->created);
         $years[$year][] = [

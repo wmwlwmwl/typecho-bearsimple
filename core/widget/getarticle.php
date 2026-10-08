@@ -3,7 +3,7 @@ header("HTTP/1.1 200 OK");
 header("Access-Control-Allow-Origin: *");
 date_default_timezone_set('PRC');
 
-$db = Typecho_Db::get();
+$db = \Typecho\Db::get();
 $options = Helper::options();
 $result = ['items' => []];
 
@@ -23,7 +23,7 @@ function buildLikeParam($value) {
 }
 
 function getPostUrlByCid($cid) {
-    $post = Typecho_Widget::widget('Widget_Archive@post_'.$cid, 'type=post', 'cid='.$cid);
+    $post = \Typecho\Widget::widget('Widget\Archive@post_'.$cid, 'type=post', 'cid='.$cid);
     return $post->permalink;
 }
 
@@ -85,7 +85,7 @@ function generateSummary($content, $cid = 0) {
     }
 
     $maxLen = (preg_match('/[\x{4e00}-\x{9fa5}]/u', $plainText)) ? 100 : 150;
-    return Typecho_Common::subStr($plainText, 0, $maxLen, '...');
+    return \Typecho\Common::subStr($plainText, 0, $maxLen, '...');
 }
 
 try {

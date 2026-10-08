@@ -4,7 +4,8 @@ require 'vendor/autoload_538.php';
 use MaxMind\Db\Reader;
 use Widget\Base\Comments;
 use Widget\Base\Contents;
-class Bearsimple_Widget_Comments_Archive extends Widget_Abstract_Comments
+use Widget\Contents\From;
+class Bearsimple_Widget_Comments_Archive extends Comments
 {
      /**
      * 当前页
@@ -13,6 +14,7 @@ class Bearsimple_Widget_Comments_Archive extends Widget_Abstract_Comments
      * @var integer
      */
     private $_currentPage;
+
     /**
      * 所有文章个数
      *
@@ -68,7 +70,7 @@ class Bearsimple_Widget_Comments_Archive extends Widget_Abstract_Comments
         parent::__construct($request, $response, $params);
         $this->parameter->setDefault('parentId=0&commentPage=0&commentsNum=0&allowComment=1');
         
-        Typecho_Widget::widget('Widget_Security')->to($this->_security);
+        \Typecho\Widget::widget('Widget\Security')->to($this->_security);
 
         /** 初始化回调函数 */
         if (function_exists('threadedComments')) {
@@ -102,22 +104,35 @@ class Bearsimple_Widget_Comments_Archive extends Widget_Abstract_Comments
              return self::formatProvince($IPlo::getLocation($ip)['province']);
          }
      }
-     public static function getIpInfo($ip){
+     public function getIpInfo($ip){
 $url = 'https://ip.zxinc.org/api.php?type=json&ip='.$ip;
-$headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:33.0) Gecko/20100101 Firefox/33.0';
-foreach( $headers as $n => $v )
-{ $headerArr[] = $n .':' . $v; }
     $ch = curl_init();  
     curl_setopt($ch,CURLOPT_URL,$url);
+    curl_setopt($ch,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
     curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);  
-    curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,3);  
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt ($ch, CURLOPT_HTTPHEADER , $headerArr );
+    curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,3);
+    curl_setopt($ch,CURLOPT_TIMEOUT,5);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
     $handles = curl_exec($ch);  
     curl_close($ch);  
-    $info = json_decode($handles,true)['data']['country'];
-  
+    $info = explode("\t",json_decode($handles,true)['data']['country']);
+    $total = count($info);
+    switch($total){
+     case 1:
+         $info = self::formatProvince($info[0]);
+         break;
+     case 2:
+         $info = self::formatProvince($info[1]);
+         break;
+     case 3:
+         $info = self::formatProvince($info[1]);
+         break;
+     case 4:
+         $info = self::formatProvince($info[1]);
+         break;
+     default:$info = self::formatProvince($info[0]);
+    }
     return $info;
      }
      
@@ -194,7 +209,7 @@ foreach( $headers as $n => $v )
      * @access private
      * @return void
      */
-    private function threadedCommentsCallback()
+     private function threadedCommentsCallback()
     {
 
         $singleCommentOptions = $this->_singleCommentOptions;
@@ -235,9 +250,9 @@ foreach( $headers as $n => $v )
 
     <div class="content">
       <span class="author"><?php CommentAuthor($this); ?></span> <?php $this->commentRank($this); ?>                 <?php if(Bsoptions('Comment_useragent') == true): ?> <?php BearsimpleUserAgent::render($this->agent,'comment'); ?><?php endif; ?> <span><?php echo $this->getParent(); ?></span><br>
-      <div class="metadata" style="margin-top:5px;margin-left:auto">
+      <div class="metadata" style="margin:auto">
         <span class="date"><?php $singleCommentOptions->beforeDate();
-                echo date('Y-m-d', $this->created);
+                echo date('Y-m-d H:i', $this->created);
                 $singleCommentOptions->afterDate(); ?></span>
                 <?php if(Bsoptions('Comment_ipget') == true): ?><span class="date">IP属地：<?php self::getLocation($this); ?></span><?php endif; ?>
 
@@ -260,7 +275,7 @@ foreach( $headers as $n => $v )
                     <?php if(Bsoptions('CommentClose') == true):?>
         <?php $this->reply($singleCommentOptions->replyWord); ?>
                   <?php endif; ?>
-        <?php if ($this->children) { ?><a class="slickcomment" id="bs<?php $this->theId(); ?>" data-count="<?php echo count($this->children);?>">展开子评论(<?php echo count($this->children);?>条)</a><?php } ?>
+        <?php if ($this->children) { ?><a class="slickcomment" id="bs<?php $this->theId(); ?>">收起子评论</a><?php } ?>
          <?php if(Bsoptions('Comment_like') == true && $emaction == false): ?>
            <?php $agree = $this->hidden?array('agree' => 0, 'recording' => true):agreeNumforcomment($this->coid);?>
            <i id="commentlike" class="like thumbs up red link icon" data-coid="<?php echo $this->coid; ?>"></i><font color=gray class="agreenumcomment<?php echo $this->coid; ?>"><?php echo $agree['agree']; ?></font>
@@ -270,7 +285,7 @@ foreach( $headers as $n => $v )
     </div>
     <?php if ($this->children) { ?>
     
-    <div class="ui segment comment-children bs<?php $this->theId(); ?>" style="display:none">
+    <div class="ui segment comment-children bs<?php $this->theId(); ?>">
         <?php $this->threadedComments(); ?>
     </div>
     <?php } ?>
@@ -300,16 +315,17 @@ foreach( $headers as $n => $v )
      * @access protected
      * @return string
      */
-    protected function ___permalink() : string
+    protected function ___permalink(): string
     {
-
-        if ($this->options->commentsPageBreak) {            
-            $pageRow = array('permalink' => $this->parentContent['pathinfo'], 'commentPage' => $this->_currentPage);
-            return Typecho_Router::url('comment_page',
-                        $pageRow, $this->options->index) . '#' . $this->theId;
+        if ($this->options->commentsPageBreak) {
+            return Router::url(
+                'comment_page',
+                $this,
+                $this->options->index
+            ) . '#' . $this->theId;
         }
-        
-        return $this->parentContent['permalink'] . '#' . $this->theId;
+
+        return $this->parentContent->permalink . '#' . $this->theId;
     }
 
     /**
@@ -341,9 +357,9 @@ foreach( $headers as $n => $v )
      * @access protected
      * @return void
      */
-    protected function ___parentContent(): Array
+    protected function ___parentContent(): Contents
     {
-        return $this->parameter->parentContent;
+        return From::allocWithAlias($this->cid, ['cid' => $this->cid]);
     }
 
     /**
@@ -380,8 +396,8 @@ foreach( $headers as $n => $v )
         if (!$this->parameter->parentId) {
             return;
         }
-$commentsAuthor = Typecho_Cookie::get('__typecho_remember_author');
-        $commentsMail = Typecho_Cookie::get('__typecho_remember_mail');
+$commentsAuthor = \Typecho\Cookie::get('__typecho_remember_author');
+        $commentsMail = \Typecho\Cookie::get('__typecho_remember_mail');
 
         // 对已登录用户显示待审核评论，方便前台管理
         if ($this->user->hasLogin()) {
@@ -524,10 +540,10 @@ $commentsAuthor = Typecho_Cookie::get('__typecho_remember_author');
             $pageRow = $this->parameter->parentContent;
             $pageRow['permalink'] = $pageRow['pathinfo'];
 
-            $query = Typecho_Router::url('comment_page', $pageRow, $this->options->index);
+            $query = \Typecho\Router::url('comment_page', $pageRow, $this->options->index);
 
             /** 使用盒状分页 */
-            $nav = new Typecho_Widget_Helper_PageNavigator_Box($this->_total,
+            $nav = new \Typecho\Widget\Helper\PageNavigator\Box($this->_total,
                 $this->_currentPage, $this->options->commentsPageSize, $query);
             $nav->setPageHolder('commentPage');
             $nav->setAnchor('comments');
@@ -579,7 +595,7 @@ $commentsAuthor = Typecho_Cookie::get('__typecho_remember_author');
     public function listComments($singleCommentOptions = NULL)
     {
         //初始化一些变量
-        $this->_singleCommentOptions = Typecho_Config::factory($singleCommentOptions);
+        $this->_singleCommentOptions = \Typecho\Config::factory($singleCommentOptions);
         $this->_singleCommentOptions->setDefault(array(
             'before'        =>  '<ol class="comment-list">',
             'after'         =>  '</ol>',
@@ -647,16 +663,16 @@ $commentsAuthor = Typecho_Cookie::get('__typecho_remember_author');
      * @param string $word 回复链接文字
      * @return void
      */
-    public function reply($word = '')
+    public function reply(string $word = '')
     {
         if ($this->options->commentsThreaded && $this->parameter->allowComment) {
-            $word = empty($word) ? '回复' : $word;
-            $this->pluginHandle()->trigger($plugged)->reply($word, $this);
-            
+            $word = empty($word) ? _t('回复') : $word;
+            self::pluginHandle()->trigger($plugged)->call('reply', $word, $this);
+
             if (!$plugged) {
-                echo '<a no-pjax  href="' . substr($this->permalink, 0, - strlen($this->theId) - 1) . '?replyTo=' . $this->coid .
+                echo '<a no-pjax href="' . substr($this->permalink, 0, - strlen($this->theId) - 1) . '?replyTo=' . $this->coid .
                     '#' . $this->parameter->respondId . '" rel="nofollow" onclick="return TypechoComment.reply(\'' .
-                    $this->theId . '\', ' . $this->coid . ');">' . $word . '</a>';
+                    $this->theId . '\', ' . $this->coid . ', this);">' . $word . '</a>';
             }
         }
     }

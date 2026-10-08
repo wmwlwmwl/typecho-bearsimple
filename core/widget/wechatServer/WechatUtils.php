@@ -14,7 +14,7 @@ $file_path = $blogUrl.$dir.$fileName; // 文件路径
 $ch = curl_init();
 
 // 设置cURL选项
-curl_setopt($ch, CURLOPT_URL,Typecho_Widget::widget('Widget_Security')->getIndex('/action/upload?do=wechatupload&openid='.$openid)); // 目标URL
+curl_setopt($ch, CURLOPT_URL,\Typecho\Widget::widget('Widget\Security')->getIndex('/action/upload?do=wechatupload&openid='.$openid)); // 目标URL
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // 将结果作为字符串返回，而不是直接输出
 curl_setopt($ch, CURLOPT_POST, 1); // 启用POST请求
 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 120);
@@ -70,7 +70,7 @@ $file_path = $blogUrl.$childDir.$fileName; // 文件路径
 $ch = curl_init();
 
 // 设置cURL选项
-curl_setopt($ch, CURLOPT_URL,Typecho_Widget::widget('Widget_Security')->getIndex('/action/upload?do=wechatupload&openid='.$openid)); // 目标URL
+curl_setopt($ch, CURLOPT_URL,\Typecho\Widget::widget('Widget\Security')->getIndex('/action/upload?do=wechatupload&openid='.$openid)); // 目标URL
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // 将结果作为字符串返回，而不是直接输出
 curl_setopt($ch, CURLOPT_POST, 1); // 启用POST请求
 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 120);

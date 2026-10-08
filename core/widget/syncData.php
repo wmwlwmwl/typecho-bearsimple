@@ -8,12 +8,12 @@ header("HTTP/1.1 200 OK");
 ignore_user_abort(true);
 set_time_limit(0);
 ini_set('memory_limit',-1);
-ini_set('mysql.connect_timeout', 900);
+// ponytail: mysql.connect_timeout 为 PHP-INI_SYSTEM 且已废弃，运行时设置无效，已移除
 ini_set('default_socket_timeout', 900);
 session_start();
     $options = Helper::options();
     $removeChar = ["https://", "http://"]; 
-    Typecho_Widget::widget('Widget_User')->to($user);
+    \Typecho\Widget::widget('Widget\User')->to($user);
     $db = \Typecho\Db::get();
 $id = $this->user->uid;
     if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false  && $user->hasLogin()) {   

@@ -5,7 +5,7 @@
                     <div class="ui placeholder segment">
   <div class="ui icon header">
     <i class="exclamation triangle icon"></i>
-    <?php $this->widget('Widget_Metas_Category_List')->to($categorys);?>
+    <?php $this->widget('Widget\Metas\Category\Rows')->to($categorys);?>
     <?php while ($categorys->next()): ?> <?php if ($this->category ==
 $categorys->slug):?>
 <?php $slug_name = $categorys->name; ?>

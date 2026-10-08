@@ -11,7 +11,7 @@ function getViewsStr($widget) {
     
     //增加浏览次数
     if ($widget->is('single')) {
-        $vieweds = Typecho_Cookie::get('contents_viewed');
+        $vieweds = \Typecho\Cookie::get('contents_viewed');
         if (empty($vieweds))
             $vieweds = array();
         else
@@ -21,7 +21,7 @@ function getViewsStr($widget) {
             $widget->setField('views', 'str', strval($views), $widget->cid);
             $vieweds[] = $widget->cid;
             $vieweds = implode(',', $vieweds);
-            Typecho_Cookie::set("contents_viewed",$vieweds);
+            \Typecho\Cookie::set("contents_viewed",$vieweds);
         }
     }
     return $views;

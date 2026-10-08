@@ -7,7 +7,7 @@ header("HTTP/1.1 200 OK");
     date_default_timezone_set('PRC');
     $options = Helper::options();
     $removeChar = ["https://", "http://"]; 
-    Typecho_Widget::widget('Widget_User')->to($user);
+    \Typecho\Widget::widget('Widget\User')->to($user);
     $db = \Typecho\Db::get();
 $id = $this->user->uid;
 $opts = array(

@@ -6,7 +6,7 @@ header("HTTP/1.1 200 OK");
     header('Content-type: application/json');
     $options = Helper::options();
     $removeChar = ["https://", "http://"]; 
-    Typecho_Widget::widget('Widget_User')->to($user);
+    \Typecho\Widget::widget('Widget\User')->to($user);
     if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) {   
    $db = \Typecho\Db::get();
    $data = json_decode(file_get_contents('php://input'),true);

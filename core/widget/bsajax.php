@@ -11,7 +11,7 @@ header("HTTP/1.1 200 OK");
     header("Access-Control-Allow-Origin: *");
     header('Content-type: application/json');
     date_default_timezone_set('PRC');
-$user = \Typecho\Widget::widget('Widget_User');
+$user = \Typecho\Widget::widget('Widget\User');
         if (!$user->hasLogin()) {
             $data = [
                 'data' => [

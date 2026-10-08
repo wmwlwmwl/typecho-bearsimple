@@ -6,7 +6,7 @@ header("HTTP/1.1 200 OK");
     header('Content-type: application/json');
     $options = Helper::options();
     $removeChar = ["https://", "http://"]; 
-    Typecho_Widget::widget('Widget_User')->to($user);
+    \Typecho\Widget::widget('Widget\User')->to($user);
     if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) {   
    $db = \Typecho\Db::get();
     switch($_POST['action']){
@@ -48,7 +48,7 @@ header("HTTP/1.1 200 OK");
         
            }
            else{
-            if(Typecho_Cookie::get('like_circle_'.$_POST['coid']) == '1'){
+            if(\Typecho\Cookie::get('like_circle_'.$_POST['coid']) == '1'){
                 exit(json_encode(array(
         "code" => 500,
         "msg" => '您已点过赞，请勿重复点赞！',
@@ -72,7 +72,7 @@ header("HTTP/1.1 200 OK");
           if(!$like['likeUser']){
               $like['likeUser'] = '';
           }
-          Typecho_Cookie::set('like_circle_'.$_POST['coid'],'1');
+          \Typecho\Cookie::set('like_circle_'.$_POST['coid'],'1');
           exit(json_encode(array(
         "code" => 200,
         "msg" => '点赞成功',

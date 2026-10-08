@@ -17,7 +17,7 @@ class Curl {
 		CURLOPT_RETURNTRANSFER => true, // 输出数据流
 		CURLOPT_FOLLOWLOCATION => true, // 自动跳转追踪
 		CURLOPT_AUTOREFERER=> true, // 自动设置来路信息
-		CURLOPT_SSL_VERIFYPEER => false,// 认证证书检查
+		CURLOPT_SSL_VERIFYPEER => false,// ponytail: 证书校验保持关闭以兼容部分主机环境；升级路径：服务器配置 CA 证书后开启
 		CURLOPT_SSL_VERIFYHOST => false,// 检查SSL加密算法
 		CURLOPT_NOSIGNAL => true, // 忽略所有传递的信号
 		CURLOPT_HTTPHEADER => [], // 请求头
@@ -163,18 +163,26 @@ class Curl {
 		curl_setopt_array($ch, $this->options);
 		$data = curl_exec($ch);
 		$info = curl_getinfo($ch);
+		$err = curl_error($ch);
 		curl_close($ch);
+		// ponytail: 请求失败统一降级为空响应，调用方均按 falsy 兜底；升级路径：返回错误详情供上层提示
+		if ($data === false) {
+			if ($method === 'down') {
+				return '下载失败：' . $err;
+			}
+			$data = '';
+			$info['http_code'] = 0;
+			$info['header_size'] = 0;
+		}
 		if ($method === 'down') {
 			if (isset($args[1])) $file = trim($args[0]) . DIRECTORY_SEPARATOR . trim($args[1]); else if (isset($args[0])) $file = trim($args[0]); else $file = './' . pathinfo($this->options[CURLOPT_URL], PATHINFO_BASENAME);
-			try {
-				$fo = fopen($file, 'a');
-				fwrite($fo, $data);
-				fclose($fo);
-				return true;
+			$fo = fopen($file, 'a');
+			if ($fo === false) {
+				return '无法写入文件：' . $file;
 			}
-			catch (\Exception $e) {
-				return $e->getMessage();
-			}
+			fwrite($fo, $data);
+			fclose($fo);
+			return true;
 		}
 		$info['header'] = trim(substr($data, 0, $info['header_size']));
 		$info['response'] = substr($data, $info['header_size']);

@@ -1,5 +1,6 @@
 <?php
-$options = bsOptions::getInstance()::get_option( 'bearsimple' );
+// ponytail: BsCore 未启用时配置降级为空数组，避免 fatal；升级路径：要求启用 BsCore
+$options = class_exists('bsOptions') ? bsOptions::getInstance()::get_option( 'bearsimple' ) : array();
 \Widget\Security::alloc()->to($security);
 require_once('general.php');
 require_once('assetsdir.php');
@@ -10,18 +11,8 @@ require_once('replyview.php');
 require_once('tongji.php');
 require_once('parse.php');
 require_once('extend/UserAgent.class.php');
-if(Helper::options()->version >= '1.3.0'){
-require_once('extend/Comments_n.php');
-}
-else{
-require_once('extend/Comments.php');    
-}
-if(Helper::options()->version >= '1.3.0'){
-require_once('extend/FriendCircle_n.php');
-}
-else{
-require_once('extend/FriendCircle.php');    
-}
+require_once('extend/Comments.php');
+require_once('extend/FriendCircle.php');
 require_once('usercenter.php');
 
 function syncDb(){
@@ -198,14 +189,16 @@ function get_hito(){
  $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, 'https://v1.hitokoto.cn/');
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 500);
+    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($curl, CURLOPT_TIMEOUT, 15);
     curl_setopt($curl, CURLOPT_POST, false);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
     $data = curl_exec($curl);
     curl_close($curl);
-    $datas = json_decode($data,true);
-    return $datas['hitokoto'];
+    // ponytail: 请求失败返回空串，调用方按空句子串渲染
+    $datas = $data === false ? [] : (json_decode($data,true) ?: []);
+    return $datas['hitokoto'] ?? '';
 }
 function get_friendlink($type = NULL){
      $db = \Typecho\Db::get();
@@ -450,7 +443,8 @@ function getMusicTag()
 function curl_func($url){
 $ch = curl_init ();
 curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_TIMEOUT, 200);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 curl_setopt($ch, CURLOPT_HEADER, FALSE);
 curl_setopt($ch, CURLOPT_NOBODY, FALSE);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -460,6 +454,7 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 curl_exec($ch);
 $httpCode = curl_getinfo($ch,CURLINFO_HTTP_CODE);
+curl_close($ch);
 return $httpCode;
     }
 //主题开启后的设定
@@ -496,7 +491,7 @@ if($options1['Pjax'] == true){
 $options->commentsCheckReferer = false;
 }
 //bsOptions::getInstance()::get_option( 'bearsimple' )->commentsMaxNestingLevels = 999;
-\Typecho\Widget::widget('Widget_User')->to($user);
+\Typecho\Widget::widget('Widget\User')->to($user);
             
     //Sitemap
          if (bsOptions::getInstance()::get_option( 'bearsimple' )['SiteMap'] && bsOptions::getInstance()::get_option( 'bearsimple' )['SiteMap'] !== 'close') {
@@ -605,13 +600,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['REQUEST_URI'], 'bs-
            $self->response->setStatus(200);
             $self->setThemeFile("upload/upload_img.php");
         }
-        //升级API
-        if (strpos($_SERVER['REQUEST_URI'], 'bs-upgrade') !== false) {
-            $self->response->setStatus(200);
-            $self->setThemeFile("modules/Upgrade/Upgrade.php");
-        }
-      
-//获取友链数据
+        //获取友链数据
         if (strpos($_SERVER['REQUEST_URI'], 'bsfrienddata') !== false) {
             $self->response->setStatus(200);
             $self->setThemeFile("core/widget/friendlinkData.php");
@@ -719,7 +708,7 @@ if (strpos($_SERVER['REQUEST_URI'], 'feed') !== false) {
     
 }
 function getCustom($cid, $key){
-$field=Typecho_Widget::widget('Widget_Archive@'.$cid,'pageSize=1&type=post', 'cid='.$cid);
+$field=\Typecho\Widget::widget('Widget\Archive@'.$cid,'pageSize=1&type=post', 'cid='.$cid);
 return $field->fields->$key;
 }
 
@@ -759,18 +748,18 @@ function setFields(string $name, string $type, string $value, int $cid)
     }
     
 function addPostView($widget,$post_id,$post_type){
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     if (!$post_id) $widget->response->throwJson([
             'code'=> 0,
             'msg' => '缺少参数',
     ]);
 
-   $views=Typecho_Widget::widget('Widget_Archive@'.$post_id,'pageSize=1&type='.$post_type, 'cid='.$post_id);
+   $views=\Typecho\Widget::widget('Widget\Archive@'.$post_id,'pageSize=1&type='.$post_type, 'cid='.$post_id);
         $views = (!empty(getCustom($post_id, 'views'))) ? intval(getCustom($post_id, 'views')) : 0;
    
     
     //增加浏览次数
-        $vieweds = Typecho_Cookie::get('contents_viewed');
+        $vieweds = \Typecho\Cookie::get('contents_viewed');
         if (empty($vieweds))
             $vieweds = array();
         else
@@ -780,7 +769,7 @@ function addPostView($widget,$post_id,$post_type){
             setFields('views', 'str', strval($views), $post_id);
             $vieweds[] = $post_id;
             $vieweds = implode(',', $vieweds);
-            Typecho_Cookie::set("contents_viewed",$vieweds);
+            \Typecho\Cookie::set("contents_viewed",$vieweds);
         }    
     
     $widget->response->throwJson([
@@ -937,7 +926,8 @@ function douban_getdata($id,$type){
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, 'https://api.douban.com/v2/'.$type.'/'.$id);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 500);
+    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($curl, CURLOPT_TIMEOUT, 15);
     curl_setopt($curl, CURLOPT_POST, TRUE);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
@@ -945,6 +935,9 @@ function douban_getdata($id,$type){
     $data = curl_exec($curl);
     curl_close($curl);
     $datas = json_decode($data,true);
+    if (!is_array($datas)) {
+        return []; // ponytail: 请求失败统一返回空数组，下游按空数据渲染
+    }
     $result = [];
     switch($type){
     case 'book':
@@ -979,14 +972,19 @@ $result['url'] = $datas['alt'];
 
 function bilibili_getpage(){
     $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    $status = json_decode(file_get_contents('https://api.bilibili.com/x/space/bangumi/follow/list?vmid='.$options['bilibili_accountid'].'&type=1&follow_status=0&pn=1&ps=15'),true);
-    return $status['data']['total'];
+    $ctx = stream_context_create(['http' => ['timeout' => 15]]);
+    $json = file_get_contents('https://api.bilibili.com/x/space/bangumi/follow/list?vmid='.$options['bilibili_accountid'].'&type=1&follow_status=0&pn=1&ps=15', false, $ctx);
+    $status = $json === false ? [] : (json_decode($json,true) ?: []);
+    return $status['data']['total'] ?? 0;
 }
 
 function bilibili_getlist(){
     $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    $status = json_decode(file_get_contents('https://api.bilibili.com/x/space/bangumi/follow/list?vmid='.$options['bilibili_accountid'].'&type=1&follow_status=0&pn=1&ps=15'),true);
-    return $status['data']['list'];
+    // ponytail: 加 15s 超时的 stream context，避免无超时直连
+    $ctx = stream_context_create(['http' => ['timeout' => 15]]);
+    $json = file_get_contents('https://api.bilibili.com/x/space/bangumi/follow/list?vmid='.$options['bilibili_accountid'].'&type=1&follow_status=0&pn=1&ps=15', false, $ctx);
+    $status = $json === false ? [] : (json_decode($json,true) ?: []);
+    return $status['data']['list'] ?? [];
 }
 
 function bilibili_getdata($i){
@@ -994,13 +992,14 @@ function bilibili_getdata($i){
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, 'https://api.bilibili.com/x/space/bangumi/follow/list?vmid='.$options['bilibili_accountid'].'&type=1&follow_status=0&pn='.$i.'&ps=15');
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 500);
+    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($curl, CURLOPT_TIMEOUT, 15);
     curl_setopt($curl, CURLOPT_POST, false);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
     $data = curl_exec($curl);
     curl_close($curl);
-    $datas = json_decode($data,true);
+    $datas = $data === false ? [] : (json_decode($data,true) ?: []);
     return $datas;
 }
 
@@ -1047,7 +1046,7 @@ return $returnstr;
 
 function getCommentHF($coid){
     $parser = new HyperDown();
-    $db   = Typecho_Db::get();
+    $db   = \Typecho\Db::get();
     $prow = $db->fetchRow($db->select('parent')
         ->from('table.comments')
         ->where('coid = ? AND status = ?', $coid, 'approved'));
@@ -1077,17 +1076,17 @@ function getCommentHF($coid){
  * 文章自定义字段
  */
 
-function themeFields(Typecho_Widget_Helper_Layout $layout)
+function themeFields(\Typecho\Widget\Helper\Layout $layout)
 {
     
-    $excerpt = new Typecho_Widget_Helper_Form_Element_Textarea('excerpt', null, null, '文章摘要', '输入自定义摘要。留空自动从文章截取。');
+    $excerpt = new \Typecho\Widget\Helper\Form\Element\Textarea('excerpt', null, null, '文章摘要', '输入自定义摘要。留空自动从文章截取。');
     $layout->addItem($excerpt);
-    $seo_dec = new Typecho_Widget_Helper_Form_Element_Textarea('seo_dec', null, null, '文章SEO描述', '输入文章SEO描述。留空自动从文章截取。');
+    $seo_dec = new \Typecho\Widget\Helper\Form\Element\Textarea('seo_dec', null, null, '文章SEO描述', '输入文章SEO描述。留空自动从文章截取。');
     $layout->addItem($seo_dec);
-    $Bsoptions = new Typecho_Widget_Helper_Form_Element_Select('ArticleType', array('common_Mode' => '普通文章模式',  'pic_Mode' => '图片模式'),' common_Mode', '选择文章内容展现模式', '普通文章模式会显示所有内容，而图片模式则不显示除图片以外的其他内容。');
+    $Bsoptions = new \Typecho\Widget\Helper\Form\Element\Select('ArticleType', array('common_Mode' => '普通文章模式',  'pic_Mode' => '图片模式'),' common_Mode', '选择文章内容展现模式', '普通文章模式会显示所有内容，而图片模式则不显示除图片以外的其他内容。');
     $layout->addItem($Bsoptions->multiMode());
     
-    $cover = new Typecho_Widget_Helper_Form_Element_Text('cover', null, null, '文章封面', '输入文章封面图片直链');
+    $cover = new \Typecho\Widget\Helper\Form\Element\Text('cover', null, null, '文章封面', '输入文章封面图片直链');
     $layout->addItem($cover);
     if(Bsoptions('article_hotopen') == true || Bsoptions('article_hotopen') == ''){
         $article_hotopen = '1';
@@ -1095,7 +1094,7 @@ function themeFields(Typecho_Widget_Helper_Layout $layout)
     else{
         $article_hotopen = '2';
     }
-     $Hot = new Typecho_Widget_Helper_Form_Element_Select('Hot', array('1' => '开启文章热度',  '2' => '关闭文章热度'), $article_hotopen, '是否开启文章热度', '若选择开启,则文章页面将显示文章热度值。');
+     $Hot = new \Typecho\Widget\Helper\Form\Element\Select('Hot', array('1' => '开启文章热度',  '2' => '关闭文章热度'), $article_hotopen, '是否开启文章热度', '若选择开启,则文章页面将显示文章热度值。');
     $layout->addItem($Hot->multiMode());
     if(Bsoptions('article_copyrightopen') == true){
         $article_copyrightopen = '1';
@@ -1104,7 +1103,7 @@ function themeFields(Typecho_Widget_Helper_Layout $layout)
         $article_copyrightopen = '2';
     }
     
-    $copyright = new Typecho_Widget_Helper_Form_Element_Select('copyright', array('1' => '开启版权声明',  '2' => '关闭版权声明'), $article_copyrightopen, '本文是否开启版权声明', '开启后在文章页面会显示版权声明。');
+    $copyright = new \Typecho\Widget\Helper\Form\Element\Select('copyright', array('1' => '开启版权声明',  '2' => '关闭版权声明'), $article_copyrightopen, '本文是否开启版权声明', '开启后在文章页面会显示版权声明。');
     $layout->addItem($copyright->multiMode());
     
     if(Bsoptions('article_copyrightopen_type') !== ''){
@@ -1114,7 +1113,7 @@ function themeFields(Typecho_Widget_Helper_Layout $layout)
         $article_copyrightname = 'one';
     }
     
-    $copyright_cc = new Typecho_Widget_Helper_Form_Element_Select('copyright_cc', array(
+    $copyright_cc = new \Typecho\Widget\Helper\Form\Element\Select('copyright_cc', array(
                         'zero' => '不指定',
                         'one' => '知识共享署名协议',
                         'two' => '非商业性使用协议',
@@ -1132,16 +1131,16 @@ function themeFields(Typecho_Widget_Helper_Layout $layout)
         $article_tagopen = '2';
     }
     
-    $tags = new Typecho_Widget_Helper_Form_Element_Select('tags', array('1' => '开启文章标签',  '2' => '关闭文章标签'), $article_tagopen, '本文是否开启标签', '开启后在文章末尾会显示文章标签，若文章不添加标签的情况下建议关闭。');
+    $tags = new \Typecho\Widget\Helper\Form\Element\Select('tags', array('1' => '开启文章标签',  '2' => '关闭文章标签'), $article_tagopen, '本文是否开启标签', '开启后在文章末尾会显示文章标签，若文章不添加标签的情况下建议关闭。');
     $layout->addItem($tags->multiMode());
     
     
-    $articleplo = new Typecho_Widget_Helper_Form_Element_Select('articleplo', array('1' => '关闭文章提示',  '2' => '展现文章提示'), '1', '是否展现文章提示', '开启后阅读本篇文章时会展现文章提示');
+    $articleplo = new \Typecho\Widget\Helper\Form\Element\Select('articleplo', array('1' => '关闭文章提示',  '2' => '展现文章提示'), '1', '是否展现文章提示', '开启后阅读本篇文章时会展现文章提示');
     $layout->addItem($articleplo->multiMode());
-    $articleplonr = new Typecho_Widget_Helper_Form_Element_Textarea('articleplonr', null, null, '文章提示内容', '文章提示功能非关闭状态时本栏有效，输入文章提示内容。留空则不显示');
+    $articleplonr = new \Typecho\Widget\Helper\Form\Element\Textarea('articleplonr', null, null, '文章提示内容', '文章提示功能非关闭状态时本栏有效，输入文章提示内容。留空则不显示');
     $layout->addItem($articleplonr);
     
-    $Overdue = new Typecho_Widget_Helper_Form_Element_Select(
+    $Overdue = new \Typecho\Widget\Helper\Form\Element\Select(
         'Overdue',
         array(
             'close' => '关闭',

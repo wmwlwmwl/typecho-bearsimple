@@ -13,7 +13,7 @@ $category['md5_password'] = md5Encode(CategoryEncrypt(categeid($this->getArchive
 $category['type'] = "category";
 $category['category'] = $this->getArchiveSlug();
 $_POST['data'] = $category;
-$password = Typecho_Cookie::get('category_'.$this->getArchiveSlug());
+$password = \Typecho\Cookie::get('category_'.$this->getArchiveSlug());
 if ((!empty($password) && $password == $category['md5_password']) || $this->user->hasLogin()){
     $cookie = true;
 }

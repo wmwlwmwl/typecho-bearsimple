@@ -15,7 +15,7 @@
                 <div class="content_container">
                <div class="page-card">
                     <h2><i class="hourglass half icon"></i> <?php $this->title() ?></h2><br>
-                    <?php Typecho_Widget::widget('Widget_Stat')->to($stat); ?>
+                    <?php \Typecho\Widget::widget('Widget\Stat')->to($stat); ?>
 
 <div class="ui three statistics">
   <div class="statistic" style="margin-left:auto;margin-right:auto">

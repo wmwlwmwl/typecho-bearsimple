@@ -152,7 +152,7 @@ function excerpt($content, $limit)
             if (trim($content) == "") {
                 return "暂时没有可提供的摘要";
             } else {
-                return Typecho_Common::subStr(strip_tags($content), 0, $limit, "...");
+                return \Typecho\Common::subStr(strip_tags($content), 0, $limit, "...");
             }
         }
     }
@@ -294,10 +294,13 @@ $new = ($i+1)."、".$data['cards'][0]['content'][$i]['query'] . '  ' . str_repla
 $news.= '<p>'.chunkSplit($new,27,"")."</p>";
 }
 $content = $news;
-if(Typecho_Cookie::get('yiyan') == ''){
-Typecho_Cookie::set('yiyan', json_decode(file_get_contents('https://v1.hitokoto.cn/'),true)['hitokoto']);
+if(\Typecho\Cookie::get('yiyan') == ''){
+// ponytail: 加 15s 超时，失败置空串
+$ctx = stream_context_create(['http' => ['timeout' => 15]]);
+$json = file_get_contents('https://v1.hitokoto.cn/', false, $ctx);
+\Typecho\Cookie::set('yiyan', $json === false ? '' : ((array)json_decode($json,true))['hitokoto'] ?? '');
 }
-$yiyan = Typecho_Cookie::get('yiyan');
+$yiyan = \Typecho\Cookie::get('yiyan');
 if($attrs['image'] == 'true'){
 $img = '<img '.lazyload().'src="'.Helper::options()->themeUrl.'/assets/images/60s/'.$week.'.webp'.'">';
 }
@@ -310,7 +313,7 @@ EOF;
 }
 
 function getCustomFields($cid, $key){
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     $rows = $db->fetchAll($db->select('table.fields.str_value')->from('table.fields')
         ->where('table.fields.cid = ?', $cid)
         ->where('table.fields.name = ?', $key)
@@ -336,7 +339,7 @@ function quotePostCallback($matches){
         $targetDate = "";
         $expert = getCustomFields($cid, 'excerpt');
         if (!empty($cid)){
-            $db = Typecho_Db::get();
+            $db = \Typecho\Db::get();
             $prefix = $db->getPrefix();
             $posts = $db->fetchAll($db
                 ->select()->from('table.contents')
@@ -347,7 +350,7 @@ function quotePostCallback($matches){
                 $targetUrl = '#';
                 $targetDate = '';
             }else{
-                $result = Typecho_Widget::widget('Widget_Abstract_Contents')->push($posts[0]);
+                $result = \Typecho\Widget::widget('Widget\Base\Contents')->push($posts[0]);
                  $targetSummary = preg_replace(['/#+/', '/-+/', '/\n(>|\\>)/', '/^>{1}/'], '', excerpt($result['text'], 60));
                 $targetTitle = $result['title'];
                 $targetUrl = $result['permalink'];
@@ -573,11 +576,13 @@ $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36');
-curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 $result = curl_exec($ch);
+curl_close($ch);
 return $result;
     }
     
@@ -587,13 +592,16 @@ function parseGithubCallback($matches)
         $attr = htmlspecialchars_decode($matches[3]);
         $attrs = shortcode_parse_atts($attr);
         $gh_result_cookie_name = '__gh_result_cookie_'.$attrs['user'].'_'.$matches[5];
-        $gh_result_cookie = Typecho_Cookie::get($gh_result_cookie_name);
+        $gh_result_cookie = \Typecho\Cookie::get($gh_result_cookie_name);
         if(!$gh_result_cookie){
             $result = json_decode(curl_get('https://api.github.com/repos/'.$attrs['user'].'/'.$matches[5]),true);
-            $result['pushed_at'] = date('Y-m-d H:m:s',strtotime($result['pushed_at']));
-            $result_arr = array($result['full_name'],$attrs['user'],$matches[5],$result['pushed_at'],$result['stargazers_count'],$result['forks_count'],$result['html_url'],$result['description'],
+            if (!is_array($result)) {
+                $result = []; // ponytail: 请求失败按空数据渲染
+            }
+            $result['pushed_at'] = date('Y-m-d H:m:s',strtotime($result['pushed_at'] ?? ''));
+            $result_arr = array($result['full_name'] ?? '',$attrs['user'],$matches[5],$result['pushed_at'],$result['stargazers_count'] ?? 0,$result['forks_count'] ?? 0,$result['html_url'] ?? '',$result['description'] ?? '',
             );
-        Typecho_Cookie::set($gh_result_cookie_name, implode(",",$result_arr));
+        \Typecho\Cookie::set($gh_result_cookie_name, implode(",",$result_arr));
         }
        else{
         $result = explode(",",$gh_result_cookie);
@@ -638,7 +646,7 @@ function parseTagCallback($matches)
     {
         $attr = htmlspecialchars_decode($matches[3]);
         $attrs = shortcode_parse_atts($attr);
-        $db = Typecho_Db::get();
+        $db = \Typecho\Db::get();
    $tag=$db->fetchRow($db->select()->from ('table.metas')->where('type=?', 'tag')->where ('name=?',$matches[5]));
         $url = Helper::options()->siteUrl.'index.php/tag/';
         if($tag){
@@ -1340,7 +1348,7 @@ function ShortCodePage($post,$title,$remember,$cid,$login,$articletype,$modetype
     //登录或回复后可见
             if (strpos($content, '[bshide') !== false) {
                 $pattern = get_shortcode_regex(array('bshide'));
-                $db = Typecho_Db::get();
+                $db = \Typecho\Db::get();
         $hasComment = $db->fetchAll($db->select()->from('table.comments')->where('cid = ?', $cid)->where('status = ?', 'approved')->where('mail = ?', $remember)->limit(1));
         if(count($hasComment) !== 0){
             $hasComments = count($hasComment);
@@ -1368,7 +1376,7 @@ function ShortCodePage($post,$title,$remember,$cid,$login,$articletype,$modetype
             }
     //回复可见
     if (strpos($content, '{bs-hide') !== false) {
-        $db = Typecho_Db::get();
+        $db = \Typecho\Db::get();
         $hasComment = $db->fetchAll($db->select()->from('table.comments')->where('cid = ?', $cid)->where('mail = ?', $remember)->limit(1));
 
         if ($hasComment||$login) {
@@ -1379,7 +1387,7 @@ function ShortCodePage($post,$title,$remember,$cid,$login,$articletype,$modetype
     }
     //兼容1.6.3版本前的回复可见短代码
     if (strpos($content, '[bs-hide') !== false) {
-        $db = Typecho_Db::get();
+        $db = \Typecho\Db::get();
         $hasComment = $db->fetchAll($db->select()->from('table.comments')->where('cid = ?', $cid)->where('mail = ?', $remember)->limit(1));
 
         if ($hasComment||$login) {
@@ -1750,7 +1758,7 @@ $content = preg_replace(
     //登录或回复后可见
             if (strpos($content, '[bshide') !== false) {
                 $pattern = get_shortcode_regex(array('bshide'));
-                $db = Typecho_Db::get();
+                $db = \Typecho\Db::get();
         $hasComment = $db->fetchAll($db->select()->from('table.comments')->where('cid = ?', $t->cid)->where('status = ?', 'approved')->where('mail = ?', $t->remember('mail', true))->limit(1));
         if(count($hasComment) !== 0){
             $hasComments = count($hasComment);
@@ -1778,7 +1786,7 @@ $content = preg_replace(
             }
     //回复可见
     if (strpos($content, '{bs-hide') !== false) {
-        $db = Typecho_Db::get();
+        $db = \Typecho\Db::get();
         $hasComment = $db->fetchAll($db->select()->from('table.comments')->where('cid = ?', $t->cid)->where('mail = ?', $t->remember('mail', true))->limit(1));
 
         if ($hasComment||$login) {
@@ -1789,7 +1797,7 @@ $content = preg_replace(
     }
     //兼容1.6.3版本前的回复可见短代码
     if (strpos($content, '[bs-hide') !== false) {
-        $db = Typecho_Db::get();
+        $db = \Typecho\Db::get();
         $hasComment = $db->fetchAll($db->select()->from('table.comments')->where('cid = ?', $t->cid)->where('mail = ?', $t->remember('mail', true))->limit(1));
 
         if ($hasComment||$login) {

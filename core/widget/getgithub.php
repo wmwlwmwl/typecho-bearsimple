@@ -9,7 +9,7 @@
 header("HTTP/1.1 200 OK");
     header("Access-Control-Allow-Origin: *");
     date_default_timezone_set('PRC');
-error_reporting(0);
+
 
 function getData(){
     $options = bsOptions::getInstance()::get_option( 'bearsimple' );

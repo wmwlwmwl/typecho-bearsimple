@@ -13,7 +13,7 @@ if (@$_POST['action'] == 'open_lock') {
 								$result = array('code' => '1');
 								if ($type == 'category') {
 									$category = $_POST['category'];
-									Typecho_Cookie::set('category_' . $category, md5Encode($password));
+									\Typecho\Cookie::set('category_' . $category, md5Encode($password));
 								}
 							} else {
 								$result = array('code' => '-1');

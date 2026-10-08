@@ -123,6 +123,8 @@ function dump_html_tree($node, $show_attr = true, $deep = 0)
 	$node->dump($node);
 }
 
+// ponytail: 内置 simple_html_dom（PHP5 时代第三方库）大量动态属性，加注解避免 PHP8.2+ 弃用告警；升级路径：更换为 html5-php 等现代解析库
+#[\AllowDynamicProperties]
 class simple_html_dom_node
 {
 	public $nodetype = HDOM_TYPE_TEXT;
@@ -1378,6 +1380,7 @@ class simple_html_dom_node
 
 }
 
+#[\AllowDynamicProperties]
 class simple_html_dom
 {
 	public $root = null;

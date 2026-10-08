@@ -3,7 +3,7 @@
 //签到
 function user_sign($uid){
     $today = date('Y-m-d',time());
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     $result = $db->fetchAll($db->select()->from('table.bscore_sign_data')
             ->where('signuid = ?',$uid)
             ->where('signtime = ?', $today)
@@ -18,7 +18,7 @@ function user_sign($uid){
 }
 //输出用户文章总数
 function allpostnum($id){
-    $db = Typecho_Db::get();
+    $db = \Typecho\Db::get();
     $postnum=$db->fetchRow($db->select(array('COUNT(authorId)'=>'allpostnum'))->from ('table.contents')->where ('table.contents.authorId=?',$id)->where('table.contents.type=?', 'post')->where('table.contents.status = ?', 'publish')->where('table.contents.created < ?', Helper::options()->time));
     $postnum = $postnum['allpostnum'];
     return $postnum;
@@ -28,17 +28,17 @@ function allpostnum($id){
 function authorPosts($id){
     if($id){ 
         $limit = 6;
-        $db = Typecho_Db::get();
+        $db = \Typecho\Db::get();
         $result = $db->fetchAll($db->select()->from('table.contents')
             ->where('authorId = ?',$id)
             ->where('type = ?', 'post')
             ->limit($limit)
-            ->order('cid', Typecho_Db::SORT_DESC)  
+            ->order('cid', \Typecho\Db::SORT_DESC)  
             
         );
         if($result){
             foreach($result as $val){                
-                $val = Typecho_Widget::widget('Widget_Abstract_Contents')->push($val);
+                $val = \Typecho\Widget::widget('Widget\Base\Contents')->push($val);
                 $post_title = htmlspecialchars($val['title']);
                 $permalink = $val['permalink'];
                 if($val['status'] == 'publish'){
@@ -98,10 +98,10 @@ return $res;
 //用户通知
 function userNotify($id){
     if($id){ 
-        $db = Typecho_Db::get();
+        $db = \Typecho\Db::get();
         $result = $db->fetchAll($db->select()->from('table.bscore_notify_data')
             ->where('notifyuid = ?',$id)
-            ->order('notifytime', Typecho_Db::SORT_DESC)
+            ->order('notifytime', \Typecho\Db::SORT_DESC)
         );
         return $result;
     }

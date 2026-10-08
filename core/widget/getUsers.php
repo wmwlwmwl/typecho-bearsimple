@@ -5,7 +5,7 @@ header("HTTP/1.1 200 OK");
     date_default_timezone_set('PRC');
     $options = Helper::options();
     $removeChar = ["https://", "http://"]; 
-    Typecho_Widget::widget('Widget_User')->to($user);
+    \Typecho\Widget::widget('Widget\User')->to($user);
     if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false && $user->hasLogin() && $user->pass('administrator', true)) {   
         $db = \Typecho\Db::get();
         $searchQuery = '%' . str_replace(' ', '%', $_GET['q']) . '%';

@@ -1,7 +1,7 @@
 <?php if (!defined('__TYPECHO_ROOT_DIR__')) exit; 
 ?>
 <?php $this->need('compoment/head.php');?>
-<?php $this->widget('Widget_Metas_Category_List')->to($categorys);?>
+<?php $this->widget('Widget\Metas\Category\Rows')->to($categorys);?>
 <?php while ($categorys->next()): ?> <?php if ($this->category ==
 $categorys->slug):?>
 <?php $slug = $categorys->slug; ?>
@@ -19,7 +19,7 @@ $category['md5_password'] = md5Encode(CategoryEncrypt(categeid($slug))['Cate_Enc
 $category['type'] = "category";
 $category['category'] = $slug;
 $_POST['data'] = $category;
-$password = Typecho_Cookie::get('category_'.$slug);
+$password = \Typecho\Cookie::get('category_'.$slug);
 if ((!empty($password) && $password == $category['md5_password']) || $this->user->hasLogin()){
     $cookie = true;
 }

@@ -865,9 +865,9 @@ function getCommentInfo(){
     let nick = document.getElementById('friendcircle-comment-nickname');
     let mail = document.getElementById('friendcircle-comment-email');
     let url = document.getElementById('friendcircle-comment-url');
-    let nick_value = decodeURIComponent(getCookie('<?php echo Typecho_Cookie::getPrefix()?>__typecho_remember_author'));
-    let mail_value = decodeURIComponent(getCookie('<?php echo Typecho_Cookie::getPrefix()?>__typecho_remember_mail'));
-    let url_value = decodeURIComponent(getCookie('<?php echo Typecho_Cookie::getPrefix()?>__typecho_remember_url'));
+    let nick_value = decodeURIComponent(getCookie('<?php echo \Typecho\Cookie::getPrefix()?>__typecho_remember_author'));
+    let mail_value = decodeURIComponent(getCookie('<?php echo \Typecho\Cookie::getPrefix()?>__typecho_remember_mail'));
+    let url_value = decodeURIComponent(getCookie('<?php echo \Typecho\Cookie::getPrefix()?>__typecho_remember_url'));
     if (nick && nick_value!== 'null') nick.value = nick_value;
     if (mail && mail_value!== 'null') mail.value = mail_value;
     if (url && url_value!== 'null') url.value = url_value;

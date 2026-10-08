@@ -2,13 +2,15 @@
 header("HTTP/1.1 200 OK");
     header("Access-Control-Allow-Origin: *");
     date_default_timezone_set('PRC');
-error_reporting(0);
+
 
 function curl_file_get_contents_a($_url)
 {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
     curl_setopt($ch, CURLOPT_REFERER, 'https://bangumi.tv/');
@@ -24,6 +26,8 @@ function curl_file_get_contents_b($_url)
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
     curl_setopt($ch, CURLOPT_REFERER, 'https://www.bilibili.com/');
@@ -45,9 +49,9 @@ class BangumiAPI
 $collDataArr = [];
  do {
                 $collData = json_decode(curl_file_get_contents_a('https://api.bgm.tv/v0/users/'.$UserID.'/collections?subject_type=2&type='.$Type.'&limit=50&offset=' . $collOffset), true);
-                $collDataArr = array_merge($collDataArr, $collData['data']);
+                $collDataArr = array_merge($collDataArr, (array)($collData['data'] ?? []));
                 $collOffset += 50;
-            } while ($collOffset < $collData['total']);
+            } while ($collOffset < ($collData['total'] ?? 0));
             
         $data = array();
 
@@ -144,9 +148,9 @@ class BilibiliAPI
 $collDataArr = [];
  do {
                 $collData = json_decode(curl_file_get_contents_b('https://api.bilibili.com/x/space/bangumi/follow/list?vmid='.$UserID.'&type=1&ps=30&follow_status=0&pn=' . $collOffset), true);
-                $collDataArr = array_merge($collDataArr, $collData['data']['list']);
+                $collDataArr = array_merge($collDataArr, (array)($collData['data']['list'] ?? []));
                 $collOffset += 1;
-            } while ($collOffset < $collData['data']['total']);
+            } while ($collOffset < ($collData['data']['total'] ?? 0));
             
         $data = array();
 

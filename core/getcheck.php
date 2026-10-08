@@ -1,12 +1,12 @@
 <?php
 function GetCheck()
 {
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
     $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $options['Assets_Custom'].'/assets/check.json');
+    curl_setopt($curl, CURLOPT_URL, Bsoptions('Assets_Custom').'/assets/check.json');
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curl, CURLOPT_POST, false);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 500);
+    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($curl, CURLOPT_TIMEOUT, 15);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
     $data = curl_exec($curl);

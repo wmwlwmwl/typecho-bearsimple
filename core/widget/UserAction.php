@@ -5,7 +5,7 @@ header("HTTP/1.1 200 OK");
     date_default_timezone_set('PRC');
     $options = Helper::options();
     $removeChar = ["https://", "http://"]; 
-    Typecho_Widget::widget('Widget_User')->to($user);
+    \Typecho\Widget::widget('Widget\User')->to($user);
     $db = \Typecho\Db::get();
 $id = $this->user->uid;
 
@@ -19,6 +19,8 @@ function curl_getToken($url, $email = '', $password = '')
     
     curl_setopt($ch, CURLOPT_URL, $url.'/api/v1/tokens');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -84,7 +86,7 @@ $total = count($db->fetchAll($db->select()->from('table.contents')
         $post = $db->fetchAll($db->select()->from('table.contents')
             ->where('authorId = ?',$id)
             ->where('type = ?', 'post')
-            ->order('cid', Typecho_Db::SORT_DESC)
+            ->order('cid', \Typecho\Db::SORT_DESC)
             ->page($i,6));
         $max = ceil($total / 6);
         $result = array(
@@ -94,7 +96,7 @@ $total = count($db->fetchAll($db->select()->from('table.contents')
 );
     if($post){
             foreach($post as $val){                
-                $val = Typecho_Widget::widget('Widget_Abstract_Contents')->push($val);
+                $val = \Typecho\Widget::widget('Widget\Base\Contents')->push($val);
                 $post_title = htmlspecialchars($val['title']);
                 $permalink = $val['permalink'];
                 if($val['status'] == 'publish'){
@@ -274,7 +276,7 @@ $total = count($db->fetchAll($db->select()->from('table.bscore_says_data')
 
         $says = $db->fetchAll($db->select()->from('table.bscore_says_data')
             ->where('saysuid = ?',$this->user->uid)
-            ->order('id', Typecho_Db::SORT_DESC)
+            ->order('id', \Typecho\Db::SORT_DESC)
             ->page($i,6));
 }
 else{
@@ -284,7 +286,7 @@ $total = count($db->fetchAll($db->select()->from('table.bscore_says_data')
         $says = $db->fetchAll($db->select()->from('table.bscore_says_data')
             ->where('saysuid = ?',$this->user->uid)
             ->where('saysprivate != ?','on')
-            ->order('id', Typecho_Db::SORT_DESC)
+            ->order('id', \Typecho\Db::SORT_DESC)
             ->page($i,6));    
 }
         $max = ceil($total / 6);
@@ -348,7 +350,7 @@ $total = count($db->fetchAll($db->select()->from('table.bscore_says_data')
         $says = $db->fetchAll($db->select()->from('table.bscore_says_data')
             ->where('saysuid = ?',$_POST['authorId'])
             ->where('saysprivate != ?','on')
-            ->order('id', Typecho_Db::SORT_DESC)
+            ->order('id', \Typecho\Db::SORT_DESC)
             ->page($i,6));    
 
         $max = ceil($total / 6);

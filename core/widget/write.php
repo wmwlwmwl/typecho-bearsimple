@@ -27,14 +27,14 @@ header("HTTP/1.1 200 OK");
 
 
 
-    Typecho_Widget::widget('Widget_User')->to($user);
+    \Typecho\Widget::widget('Widget\User')->to($user);
     if ($user->hasLogin()) {
         if ($_GET["url"] == 'post' || $_GET["url"] == 'page')
 {
 if ($_GET["cid"]) {
-     Typecho_Widget::widget('Widget_Contents_Attachment_Related', 'parentId=' . $_GET["cid"])->to($attachment);
+     \Typecho\Widget::widget('Widget\Contents\Attachment\Related', 'parentId=' . $_GET["cid"])->to($attachment);
     } else {
-        Typecho_Widget::widget('Widget_Contents_Attachment_Unattached')->to($attachment);
+        \Typecho\Widget::widget('Widget\Contents\Attachment\Unattached')->to($attachment);
     }
     $result = array(
     'code' => '1',

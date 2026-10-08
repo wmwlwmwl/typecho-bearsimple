@@ -1,8 +1,6 @@
 <?php
-error_reporting(0);
+
 use Typecho\Common;
-use Typecho\Exception;
-use Typecho\Router;
 use Utils\Helper;
 use Widget\Options;
 if(!class_exists('CSF')){
@@ -24,12 +22,16 @@ function themeVersionOnly()
             return '2.9.9';
         }
 
-$options = bsOptions::getInstance()::get_option( 'bearsimple' );
+// ponytail: BsCore 未启用时配置降级为空数组，避免 fatal；升级路径：要求启用 BsCore
+$options = class_exists('bsOptions') ? bsOptions::getInstance()::get_option( 'bearsimple' ) : array();
 
 
 function Bsoptions($key, $default = false){
+    if (!class_exists('bsOptions')) {
+        return $default;
+    }
     $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    return $options[$key];
+    return $options[$key] ?? $default;
 }
 
 /**解析表情**/
@@ -49,11 +51,11 @@ function reEmo($comment,$type){
 $context = stream_context_create($opts);
 
         if(Bsoptions('Emoji_HideDefault') == false || Bsoptions('Emoji_HideDefault') == ''){
-        $res = json_decode(file_get_contents(__DIR__.'/assets/vendors/bs-emoji/bs-emoji.json', false, $context),true);
+        $res = json_decode(file_get_contents(__DIR__.'/assets/vendors/bs-emoji/bs-emoji.json', false, $context),true) ?: [];
         $emo = $res;
         }
         if(Bsoptions('Emoji_Diy') == true && Bsoptions('Emoji_DiyUrl') !== ''){
-        $res2 = json_decode(file_get_contents(Bsoptions('Emoji_DiyUrl'), false, $context),true);
+        $res2 = json_decode(file_get_contents(Bsoptions('Emoji_DiyUrl'), false, $context),true) ?: [];
         if(Bsoptions('Emoji_HideDefault') == false || Bsoptions('Emoji_HideDefault') == ''){
         $emo = array_merge($res,$res2);
         }
@@ -97,18 +99,18 @@ $options = Helper::options();
   'http'=>array(
    'method' => 'GET',
           'header' => 'Content-type: application/json',
-          'timeout' => 60 * 10,
+          'timeout' => 15, // ponytail: 外链表情 json 限 15s，失败走 $emo 空数组兜底
        'Connection'=>"close"
   )
 );
 $context = stream_context_create($opts);
 
         if(Bsoptions('Emoji_HideDefault') == false || Bsoptions('Emoji_HideDefault') == ''){
-        $res = json_decode(file_get_contents($options->themeUrl."/assets/vendors/bs-emoji/bs-emoji.json", false, $context),true);
+        $res = json_decode(file_get_contents($options->themeUrl."/assets/vendors/bs-emoji/bs-emoji.json", false, $context),true) ?: [];
         $emo = $res;
         }
         if(Bsoptions('Emoji_Diy') == true && Bsoptions('Emoji_DiyUrl') !== ''){
-        $res2 = json_decode(file_get_contents(Bsoptions('Emoji_DiyUrl'), false, $context),true);
+        $res2 = json_decode(file_get_contents(Bsoptions('Emoji_DiyUrl'), false, $context),true) ?: [];
         if(Bsoptions('Emoji_HideDefault') == false || Bsoptions('Emoji_HideDefault') == ''){
         $emo = array_merge($res,$res2);
         }
@@ -184,9 +186,7 @@ nowversion = "'.themeVersion().'";
 $("#version").html(json.version);
 if(json.version > nowversion){
 if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
-    $("#versiontips").html(\'<div class="csf-submessage csf-submessage-warning">检测到有新版本可以更新，请及时完成更新!<br><a href="#check" class="ui warning label">前往更新<a></div>\');
-} else {
-    $("#versiontips").html(\'<div class="csf-submessage csf-submessage-warning">检测到有新版本可以更新，请及时完成更新!<br><a href="#tab=在线升级" class="ui warning label">前往更新<a></div>\'); 
+    $("#versiontips").html(\'<div class="csf-submessage csf-submessage-warning">检测到有新版本可以更新，请及时完成更新!<br><a href="https://files.bear.dance/Bearsimple/Bearsimple_v\'.themeVersionOnly().\'.release.zip" target="_blank" class="ui warning label">前往下载</a></div>\');
 };
 
 }
@@ -587,7 +587,7 @@ $siteMaintenance_associative = array_combine($siteMaintenance_styles, $siteMaint
         ),
     )
   ) );
-  $all = Typecho_Plugin::export();
+  $all = \Typecho\Plugin::export();
   if (!array_key_exists('TePass', $all['activated'])){
       $Tepass_check = '<font color=red>当前Tepass插件未启用~</font>';
   }
@@ -3807,7 +3807,7 @@ array(
         ),
         )
   ) );
-  Typecho_Widget::widget('Widget_Stat')->to($stat);
+  \Typecho\Widget::widget('Widget\Stat')->to($stat);
        $sync_api = Common::url('syncData',Options::alloc()->index);
 
         $sync_htmls = '<div id="sync1" class="button button-primary csf--button" style="margin:5px">一键同步并启用所有文章的知识共享协议</div> <div id="sync2" class="button button-primary csf--button"style="margin:5px">一键同步关闭所有文章的知识共享协议</div>
@@ -5412,253 +5412,12 @@ CSF::createSection( $prefix, array(
     )
 ) );
 
-?>
-
-<?php
-if(Bsoptions('Cache') == 1 && (Bsoptions('Cache_choose') == 'memcached' || Bsoptions('Cache_choose') == 'redis') && Bsoptions('enable_gcache') == 1){
-    $ifcache = '1';
-}
-else{
-   $ifcache = '0'; 
-}
-                $htmls = '
-                <script>
-                window.ifcache = "'.$ifcache.'";
-                </script>
-        <div class="ui three steps">
-  <div class="step" id="check">
-    <i class="tree icon"></i>
-    <div class="content">
-      <div class="title">检测</div>
-    </div>
-  </div>
-  <div class="disabled step" id="upgrade">
-    <i class="angle double right icon"></i>
-    <div class="content">
-      <div class="title">升级</div>
-    </div>
-  </div>
-  <div class="disabled step" id="finished">
-    <i class="info icon"></i>
-    <div class="content">
-      <div class="title">完成</div>
-    </div>
-  </div>
-</div>
-<div id="checkcon">
-<div class="ui placeholder segment">
-  <div class="ui icon header">
-    <i class="cloud icon"></i>
-    您可以通过点击以下按钮进行检测是否符合在线升级的条件
-  </div>
-  <div class="inline">
-    <div class="ui button" id="checkbtn">检测版本</div>
-  </div>
-
-</div>
-  <div id="versiontipss"></div>
-</div>
-<div id="upgradecon" style="display:none">
-<div class="ui placeholder segment">
-  <div class="ui icon header">
-    <i class="cloud icon"></i>
-    检测到最新版本为 v<font id="newversion"></font>，您可以通过点击以下按钮进行在线升级
-  </div>
-<div class="ui piled segment" style="margin-top:10px;">
-  <h4 class="ui header">更新内容</h4>
-  <p id="upgradelog"></p>
-</div>
-  <div class="inline">
-    <div class="ui button" id="upgradebtn" style="margin-top:-10px;">立即更新</div>
-    
-  </div>
- <center><div id="pre-message" style="margin-top:20px;"></div></center>
- <center><div id="progress-message" style="margin-top:20px;"></div></center>
-<progress id="progress" value="0" max="100" style="display:none;margin-top:10px;width:100%;max-width:100%;height:20px"></progress> 
-
-</div>
-</div>
-
-<div id="finishcon" style="display:none">
-<div class="ui placeholder segment">
-  <div class="ui icon header">
-    <i class="green check icon"></i>
-    您已成功升级到最新版本，系统将在三秒后自动刷新~~~
-  </div>
-
-</div>
-</div>
-
-<script>
-//检测
-$("#checkbtn").on("click",function(){
-$("#checkbtn").addClass("loading").attr("disabled","disabled");
-    $.post("https://upgrade.typecho.co.uk/Bearsimple/version.php",function(data,status){
-switch(status)
-{
-case "success":
-json = JSON.parse(data);
-nowversion = "'.themeVersion().'";
-if(json.version > nowversion){
-$("#versiontipss").html(\'<div class="csf-submessage csf-submessage-warning">检测到有新版本可以更新，3秒钟后自动跳转下一步!</div>\');
-$("#newversion").html(json.version);
-$.post("https://upgrade.typecho.co.uk/Bearsimple/upgrade_log.php",function(data,status){
-$("#upgradelog").html(data);
-});
-setTimeout(function(){
-$("#check").addClass("completed");
-$("#upgrade").removeClass("disabled");
-$("#checkcon").hide();
-$("#upgradecon").fadeIn();
-},3000);
-}
-if(json.version == nowversion){
-$("#versiontipss").html(\'<div class="csf-submessage csf-submessage-success">当前版本为最新版本，无需更新~<a href="https://docs.whitebear.dev/index.php/archives/6/" target="_blank">查看版本更新日志</a></div>\');
-$("#checkbtn").removeClass("loading").removeAttr("disabled","disabled");
-}
-break;
-case "error":
-toastr.warning("最新版本获取失败，请稍后重试");
-$("#checkbtn").removeClass("loading").removeAttr("disabled","disabled");
-break;
-case "timeout":
-toastr.warning("最新版本获取超时，请稍后重试");
-$("#checkbtn").removeClass("loading").removeAttr("disabled","disabled");
-break;
-}
-    });
-});
-
-//升级
-$("#upgradebtn").on("click",function(){
-$("#upgradebtn").addClass("loading").attr("disabled","disabled");
-$("#upgradebtn").css("pointer-events","none");
-$.ajax({
-                        type: "GET",
-                        url: "/index.php/bs-upgrade",
-                        data: {
-                            "action": "prepare-download",
-                        },
-                        dateType: "json",
-                        success: function(json) {
-                            json = JSON.parse(json);
-                             if(json.code == 0){
-                             layer.msg(json.message, {icon: 2});  
-                             $("#upgradebtn").removeClass("loading").removeAttr("disabled","disabled");
-$("#upgradebtn").css("pointer-events","auto");
-                            }
-                            else{
-                           $("#pre-message").html("升级包大小："+json.filesize+"，预计需要三十秒，请耐心等待~");
-                           $("#progress-message").html("升级进度：0%");
-                           $("#progress").fadeIn();
-                        let x = document.getElementById("progress");   
-                        x.setAttribute("value", "1");
-                        intervaldown();
-                        //设置定时器定时每5秒获取一次升级进度
-                        let progressx = setInterval(function(){ 
-                        intervalprogress();
-                        }, 5000);
-                        $("#progress").one("click",function(){
-                            clearInterval(progressx);
-                            finishUpgrade();
-                        })
-                            }
-                        },
-                        error: function() {
-alert("升级准备检测失败，请稍后重试");
-$("#upgradebtn").removeClass("loading").removeAttr("disabled","disabled");
-                        }
-                    });
-                    
-});
-function intervaldown(){
-$.ajax({
-                        type: "GET",
-                        url: "/index.php/bs-upgrade",
-                        data: {
-                            "action": "download",
-                        },
-                        dateType: "json",
-                    });
-}
-function intervalprogress(){
-$.ajax({
-                        type: "GET",
-                        url: "/index.php/bs-upgrade",
-                        data: {
-                            "action": "getsize",
-                        },
-                        dateType: "json",
-                        success: function(json) {
-                            json = JSON.parse(json);
-                           $("#progress-message").html("升级进度："+json.filesize+"%");
-let x = document.getElementById("progress");   
-                        x.setAttribute("value", json.filesize);
-                if(json.filesize == "100"){
-                
-                $("#progress-message").html("正在进行数据效验，请稍后...");
-                setTimeout(function(){
-                   $("#progress").click();
-},3000);
-                }
-                        },
-                        error: function() {
-alert("获取升级进度失败");
-                        }
-                    });
-}
-function finishUpgrade(){
-$.ajax({
-                        type: "GET",
-                        url: "/index.php/bs-upgrade",
-                        data: {
-                            "action": "finish",
-                        },
-                        dateType: "json",
-                        success: function(json) {
-$("#upgrade").addClass("completed");
-$("#finished").removeClass("disabled");
-$("#upgradecon").hide();
-$("#finishcon").fadeIn();
-if(ifcache =="1"){
-$.get("'.$cache_api.'");
-}
-setTimeout(function(){
-window.parent.location.reload();
-},3000);
-                        },
-                        error: function() {
-alert("升级失败");
-                        }
-                    });
-}
-</script>
-        ';
-        
-        CSF::createSection( $prefix, array(
-    'title'       => '在线升级',
-    'icon'        => 'fa fa-cloud-upload-alt',
-    
-    'fields'      => array(
-        array(
-            'type'    => 'notice',
-            'style'   => 'info',
-            'content' => '<strong>注意事项</strong><p> <ul><li>1、若您有开启缓存功能，那么在升级完成后都请关闭一次缓存功能提交保存后再启用。</li><li>2、若出现在线升级卡顿无法升级，可能是您的服务器网络到升级节点之间存在异常，则需要手动覆盖升级或者稍等一会再试试。</li><li>3、若升级完毕后出现报错，可尝试通过手动覆盖新版本来进行修复，下载地址:<a href="https://files.bear.dance/Bearsimple/Bearsimple_v'.themeVersionOnly().'.release.zip">戳这里</a></ul></p>',
-        ),
-array(
-                    'type' =>'content',
-                    'content' => $htmls,
-                ),
-        
-
-    )
-) );
 }
 function themeConfig($form)
 {
 
    ?>
-       <?php $all = Typecho_Plugin::export();
+       <?php $all = \Typecho\Plugin::export();
        \Widget\Security::alloc()->to($security);?>
 <?php if (!array_key_exists('BsCore', $all['activated'])) : ?>
    <div class="update-check message error"><p>检测到您未安装BsCore插件，主题尚处于封印状态，您需要安装启用BsCore核心插件后方能解除封印QAQ！<br>若您还未下载核心插件，可戳这里进行下载并将核心插件放入/usr/plugins，当下方出现解除封印按钮时点击按钮后即可解除封印~~~

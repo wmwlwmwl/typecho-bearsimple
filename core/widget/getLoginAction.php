@@ -3,12 +3,12 @@
 header("HTTP/1.1 200 OK");
     header("Access-Control-Allow-Origin: *");
     date_default_timezone_set('PRC');
-error_reporting(0);
+
 ob_clean();
 $options = Helper::options();
     $temoptions = bsOptions::getInstance()::get_option( 'bearsimple' );
     $removeChar = ["https://", "http://"]; 
-    Typecho_Widget::widget('Widget_User')->to($user);
+    \Typecho\Widget::widget('Widget\User')->to($user);
 if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", $options->siteUrl)) !== false) {     
 if($_POST['action'] == 'login'){
 
@@ -17,27 +17,27 @@ return;
 }
 else if($_POST['action'] == 'protect'){
 
-echo Typecho_Widget::widget('Widget_Security')->getTokenUrl($_POST['permalink']);
+echo \Typecho\Widget::widget('Widget\Security')->getTokenUrl($_POST['permalink']);
 return;
 }
 else if($_POST['action'] == 'cross'){
 
-echo Typecho_Widget::widget('Widget_Security')->index('/action/comments-edit?do=edit&coid=' . $_POST['coid']);
+echo \Typecho\Widget::widget('Widget\Security')->index('/action/comments-edit?do=edit&coid=' . $_POST['coid']);
 return;
 }
 else if($_POST['action'] == 'editprofile'){
 
-echo Typecho_Widget::widget('Widget_Security')->getIndex('/action/users-profile');
+echo \Typecho\Widget::widget('Widget\Security')->getIndex('/action/users-profile');
 return;
 }
 else if($_POST['action'] == 'tougao'){
 
-echo Typecho_Widget::widget('Widget_Security')->index('/action/contents-post-edit');
+echo \Typecho\Widget::widget('Widget\Security')->index('/action/contents-post-edit');
 return;
 }
 else if($_POST['action'] == 'deleteCircle' && $user->hasLogin() && $user->pass('administrator', true)){
 
-echo Typecho_Widget::widget('Widget_Security')->index('/action/comments-edit?do=delete&coid=' . $_POST['coid']);
+echo \Typecho\Widget::widget('Widget\Security')->index('/action/comments-edit?do=delete&coid=' . $_POST['coid']);
 return;
 }
 else if($_POST['action'] == 'register'){

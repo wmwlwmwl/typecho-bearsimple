@@ -1,7 +1,7 @@
 <?php
 //回复可见处理
-Typecho_Plugin::factory('Widget_Abstract_Contents')->excerptEx = array('BearToolOne','one');
-Typecho_Plugin::factory('Widget_Abstract_Contents')->contentEx = array('BearToolOne','one');
+\Typecho\Plugin::factory('Widget\Base\Contents')->excerptEx = array('BearToolOne','one');
+\Typecho\Plugin::factory('Widget\Base\Contents')->contentEx = array('BearToolOne','one');
 class BearToolOne {
     public static function get_shortcode_regex($tagnames = null)
     {
