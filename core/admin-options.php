@@ -97,7 +97,8 @@ array(
 
     )
 ) );
-$siteMaintenance_files = glob(__DIR__ . '/modules/siteMaintenance/*.html');
+// ponytail: 本文件位于 core/，实际目录在主题根（拆分自 functions.php 时路径语义已变）
+$siteMaintenance_files = glob(__DIR__ . '/../modules/siteMaintenance/*.html');
 $siteMaintenance_styles = array_map('basename', $siteMaintenance_files);
 $siteMaintenance_associative = array_combine($siteMaintenance_styles, $siteMaintenance_styles);
   CSF::createSection( $prefix, array(
@@ -771,7 +772,8 @@ $siteMaintenance_associative = array_combine($siteMaintenance_styles, $siteMaint
     )
   ) );
 if(isset($Tyoptions->cronKey)){
-$cronUrl = 'php '.__DIR__.'/core/widget/cron.php '.$Tyoptions->cronKey;
+// ponytail: 本文件位于 core/，实际脚本在主题根 core/widget/（拆分自 functions.php 时路径语义已变）
+$cronUrl = 'php ' . dirname(__DIR__) . '/core/widget/cron.php ' . $Tyoptions->cronKey;
 }
 else{
     $cronUrl = '未初始化自动检查密钥，请刷新后重新查看';
@@ -2319,7 +2321,8 @@ break;
             
         ),
         ));
-  $styles = array_map('basename', glob(dirname(__FILE__) . '/modules/codehightlight/static/styles/*.css'));
+  // ponytail: 本文件位于 core/，须回退到主题根再定位 styles 目录（拆分自 functions.php 时 dirname(__FILE__) 语义已变）
+  $styles = array_map('basename', glob(__DIR__ . '/../modules/codehightlight/static/styles/*.css'));
         $styles = array_combine($styles, $styles);
         
 $sync_html2 = '';
@@ -4834,7 +4837,8 @@ break;
         
     )
   ) );
-$template_files = scandir(dirname(__FILE__) . '/modules/GoLinks/templates');
+// ponytail: 本文件位于 core/，实际目录在主题根（拆分自 functions.php 时路径语义已变）
+$template_files = scandir(__DIR__ . '/../modules/GoLinks/templates');
         $goTemplates = array('NULL' => '禁用');
         foreach ($template_files as $item) {
             if (PATH_SEPARATOR !== ':') {
