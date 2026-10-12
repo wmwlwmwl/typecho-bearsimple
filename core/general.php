@@ -102,11 +102,16 @@ $arr[] = $val;
 
 //获取作者指定字段
 function getAuthorInfo($uid,$value){
-$db = \Typecho\Db::get();
-$result = $db->fetchAll($db->select()->from('table.users')
-->where('uid = ?',$uid)
-);
-return $result[0][$value];
+// ponytail: 进程内按_uid 缓存整行（author.php 单页 5 处调用，原先重复查 users 表）
+static $authorCache = array();
+if (!array_key_exists($uid, $authorCache)) {
+    $db = \Typecho\Db::get();
+    $result = $db->fetchAll($db->select()->from('table.users')
+    ->where('uid = ?',$uid)
+    );
+    $authorCache[$uid] = $result[0] ?? array();
+}
+return $authorCache[$uid][$value] ?? '';
 }
 
 
@@ -145,47 +150,6 @@ function monweek(){
     $arr = array("日","一","二","三","四","五","六");
      echo date(' Y年m月d日',time()). " 星期".$arr[date("w")];   
 }
-// 获取所有分类和分类文章数量
-function getPostAndNum(){
-    $db = \Typecho\Db::get();     
-    $a = array();
-    $result = $db->fetchAll($db->select()
-    ->from('table.metas')
-            ->where('table.metas.type = ?', 'category'));
-            foreach($result as $post){
-                $a[] = array(
-                    'value'=>$post['count'],
-                    'name'=>$post['name'],
-                    );
-            }
-return json_encode($a);
-
-}
-
-// 获取所有标签和标签文章数量
-function getTagAndNum($type){
-    $db = \Typecho\Db::get();     
-    $arr = array();
-    $result = $db->fetchAll($db->select()
-    ->from('table.metas')
-            ->where('table.metas.type = ?', 'tag')
-            ->where('table.metas.count != ?', 0)
-            ->limit(5)
-            );
-            if($type == 'name'){
-            foreach($result as $tag){
-                $arr[] = $tag['name'];
-            }
-            }
-             elseif($type == 'num'){
-            foreach($result as $tag){
-                $arr[] = $tag['count'];
-            }
-            }
-return json_encode($arr);
-
-}
-
 //获取随机文章
 function getRandomPosts($cid = 0){
 $db = \Typecho\Db::get();
@@ -213,6 +177,20 @@ $result = $db->fetchAll($db->select()->from('table.contents')
 
 if($result){
    $i = 1;
+// ponytail: 摘要自定义字段两步查询——原循环内 getCustomFields 每行 1 条 SQL（6+1 条），现 1 条 IN 查询（Typecho where col IN ? 支持数组展开）
+$excerptMap = array();
+$cidList = array();
+foreach ($result as $row) { $cidList[] = $row['cid']; }
+if ($cidList) {
+    $fieldRows = $db->fetchAll($db->select('table.fields.cid', 'table.fields.str_value')->from('table.fields')
+        ->where('table.fields.name = ?', 'excerpt')
+        ->where('table.fields.cid IN ?', $cidList));
+    foreach ($fieldRows as $fr) {
+        if (!empty($fr['str_value']) && !isset($excerptMap[$fr['cid']])) {
+            $excerptMap[$fr['cid']] = $fr['str_value'];
+        }
+    }
+}
 foreach($result as $val){
 
 $val = \Typecho\Widget::widget('Widget\Base\Contents')->push($val);
@@ -222,9 +200,9 @@ $permalink = $val['permalink'];
 $date = date('Y年m月d日',$val['created']);
 $md = new Markdown();
 $targetSummary = excerpt($md::convert($val['text']), 10);
-$expert = getCustomFields($val['cid'], 'excerpt');
+$expert = $excerptMap[$val['cid']] ?? '';
                 if($expert){
-                    $targetSummary = $expert[0];
+                    $targetSummary = $expert;
                 }
 $targetSummary = trim( strip_tags($targetSummary));
 		$targetSummary = preg_replace('/\\s+/',' ',$targetSummary);
@@ -296,31 +274,6 @@ function seacharr_by_value($array, $index, $value){
     }
     return $newarray;
 }
- function getDiyLinkToArray($data){
-    $res = array();
-foreach($data as $k=>$v){
-    $res[]= array(
-        'url' => $v[1],
-        'key'=>$v[0]
-        );
-        
-}
-return $res;
- }
-//获取自定义内链
-function getDiyLink($key){
-    $options = bsOptions::getInstance()::get_option('bearsimple');
-    $data = parseMultilineData(BsOptions('goLinkList'),2);
-    $result = seacharr_by_value(getDiyLinkToArray($data),'key',$key);
-    $res = array();
-foreach($result as $k=>$v){
-   foreach ($v as $key=>$value) {
-      $res[$key] = $value;
-   }
-}
-    return $res;
-}
-
 //分类密码
 function CategoryEncrypt($id){
     $options = bsOptions::getInstance()::get_option('bearsimple');
@@ -514,62 +467,6 @@ function bearcutword($string, $length='20', $dot = '…') {
      
 }
 
-function strFilter($str){
-    $str = str_replace('`', '', $str);
-    $str = str_replace('·', '', $str);
-    $str = str_replace('~', '', $str);
-    $str = str_replace('!', '', $str);
-    $str = str_replace('！', '', $str);
-    $str = str_replace('@', '', $str);
-    $str = str_replace('#', '', $str);
-    $str = str_replace('$', '', $str);
-    $str = str_replace('￥', '', $str);
-    $str = str_replace('%', '', $str);
-    $str = str_replace('^', '', $str);
-    $str = str_replace('……', '', $str);
-    $str = str_replace('&', '', $str);
-    $str = str_replace('*', '', $str);
-    $str = str_replace('(', '', $str);
-    $str = str_replace(')', '', $str);
-    $str = str_replace('（', '', $str);
-    $str = str_replace('）', '', $str);
-    $str = str_replace('-', '', $str);
-    $str = str_replace('_', '', $str);
-    $str = str_replace('——', '', $str);
-    $str = str_replace('+', '', $str);
-    $str = str_replace('=', '', $str);
-    $str = str_replace('|', '', $str);
-    $str = str_replace('\\', '', $str);
-    $str = str_replace('[', '', $str);
-    $str = str_replace(']', '', $str);
-    $str = str_replace('【', '', $str);
-    $str = str_replace('】', '', $str);
-    $str = str_replace('{', '', $str);
-    $str = str_replace('}', '', $str);
-    $str = str_replace(';', '', $str);
-    $str = str_replace('；', '', $str);
-    $str = str_replace(':', '', $str);
-    $str = str_replace('：', '', $str);
-    $str = str_replace('\'', '', $str);
-    $str = str_replace('"', '', $str);
-    $str = str_replace('“', '', $str);
-    $str = str_replace('”', '', $str);
-    $str = str_replace(',', '', $str);
-    $str = str_replace('，', '', $str);
-    $str = str_replace('<', '', $str);
-    $str = str_replace('>', '', $str);
-    $str = str_replace('《', '', $str);
-    $str = str_replace('》', '', $str);
-    $str = str_replace('.', '', $str);
-    $str = str_replace('。', '', $str);
-    $str = str_replace('/', '', $str);
-    $str = str_replace('、', '', $str);
-    $str = str_replace('?', '', $str);
-    $str = str_replace('？', '', $str);
-    return trim($str);
-}
-
-
 function readModeContent($th,$content){
  $author = $th->author->screenName;
 $date = date("Y年 m月 d 日",$th->date->timeStamp);
@@ -688,15 +585,6 @@ function agreeforcomment($coid) {
     $agree = $db->fetchRow($db->select('table.comments.agree')->from('table.comments')->where('coid = ?', $coid));
     return $agree['agree'];
 }
-
-function theAllViews()
-        {
-            $db = \Typecho\Db::get();
-            $prefix = $db->getPrefix();
-            $row = $db->fetchAll('SELECT SUM(VIEWS) FROM `' . $prefix . 'contents`');
-                echo number_format($row[0]['SUM(VIEWS)']);
-        }
-
 
 //输出样式
 function bs_style(){
@@ -1011,137 +899,6 @@ function article_module_output($thi) {
 }
 
 
-function poster_inx($cid,$content,$excerpt,$type,$excerpt_length=240){
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    $agent = strtolower($_SERVER['HTTP_USER_AGENT']);
-$is_iphone = (strpos($agent, 'iphone')) ? true : false;   
-  $is_ipad = (strpos($agent, 'ipad')) ? true : false;   
-  //判断苹果设备访问，经测试苹果设备在某些情况下可能无法下载海报
-  if($is_iphone || $is_ipad){
-      $download = '长按图片保存海报';
-  }
-  else{
-      $download = '下载海报';
-  }
-  $post_excerpt = $excerpt;
-  if($excerpt == ''){
-      $post_content = $content;
-      if (strpos($post_content, '[bspost') !== false) {
-                    $post_content = preg_replace('/\[bspost (.*?)\]/sm', '', $post_content);
-}
-if (strpos($post_content, '[bshide') !== false) {
-            $pattern = get_shortcode_regex(array('bshide'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-if (strpos($post_content, '[bslogin') !== false) {
-            $pattern = get_shortcode_regex(array('bslogin'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-if (strpos($post_content, '[bsprog') !== false) {
-            $pattern = get_shortcode_regex(array('bsprog'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '[bsgallery') !== false) {
-            $pattern = get_shortcode_regex(array('bsgallery'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-                if (strpos($post_content, '[todo-t') !== false) {
-            $pattern = get_shortcode_regex(array('todo-t'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-                if (strpos($post_content, '[todo-f') !== false) {
-            $pattern = get_shortcode_regex(array('todo-f'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-          if (strpos($post_content, '[bsgit') !== false) {
-            $pattern = get_shortcode_regex(array('bsgit'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '[bseva') !== false) {
-            $pattern = get_shortcode_regex(array('bseva'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '[bsaudio') !== false) {
-            $pattern = get_shortcode_regex(array('bsaudio'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '[bspost') !== false) {
-            $pattern = get_shortcode_regex(array('bspost'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '[bsplayer') !== false) {
-            $pattern = get_shortcode_regex(array('bsplayer'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '[bsmp3') !== false) {
-            $pattern = get_shortcode_regex(array('bsplayer'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '[bsruby') !== false) {
-            $pattern = get_shortcode_regex(array('bsruby'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '[bsmark') !== false) {
-            $pattern = get_shortcode_regex(array('bsmark'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '[bsbtn') !== false) {
-            $pattern = get_shortcode_regex(array('bsbtn'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '[bsmessage') !== false) {
-            $pattern = get_shortcode_regex(array('bsmessage'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '{bs-todo') !== false) {
-            $pattern = get_shortcode_regex2(array('bs-todo'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '{bs-accord') !== false) {
-            $pattern = get_shortcode_regex2(array('bs-accord'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '{bs-font') !== false) {
-            $pattern = get_shortcode_regex2(array('bs-font'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '{bs-iframe') !== false) {
-            $pattern = get_shortcode_regex2(array('bs-iframe'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '{bs-card') !== false) {
-            $pattern = get_shortcode_regex2(array('bs-card'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '{bs-audio') !== false) {
-            $pattern = get_shortcode_regex2(array('bs-audio'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        if (strpos($post_content, '[bspaper') !== false) {
-            $pattern = get_shortcode_regex2(array('bspaper'));
-            $post_content = preg_replace("/$pattern/", '', $post_content);
-        }
-        $post_content = strip_tags( $post_content );
-
-        $post_excerpt = mb_strimwidth($post_content,0,$excerpt_length,'…','utf-8');
-  }
-  $post_excerpt = strip_tags( $post_excerpt );
-    $post_excerpt = trim( preg_replace( "/[\n\r\t ]+/", ' ', $post_excerpt ), ' ' );
-    switch($type){
-    case '1':
-    echo '<div id="post-poster" class="post-poster action action-poster">
-			<div class="poster-qrcode" style="display:none;"></div>
-			<div class="poster-popover-mask" data-event="poster-close"></div>
-			<div class="poster-popover-box">
-				<a class="poster-download btn btn-default" download="'.$cid.'.jpg">
-					<span>'.$download.'</span>
-				</a>
-			</div>
-		</div>';
-	case '2':
-		return $post_excerpt;
-    }
-}
 //输出文章标题字数
 function articletitlenum(){
     $options = bsOptions::getInstance()::get_option( 'bearsimple' );
@@ -1151,7 +908,7 @@ function articletitlenum(){
     else{
      return $options['articletitlenum'];
     }
-    
+
 }
 
 //输出文章描述字数
@@ -1165,44 +922,6 @@ function articledecnum(){
     }
     
 }
-
-//自动分页方法
-function autoPage($array,$pagesize,$current){
-    if(!$array){
-        return;
-    }
-  $_return = array();
-  $total=ceil(count($array)/$pagesize);
-  $prev=(($current-1)<=0 ? "1":($current-1));
-  $next=(($current+1)>=$total ?   $total:$current+1);
-  $current=($current>($total)?($total):$current);
-  $start=($current-1)*$pagesize;
-  $end=($start+$pagesize)<count($array) ? ($start+$pagesize) : count($array);
-  for($i=$start;$i<$end;$i++){
-    array_push($_return,$array[$i]);
-  }
-  $pagearray["ret"]=$_return;
-  $page = '<div class="ui labels" style="margin-top:20px"><div style="text-align:center"><a class="ui large label" href="?page=1">首页</a>';
-  $page .= '<a class="ui large label" href="?page='.$prev.'">上一页</a>';
-  for($i=1;$i<=$total;$i++){
-   
-    if($i==$current){
-      $page .= '<a href="?page='.$i.'" class="ui black large label">'.$i.'</a>';
-    }
-    else{
-         $page .= '<a href="?page='.$i.'" class="ui large label">'.$i.'</a>';
-    }
-  }
-  $page .= '<a class="ui large label" href="?page='.$next.'">下一页</a>';
-  $page .= '<a class="ui large label" href="?page='.$total.'">尾页</a></div></div>';
-  $pagearray["page"] = $page;
-  if($total == 1){
-  $pagearray["page"] = '';    
-  }
-  return $pagearray;
-}
-
-
 
 //输出标签云个数
 function tagcloudnum(){
@@ -1264,15 +983,20 @@ function thumb($obj) {
 	else{
 	    $thumb = '';
 	}
-	   
-	    
-	}
-	
+
+    }
 	return $thumb;
 }
 
 // 图底文字获取图片
 function thumb2($obj,$type = 'default') {
+    // ponytail: 按_cid+type 进程内缓存——列表页每帖被调用 3-4 次，原先每次重复 attachments/fields 查询；
+    // 副作用：同帖多次取图固定为同一张（随机图场景 src 与 data-src 原本可能不一致，缓存后反而一致）
+    static $thumbCache = array();
+    $cacheKey = $obj->cid . '_' . $type;
+    if (array_key_exists($cacheKey, $thumbCache)) {
+        return $thumbCache[$cacheKey];
+    }
     //获取附件首张图片
 	$attach = $obj->attachments(1)->attachment;
 	//获取文章首张图片
@@ -1320,188 +1044,13 @@ function thumb2($obj,$type = 'default') {
 	else{
 	    $thumb = '';
 	}
-	   
-	    
+
+
 	}
+	$thumbCache[$cacheKey] = $thumb;
 	return $thumb;
 }
 
-function thumb3($obj) {
-    //获取附件首张图片
-	$attach = $obj->attachments(1)->attachment;
-	//获取文章首张图片
-	preg_match_all("/\<img.*?src\=\"(.*?)\"[^>]*>/i", $obj->content, $thumbUrl);
-	$img_src = $thumbUrl[1][0];
-	// 获取自定义随机图片
-	$options = bsOptions::getInstance()::get_option( 'bearsimple' );
-	$thumbs = explode("|",$options['Article_forma_pic']);
-	// 获取文章封面
-	$cover = $obj->fields->cover;
-	//--------------->
-	if($options['Article_forma_randapi'] == 1){
-	        $rand = '?'.mt_rand(1,1000);
-	    }
-	if($options['Article_forma_randchoose'] == false || $options['Article_forma_randchoose'] == ''){
-	if($cover){
-	    $thumb = $cover;
-	}elseif(isset($attach->isImage) && $attach->isImage == 1){
-		$thumb = $attach->url;
-	}else if($img_src){
-		$thumb = $img_src;
-	}else if(!empty($options['Article_forma_pic']) && count($thumbs)>0){
-		$thumb = $thumbs[rand(0,count($thumbs)-1)].$rand;
-	}
-	else{
-	    $thumb = '';
-	}
-	
-	}
-	else{
-	    
-	   if(!empty($options['Article_forma_pic']) && count($thumbs)>0){
-		$thumb = $thumbs[rand(0,count($thumbs)-1)].$rand;
-	}
-	   elseif($cover){
-	    $thumb = $cover;
-	}elseif(isset($attach->isImage) && $attach->isImage == 1){
-		$thumb = $attach->url;
-	}else if($img_src){
-		$thumb = $img_src;
-	}
-	else{
-	    $thumb = '';
-	}
-	   
-	    
-	}
-	return $thumb;
-}
-
-
-/**简单的标签转换**/
-function BearSimpleChange($article){
-    $article = str_replace('[bs-style=', '<div class="', $article);
-    $article = str_replace('[/bs-style]', '</div>', $article);
-    $article = str_replace(']', '">', $article);
-    return $article;
-}
-
-function BearSimpleFriendLinkBr($friendlink){
-    $friendlink = str_replace('<friendlink>', '<ul></ul>', $friendlink);
-    $friendlink = str_replace(',', '<ul></ul>', $friendlink);
-    return $friendlink;
-}
-
-
-/** 获取操作系统信息 */
-function getOs($agent)
-{
-    $os = false;
-
-    if (preg_match('/win/i', $agent)) {
-        if (preg_match('/nt 6.0/i', $agent)) {
-            $os = 'Windows Vista';
-        } else if (preg_match('/nt 6.1/i', $agent)) {
-            $os = 'Windows 7';
-        } else if (preg_match('/nt 5.1/i', $agent)) {
-            $os = 'Windows XP';
-        } else if (preg_match('/nt 5/i', $agent)) {
-            $os = 'Windows 2000';
-        } else {
-            $os = 'Windows';
-        }
-    } else if (preg_match('/android/i', $agent)) {
-        $os = 'Android';
-    } else if (preg_match('/ubuntu/i', $agent)) {
-        $os = 'Ubuntu';
-    } else if (preg_match('/linux/i', $agent)) {
-        $os = 'Linux';
-    } else if (preg_match('/mac/i', $agent)) {
-        $os = 'Mac OS X';
-    } else if (preg_match('/unix/i', $agent)) {
-        $os = 'Unix';
-    } else if (preg_match('/symbian/i', $agent)) {
-        $os = 'Nokia SymbianOS';
-    } else {
-        $os = '其它操作系统';
-    }
-
-    echo $os;
-}
-
-//**字数统计**/
-function art_count ($cid){ 
-    $db=\Typecho\Db::get (); $rs=$db->fetchRow ($db->select ('table.contents.text')->from ('table.contents')->where ('table.contents.cid=?',$cid)->order ('table.contents.cid',\Typecho\Db::SORT_ASC)->limit (1)); $text = preg_replace("/[^\x{4e00}-\x{9fa5}]/u", "", $rs['text']); 
-    
-    echo mb_strlen($text,'UTF-8'); }
-
-// 统计阅读数
-function get_post_view($archive){
-	$cid    = $archive->cid;
-	$db     = \Typecho\Db::get();
-	$prefix = $db->getPrefix();
-	// ponytail: 字段探测进程内只做一次并加 LIMIT
-	static $contentsViewsChecked = false;
-	if (!$contentsViewsChecked) {
-		if (!array_key_exists('views', $db->fetchRow($db->select()->from('table.contents')->limit(1)))) {
-			$db->query('ALTER TABLE `' . $prefix . 'contents` ADD `views` INT(10) DEFAULT 0;');
-			echo 0;
-			return;
-		}
-		$contentsViewsChecked = true;
-	}
-	$row = $db->fetchRow($db->select('views')->from('table.contents')->where('cid = ?', $cid));
-	if ($archive->is('single')) {
-        $views = \Typecho\Cookie::get('extend_contents_views');
-		if(empty($views)){
-			$views = array();
-		}else{
-			$views = explode(',', $views);
-		}
-        if(!in_array($cid,$views)){
-	        $db->query($db->update('table.contents')->rows(array('views' => (int) $row['views'] + 1))->where('cid = ?', $cid));
-            array_push($views, $cid);
-			$views = implode(',', $views);
-			\Typecho\Cookie::set('extend_contents_views', $views); //记录查看cookie
-		}
-	}
-	echo $row['views'];
-}
-
-
-// 留言加@
-function getPermalinkFromCoid($coid) {
-	$db = \Typecho\Db::get();
-	$row = $db->fetchRow($db->select('author')->from('table.comments')->where('coid = ? AND status = ?', $coid, 'approved'));
-	if (empty($row)) return '';
-	return '<a href="#comment-'.$coid.'">@'.$row['author'].'</a>';
-}
-
-//获取文章标题
-function get_article_title($cid){
- $db = \Typecho\Db::get();
-	$row = $db->fetchRow($db->select('title')->from('table.contents')->where('cid = ?', $cid));
- return $row['title'];
-}
-
-//获取文章URL
-function get_article_link($cid){    
-    $db = \Typecho\Db::get();
-
-    $result = $db->fetchAll($db->select()->from('table.contents')
-        ->where('status = ?','publish')
-        ->where('type = ?', 'post')
-        ->where('created <= unix_timestamp(now())', 'post')
-        ->where('cid = ?', $cid));
-    if($result){
-        foreach($result as $val){
-            $val = \Typecho\Widget::widget('Widget\Base\Contents')->push($val);
-            $post_title = htmlspecialchars($val['title']);
-            $permalink = $val['permalink'];
-            return $permalink;
-        }
-    }
-}
 
 //懒加载输出
 function lazyload($haveClass = 0,$url = ''){
@@ -1648,14 +1197,6 @@ function copyright_cc($field){
     return $output;
 }
 
-function msec_to_sec($timestamp,$type='msec'){
-    if($type=='msec'){
-        return sprintf('%.0f', $timestamp*1000);
-    }else{
-        return sprintf('%.0f', $timestamp/1000);
-    }
-
-}
 
 function time_start() {
 	global $timestart;

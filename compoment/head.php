@@ -112,6 +112,8 @@ session_start();
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;500;600;700;900&display=swap" as="style" onload="this.rel='stylesheet'" crossorigin>
 <?php endif; ?>
 <link rel="preload" href="<?php AssetsDir();?>assets/css/lxgw/style.css" as="style" onload="this.rel='stylesheet'" crossorigin>
+<!-- ponytail: 前端 github/author/UserCenter 等多处调用 toastr 但此前漏载样式，复用后台已有 css -->
+<link href="<?php AssetsDir();?>assets/vendors/toastr.js/toastr.min.css" rel="stylesheet">
 <script src="<?php AssetsDir();?>assets/js/toastr.min.js" defer></script>
 <?php bs_style(); ?>
 <?php echo Bsoptions('CustomizationCode'); ?>
@@ -128,9 +130,11 @@ session_start();
 <link href="<?php AssetsDir();?>assets/vendors/slider/bearslider.min.css?v=2" rel="stylesheet" type="text/css">
 <?php endif; ?>
 <?php if(Bsoptions('Scroll') == true): ?>
-<?php /* ponytail: TOC 样式仅目录树功能开启时输出，与 foot.php 的 TOC JS 条件一致 */ ?>
+<?php /* ponytail: TOC 样式仅目录树功能开启时输出，与 foot.php 的 TOC JS 条件一致；bs-toc2 仅阅读模式需要 */ ?>
 <link href="<?php AssetsDir2();?>assets/vendors/bs-toc/bs-toc.min.css" rel="stylesheet" type="text/css">
+<?php if(Bsoptions('Readmode') == true): ?>
 <link href="<?php AssetsDir2();?>assets/vendors/bs-toc/bs-toc2.min.css" rel="stylesheet" type="text/css">
+<?php endif; ?>
 <?php endif; ?>
   <?php if (Bsoptions('Translate') == "11"): ?>
   <script src="<?php AssetsDir();?>assets/vendors/translate/translate.js"></script>

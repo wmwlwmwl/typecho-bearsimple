@@ -39,40 +39,64 @@ function Bsoptions($key, $default = false){
     return $cache[$key] ?? $default;
 }
 
-/**解析表情**/
-$emo = false;
-function reEmo($comment,$type){
-    global $emo;
-    $options = Helper::options();
-    if(!$emo){
-        $opts = array(
-  'http'=>array(
-   'method' => 'GET',
-          'header' => 'Content-type: application/json',
-          'timeout' => 60,
-       'Connection'=>"close"
-  )
-);
-$context = stream_context_create($opts);
-
-        if(Bsoptions('Emoji_HideDefault') == false || Bsoptions('Emoji_HideDefault') == ''){
+/**表情数据加载（reEmo/reEmoPost 共用，合并原两份重复实现；外链表情 10 分钟文件缓存消除每请求外呼）**/
+function bs_emoji_data(){
+    static $emo = null;
+    if ($emo !== null) {
+        return $emo;
+    }
+    $opts = array(
+        'http'=>array(
+            'method' => 'GET',
+            'header' => 'Content-type: application/json',
+            'timeout' => 15,
+            'Connection'=>"close"
+        )
+    );
+    $context = stream_context_create($opts);
+    if(Bsoptions('Emoji_HideDefault') == false || Bsoptions('Emoji_HideDefault') == ''){
+        // ponytail: 直接读本地文件，原先走站点 URL 回环 HTTP 每请求一次
         $res = json_decode(file_get_contents(__DIR__.'/assets/vendors/bs-emoji/bs-emoji.json', false, $context),true) ?: [];
         $emo = $res;
-        }
-        if(Bsoptions('Emoji_Diy') == true && Bsoptions('Emoji_DiyUrl') !== ''){
-        $res2 = json_decode(file_get_contents(Bsoptions('Emoji_DiyUrl'), false, $context),true) ?: [];
+    }
+    if(Bsoptions('Emoji_Diy') == true && Bsoptions('Emoji_DiyUrl') !== ''){
+        $res2 = bs_emoji_remote();
         if(Bsoptions('Emoji_HideDefault') == false || Bsoptions('Emoji_HideDefault') == ''){
-        $emo = array_merge($res,$res2);
+            $emo = array_merge($emo, $res2);
         }
         else{
-        $emo = $res2;    
+            $emo = $res2;
         }
-        }
-        
-        
     }
+    return $emo;
+}
 
+function bs_emoji_remote(){
+    // ponytail: naive 文件缓存（TTL 10 分钟）——外链表情 json 原先每请求同步外拉；失败静默降级为空表情
+    static $remote = null;
+    if ($remote !== null) {
+        return $remote;
+    }
+    $url = Bsoptions('Emoji_DiyUrl');
+    $cacheFile = sys_get_temp_dir() . '/bs_emoji_diy_' . md5($url) . '.json';
+    $json = false;
+    if (is_file($cacheFile) && (time() - filemtime($cacheFile)) < 600) {
+        $json = @file_get_contents($cacheFile);
+    }
+    if ($json === false) {
+        $ctx = stream_context_create(['http'=>['timeout'=>15,'Connection'=>"close"]]);
+        $json = @file_get_contents($url, false, $ctx);
+        if ($json !== false) {
+            @file_put_contents($cacheFile, $json);
+        }
+    }
+    $remote = $json === false ? [] : (json_decode($json, true) ?: []);
+    return $remote;
+}
 
+/**解析表情**/
+function reEmo($comment,$type){
+    $emo = bs_emoji_data();
     foreach ($emo as $v){
         if($v['category'] !== ''){
                 if($type == 'comment'){
@@ -85,9 +109,9 @@ $context = stream_context_create($opts);
                 $comment = str_replace($v['data'], '<img width="30" src='.$v['icon'] .''.' loading="lazy" style="vertical-align:middle">', $comment);
                 $comment = str_replace($v['codex'], '<img width="30" src='.$v['icon'] .''.' loading="lazy" style="vertical-align:middle">', $comment);
                 }
-            
+
                 else{
-                $comment = str_replace($v['data'], '<img width="30" src='.$v['icon'] .''.' loading="lazy" style="vertical-align:middle">', $comment);                    
+                $comment = str_replace($v['data'], '<img width="30" src='.$v['icon'] .''.' loading="lazy" style="vertical-align:middle">', $comment);
                 }
         }
     }
@@ -97,42 +121,9 @@ $context = stream_context_create($opts);
 }
 
 function reEmoPost($post){
-    global $emo;
-$options = Helper::options();
-    if(!$emo){
-        $opts = array(
-  'http'=>array(
-   'method' => 'GET',
-          'header' => 'Content-type: application/json',
-          'timeout' => 15, // ponytail: 外链表情 json 限 15s，失败走 $emo 空数组兜底
-       'Connection'=>"close"
-  )
-);
-$context = stream_context_create($opts);
-
-        if(Bsoptions('Emoji_HideDefault') == false || Bsoptions('Emoji_HideDefault') == ''){
-        // ponytail: 直接读本地文件，原先走站点 URL 回环 HTTP 每请求一次
-        $res = json_decode(file_get_contents(__DIR__.'/assets/vendors/bs-emoji/bs-emoji.json', false, $context),true) ?: [];
-        $emo = $res;
-        }
-        if(Bsoptions('Emoji_Diy') == true && Bsoptions('Emoji_DiyUrl') !== ''){
-        $res2 = json_decode(file_get_contents(Bsoptions('Emoji_DiyUrl'), false, $context),true) ?: [];
-        if(Bsoptions('Emoji_HideDefault') == false || Bsoptions('Emoji_HideDefault') == ''){
-        $emo = array_merge($res,$res2);
-        }
-        else{
-        $emo = $res2;    
-        }
-        }
-        
-        
-    }
-
-
-
+    $emo = bs_emoji_data();
     foreach ($emo as $v){
         if($v['category'] !== ''){
-                
                 $post = str_replace($v['data'], '<img style="display:inline-block;margin: 0;padding: 0;width:30px;height:30px;vertical-align: middle;" class="emoji" src="'.$v['icon'] .'"'.' loading="lazy">', $post);
         }
     }
@@ -142,7 +133,11 @@ $context = stream_context_create($opts);
 
 
 
-require_once(__DIR__.'/core/admin-options.php');
+// ponytail: CSF 表单定义 258KB 仅后台需要；__TYPECHO_ADMIN__ 由 admin/common.php 定义。
+// 副作用：建表/版本升级检测（admin-options 顶层）随之后移到后台首次访问，安装流程必经设置页可接受
+if (defined('__TYPECHO_ADMIN__')) {
+    require_once(__DIR__.'/core/admin-options.php');
+}
 function themeConfig($form)
 {
 

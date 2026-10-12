@@ -71,6 +71,7 @@ switch(Bsoptions('IframeProtect')){
 <link rel="preload" href="<?php AssetsDir();?>assets/css/lxgw/style.css" as="style" onload="this.rel='stylesheet'" crossorigin>
 <link href="<?php AssetsDir();?>assets/vendors/usercenter/usercenter.min.css?v=<?php echo themeVersion(); ?>" rel="stylesheet">
 <script src='<?php AssetsDir();?>assets/vendors/usercenter/usercenter.min.js?v=3'></script>
+<link href="<?php AssetsDir();?>assets/vendors/toastr.js/toastr.min.css" rel="stylesheet">
 <script src="<?php AssetsDir();?>assets/js/toastr.min.js"></script>
 <?php bs_style(); ?>
 <?php echo Bsoptions('CustomizationCode'); ?>
@@ -85,7 +86,10 @@ switch(Bsoptions('IframeProtect')){
 <link href="<?php AssetsDir();?>assets/vendors/slider/bearslider.min.css?v=1" rel="stylesheet" type="text/css">
 <?php endif; ?>
 <link href="<?php AssetsDir2();?>assets/vendors/bs-toc/bs-toc.min.css" rel="stylesheet" type="text/css">
+<?php /* ponytail: bs-toc2 仅阅读模式需要（与 foot.php 的 bs-toc2 JS 条件一致） */ ?>
+<?php if(Bsoptions('Readmode') == true): ?>
 <link href="<?php AssetsDir2();?>assets/vendors/bs-toc/bs-toc2.min.css" rel="stylesheet" type="text/css">
+<?php endif; ?>
   <?php if (Bsoptions('Translate') == "11"): ?>
   <script src="<?php AssetsDir();?>assets/vendors/translate/translate.js"></script>
   <?php endif; ?>

@@ -407,79 +407,10 @@ function parseMultilineData($str, $columnCount)
         return $result;
     }
 
-function getMenu()
-    {
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-        return parseMultilineData($options['Menu'], 2);
-    }
-
-function getLink()
-    {
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-        return parseMultilineData($options['WebLink'], 2);
-    }
-
-function announmentget(){
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    $announment = explode('|',$options['PopupText']);
-    return $announment;
-}
-
-function sliderget(){
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    return parseMultilineData($options['SliderPics'], 3);
-}
-
 function getFriendLink()
     {
     $options = bsOptions::getInstance()::get_option( 'bearsimple' );
         return parseMultilineData($options['FriendLink'], 3);
-    }
-    
-function getDoubanId($id)
-    {
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    $DoubanId = explode(',',$id);
-        return $DoubanId;
-    }
-    
-function getBookTag()
-    {
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    $DoubanTag = explode(',',$options['douban_tag']);
-        return $DoubanTag;
-    }
-
-function getMovieTag()
-    {
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    $DoubanTag = explode(',',$options['douban_movie_tag']);
-        return $DoubanTag;
-    }
-
-function getMusicTag()
-    {
-    $options = bsOptions::getInstance()::get_option( 'bearsimple' );
-    $DoubanTag = explode(',',$options['douban_music_tag']);
-        return $DoubanTag;
-    }
-    
-function curl_func($url){
-$ch = curl_init ();
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-curl_setopt($ch, CURLOPT_HEADER, FALSE);
-curl_setopt($ch, CURLOPT_NOBODY, FALSE);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, FALSE);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-curl_exec($ch);
-$httpCode = curl_getinfo($ch,CURLINFO_HTTP_CODE);
-curl_close($ch);
-return $httpCode;
     }
 //主题开启后的设定
 
@@ -850,34 +781,6 @@ $returnstr = $returnstr."...";
 return $returnstr;
 }
 
-function getCommentHF($coid){
-    $parser = new HyperDown();
-    $db   = \Typecho\Db::get();
-    $prow = $db->fetchRow($db->select('parent')
-        ->from('table.comments')
-        ->where('coid = ? AND status = ?', $coid, 'approved'));
-    if (isset($prow['parent'])){
-        $parent = $prow['parent'];
-        if ($parent != "0") {
-            $arow = $db->fetchRow($db->select('text','author','status')
-                ->from('table.comments')
-                ->where('coid = ?', $parent));
-            $text = '回复'.$arow['author'].'：'.$arow['text'];
-            $author = $arow['author'];
-            $status = $arow['status'];
-            if($author){
-                if($status=='approved'){
-                    $href   = '<div class="ui list"><div class="item"><i class="quote left icon"></i><div class="content"><div class="description">'.reEmo($parser->makeHtml(cut_str($text, 30)),'reply').'</div></div> </div></div>';
-                }else if($status=='waiting'){
-                    $href   = '<div class="ui list"><div class="item"><i class="quote left icon"></i><div class="content"><div class="description">评论正在审核中...</div></div> </div></div>';
-                }
-            }
-            echo $href;
-        } else {
-            echo "";
-        }
-    }
-}
 /**
  * 文章自定义字段
  */

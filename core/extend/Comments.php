@@ -180,10 +180,17 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
     }
     
      public function commentRank($i){
+          // ponytail: 同一请求内同邮箱评论复用 COUNT 结果，消除嵌套评论 N+1
+          static $rankCache = array();
           $db=\Typecho\Db::get();
-    $mail=$db->fetchAll($db->select(array('COUNT(cid)'=>'all'))->from('table.comments')->where('mail = ?', $i->mail)->where('authorId = ?','0'));
-    foreach ($mail as $sl){
-    $all=$sl['all'];}
+          if (!array_key_exists($i->mail, $rankCache)) {
+              $mail=$db->fetchAll($db->select(array('COUNT(cid)'=>'all'))->from('table.comments')->where('mail = ?', $i->mail)->where('authorId = ?','0'));
+              $rankCache[$i->mail] = 0;
+              foreach ($mail as $sl){
+                  $rankCache[$i->mail]=(int)$sl['all'];
+              }
+          }
+          $all = $rankCache[$i->mail];
     if($i->authorId == $i->ownerId){
     echo '<div class="ui circular mini black label bstooltip bstooltip--top" data-bstooltip="博主" style="vertical-align: middle;"><i class="user tie icon"></i>博主</div>';
     }
@@ -296,9 +303,13 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
   
     private function getParent(){
         $db = \Typecho\Db::get();
-        $parentID = $db->fetchRow($db->select('parent')->from('table.comments')->where('coid = ?', $this->coid));
-        $parentID=$parentID['parent'];
-        if($parentID=='0'){ return '';}
+        // ponytail: 优先用 widget 自带的 parent 字段（行数据已含），仅取不到时回退反查，省 1 次 SQL
+        $parentID = $this->parent ?? null;
+        if ($parentID === null) {
+            $row = $db->fetchRow($db->select('parent')->from('table.comments')->where('coid = ?', $this->coid));
+            $parentID = $row['parent'] ?? '0';
+        }
+        if(empty($parentID)||$parentID=='0'){ return '';}
         else {
             $author=$db->fetchRow($db->select()->from('table.comments')->where('coid = ?', $parentID));
             if (empty($author['author']) ||!array_key_exists('author', $author) )

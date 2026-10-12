@@ -10,7 +10,9 @@ class Curl {
 	const ua_android = 'Mozilla/5.0 (Linux; Android 10.0; MHA-AL00 Build/HUAWEIMHA-AL00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/43.0.2357.134 Mobile Safari/537.36';
 	const ua_pc= 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36 Edg/89.0.774.54';
 	function __construct () {
-		$this->cookie_jar = mb_convert_encoding(__DIR__, "GBK", "UTF-8") . DIRECTORY_SEPARATOR . 'cookie.txt';
+		// ponytail: cookie jar 惰性创建（autoCookie(true) 时才 tempnam 到系统临时目录）——
+		// 原先全请求共享 core/cookie.txt，并发请求互相覆盖产生竞态；升级路径：按域名分 jar
+		$this->cookie_jar = null;
 		$this->options= [
 		CURLOPT_HEADER => true, // 输出响应头
 		CURLOPT_TIMEOUT=> 5,// 超时 秒
@@ -34,6 +36,9 @@ class Curl {
 		switch ($method) {
 			case 'autoCookie': // Cookie自动化，默认关闭
 			if (@$args[0]) {
+				if ($this->cookie_jar === null) {
+					$this->cookie_jar = tempnam(sys_get_temp_dir(), 'bscurl_');
+				}
 				$this->options[CURLOPT_COOKIEFILE] = $this->cookie_jar;
 				$this->options[CURLOPT_COOKIEJAR]= $this->cookie_jar;
 			}
@@ -128,6 +133,9 @@ class Curl {
 			break;
 			case 'getCookie': // 读取Cookie文件中的cookie
 			$url= isset($args[0]) && filter_var($args[0], FILTER_VALIDATE_URL) ? $args[0] : $this->options[CURLOPT_URL];
+			if ($this->cookie_jar === null || !is_file($this->cookie_jar)) {
+				return [];
+			}
 			$cookie = @file_get_contents($this->cookie_jar);
 			$arr= parse_url($url);
 			$host = preg_replace('/.*?\.(?=.+\..+$)/', '', $arr['host']);

@@ -7551,15 +7551,13 @@ public static function getCache_file(){
        $style = bsOptions::getInstance()::get_option( 'bearsimple' )['code_style'];
         }
         $cssUrl = $dir.'modules/codehightlight/static/styles/' . $style.'?v=2.9.9';
-        $playerUrl = $dir.'assets/vendors/player/player.min.css?v=2.3.4';
-        $mp3Url = $dir.'assets/vendors/mp3/mp3.min.css?v=2.3.4';
-    
+
         echo '<link rel="stylesheet" type="text/css" href="' . $cssUrl . '" />';
-        echo '<link rel="stylesheet" type="text/css" href="' . $playerUrl . '" />';
-        echo '<link rel="stylesheet" type="text/css" href="' . $mp3Url . '" /><script>var APlayers = [];var APlayerOptions = [];</script>';
-        
+
     }
-    
+    // ponytail: 播放器 CSS/JS 移至 footlink 按需注入（仅页面含 .dplayer/音频短代码时加载，省 350KB）；
+    // 此声明必须无条件输出——正文音频短代码会 push APlayerOptions，原先藏在 Codehightlight 条件内是隐藏缺陷
+    echo '<script>var APlayers = [];var APlayerOptions = [];</script>';
     }
 
     /**
@@ -7585,16 +7583,49 @@ HTML;
 HTML;
   }
   echo <<<HTML
-    <script src="{$dir}assets/vendors/player/player.min.js?v=2.3.4" type="text/javascript"></script>
-    <script src="{$dir}assets/vendors/player/load-player.js" type="text/javascript"></script>
-    <script src="{$dir}assets/vendors/mp3/mp3.min.js?v=2.3.4"></script>
-    <script src="{$dir}assets/vendors/mp3/load-mp3.js?v=2.3.4"></script>
-    <script type="text/javascript">
-    $(document).on('pjax:complete', function () {
-    loadDPlayer();
-    loadAPlayer();
-    });
-    </script>
+  <script type="text/javascript">
+  // ponytail: 播放器按需加载——仅当页面存在 .dplayer 容器或音频短代码 push 过 APlayerOptions 时注入，pjax 幂等
+  function bsLoadPlayers() {
+    var head = document.head;
+    function injectCss(href) {
+      if (!head.querySelector('link[href="' + href + '"]')) {
+        var l = document.createElement('link');
+        l.rel = 'stylesheet';
+        l.href = href;
+        head.appendChild(l);
+      }
+    }
+    function loadJs(src, cb) {
+      var s = document.createElement('script');
+      s.src = src;
+      s.onload = cb;
+      head.appendChild(s);
+    }
+    if (document.querySelector('.dplayer') && typeof DPlayer === 'undefined' && !window.bsDPlayerLoading) {
+      window.bsDPlayerLoading = true;
+      injectCss('{$dir}assets/vendors/player/player.min.css?v=2.3.4');
+      loadJs('{$dir}assets/vendors/player/player.min.js?v=2.3.4', function () {
+        if (typeof loadDPlayer === 'function') { loadDPlayer(); }
+        else { loadJs('{$dir}assets/vendors/player/load-player.js', function () { loadDPlayer(); }); }
+      });
+    } else if (typeof loadDPlayer === 'function' && !window.bsDPlayerLoading) {
+      loadDPlayer();
+    }
+    if (window.APlayerOptions && window.APlayerOptions.length && typeof APlayer === 'undefined' && !window.bsAPlayerLoading) {
+      window.bsAPlayerLoading = true;
+      injectCss('{$dir}assets/vendors/mp3/mp3.min.css?v=2.3.4');
+      loadJs('{$dir}assets/vendors/mp3/mp3.min.js?v=2.3.4', function () {
+        if (typeof loadAPlayer === 'function') { loadAPlayer(); }
+        else { loadJs('{$dir}assets/vendors/mp3/load-mp3.js', function () { loadAPlayer(); }); }
+      });
+    } else if (typeof loadAPlayer === 'function' && !window.bsAPlayerLoading) {
+      loadAPlayer();
+    }
+  }
+  $(document).on('pjax:complete', bsLoadPlayers);
+  if (document.readyState !== 'loading') { bsLoadPlayers(); }
+  else { document.addEventListener('DOMContentLoaded', bsLoadPlayers); }
+  </script>
 HTML;
 
 if(bsOptions::getInstance()::get_option('bearsimple')['seo_push'] == true && bsOptions::getInstance()::get_option('bearsimple')['seotabs']['baidu_token'] !== ''){

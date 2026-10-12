@@ -162,21 +162,26 @@ function quotebspaperCallback($matches){
     $arr = array("7","1","2","3","4","5","6");
     $week = $arr[date("w")];
    $news = '';
-$data = Curl::ua('android')->get('https://top.baidu.com/board')->html();
-$data = json_decode(str_Intercept($data, '<!--s-data:', '-->'), true);
+// ponytail: naive 文件缓存（TTL 10 分钟，sys_get_temp_dir）——原实现每渲染一次同步外拉 5s 超时上限；
+// 升级路径：接入 BsCore cache 模块或 Redis。缓存读写失败静默降级为直连
+$hotCacheFile = sys_get_temp_dir() . '/bs_hot_baidu_' . md5('top.baidu.com/board') . '.json';
+$raw = false;
+if (is_file($hotCacheFile) && (time() - filemtime($hotCacheFile)) < 600) {
+    $raw = @file_get_contents($hotCacheFile);
+}
+if ($raw === false) {
+    $raw = Curl::ua('android')->get('https://top.baidu.com/board')->html();
+    @file_put_contents($hotCacheFile, $raw);
+}
+$data = json_decode(str_Intercept($raw, '<!--s-data:', '-->'), true);
 for($i=0;$i!=10;$i++)
 {
-$new = ($i+1)."、".$data['cards'][0]['content'][$i]['query'] . '  ' . str_replace(' ','',$data['cards'][0]['content'][$i]['desc']);
+$new = ($i+1)."、".($data['cards'][0]['content'][$i]['query'] ?? '') . '  ' . str_replace(' ','',$data['cards'][0]['content'][$i]['desc'] ?? '');
 $news.= '<p>'.chunkSplit($new,27,"")."</p>";
 }
 $content = $news;
-if(\Typecho\Cookie::get('yiyan') == ''){
-// ponytail: 加 15s 超时，失败置空串
-$ctx = stream_context_create(['http' => ['timeout' => 15]]);
-$json = file_get_contents('https://v1.hitokoto.cn/', false, $ctx);
-\Typecho\Cookie::set('yiyan', $json === false ? '' : ((array)json_decode($json,true))['hitokoto'] ?? '');
-}
-$yiyan = \Typecho\Cookie::get('yiyan');
+// ponytail: 复用 func.php get_hito()（cookie 缓存），删除本文件 yiyan cookie 私有实现（双份外呼双份缓存）
+$yiyan = get_hito();
 if($attrs['image'] == 'true'){
 $img = '<img '.lazyload().'src="'.Helper::options()->themeUrl.'/assets/images/60s/'.$week.'.webp'.'">';
 }
@@ -425,27 +430,6 @@ $results .= $po.'<rp>(</rp><rt>'.$Pinyin->TransformWithTone($po).'</rt><rp>)</rp
 }
 $results .= '</ruby>';
  return $results;
-}
-
-
-function Rand_IP(){
-
-$ip2id= round(rand(600000, 2550000) / 10000); //第一种方法，直接生成
-
-$ip3id= round(rand(600000, 2550000) / 10000);
-
-$ip4id= round(rand(600000, 2550000) / 10000);
-
-//下面是第二种方法，在以下数据中随机抽取
-
-$arr_1 = array("218","218","66","66","218","218","60","60","202","204","66","66","66","59","61","60","222","221","66","59","60","60","66","218","218","62","63","64","66","66","122","211");
-
-$randarr= mt_rand(0,count($arr_1)-1);
-
-$ip1id = $arr_1[$randarr];
-
-return $ip1id.".".$ip2id.".".$ip3id.".".$ip4id;
-
 }
 
 function curl_get($url){
@@ -1853,11 +1837,6 @@ function getAcgFile(){
 
 function getGhFile(){
     $getGhFile =Helper::options()->siteUrl.'index.php/getgithub';
-    echo $getGhFile;
-}
-
-function getCrossFile(){
-    $getGhFile =Helper::options()->siteUrl.'index.php/searchcross';
     echo $getGhFile;
 }
 

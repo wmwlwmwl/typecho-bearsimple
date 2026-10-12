@@ -549,19 +549,22 @@ MathJax = {
 <!-- 引入全局控制 -->
 <script type="text/javascript" src="<?php AssetsDir();?>assets/vendors/fomantic-ui/semantic.subset.min.js?v=1" defer></script>
 <?php /* ponytail: Fomantic JS 全量 399KB→子集 255KB，组件清单见文件头注释 */ ?>
-<script src="<?php AssetsDir();?>assets/js/funlazy.min.js?v=1"></script>
+<script src="<?php AssetsDir();?>assets/js/funlazy.min.js?v=1" defer></script>
 <script type="text/javascript" src="<?php AssetsDir();?>assets/js/app.bundle.min.js?v=<?php echo themeVersion(); ?>" defer></script>
- <?php if(Bsoptions('AIService') == true && Bsoptions('AIService_Key') !== ''): ?> 
+ <?php if(Bsoptions('AIService') == true && Bsoptions('AIService_Key') !== ''): ?>
 <script src="<?php AssetsDir();?>assets/vendors/aiTool/ai.min.js" defer></script>
 <?php endif;?>
-<script type="module" src="<?php AssetsDir();?>assets/js/emaction.js?v=1" defer></script>
+<?php /* ponytail: emaction 仅在配置了生效位置时加载（module 自带 defer，去掉冗余 defer 属性） */ ?>
+<?php if(Bsoptions('emaction_Openplace')): ?>
+<script type="module" src="<?php AssetsDir();?>assets/js/emaction.js?v=1"></script>
+<?php endif;?>
  
 <?php if(Bsoptions('Codehightlight') == 1) : ?>
 <script type="text/javascript">
 if (!window.prismLoaded) {
     window.prismLoaded = true;
     var script = document.createElement('script');
-    script.src = '<?= $this->options->themeUrl ?>/modules/codehightlight/static/prism.js?v=3';
+    script.src = '<?= $this->options->themeUrl ?>/modules/codehightlight/static/prism.js?v=4';
     script.onload = initPrism;
     document.head.appendChild(script);
 } else if (window.Prism) {

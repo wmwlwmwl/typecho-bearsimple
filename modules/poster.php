@@ -14,15 +14,32 @@
     </div>
 </div>
 
-<!-- 引入库 -->
-<script src="<?php AssetsDir();?>assets/js/qrcode.min.js"></script>
-<script src="<?php AssetsDir();?>assets/js/html2canvas.min.js"></script>
+<!-- ponytail: qrcode/html2canvas 改为点击生成时按需注入，页面加载零开销 -->
 <script>
     // 弹窗相关
     var posterModal = document.getElementById('posterModal');
     var posterImage = document.getElementById('posterImage');
     var posterLoading = document.getElementById('posterLoading');
     var downloadButton = document.querySelector('.poster-modal__button');
+
+    // 按需加载海报依赖库
+    function loadScript(src) {
+        return new Promise(function (resolve, reject) {
+            var s = document.createElement('script');
+            s.src = src;
+            s.onload = resolve;
+            s.onerror = reject;
+            document.head.appendChild(s);
+        });
+    }
+    var posterLibsReady = null;
+    function ensurePosterLibs() {
+        if (!posterLibsReady) {
+            posterLibsReady = loadScript('<?php AssetsDir();?>assets/js/qrcode.min.js')
+                .then(function () { return loadScript('<?php AssetsDir();?>assets/js/html2canvas.min.js'); });
+        }
+        return posterLibsReady;
+    }
 
     // 打开弹窗
     function openModal() {
@@ -43,6 +60,13 @@
 
     // 生成海报
     async function generatePoster() {
+        try {
+            await ensurePosterLibs();
+        } catch (e) {
+            posterLoading.style.display = 'none';
+            alert('海报组件加载失败，请检查网络后重试');
+            return;
+        }
         // 显示加载动画
         posterLoading.style.display = 'flex';
         posterImage.style.display = 'none';
