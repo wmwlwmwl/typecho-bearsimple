@@ -105,8 +105,11 @@ if (!empty($active_methods)) {
 <?php endif; ?>
 
 <?php if(Bsoptions('Top') == true) :?>
+  <button id="to-bottom" class="fixed-button" aria-label="前往底部">
+    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+  </button>
   <button id="back-to-top" class="fixed-button" aria-label="回到顶部">
-    <i class="<?php if(empty(Bsoptions('TopSrc'))){echo 'fas fa-chevron-up';}else{echo Bsoptions('TopSrc');}; ?>"></i>
+    <i class="<?php if(empty(Bsoptions('TopSrc'))){echo 'fas fa-chevron-up';}else{echo Bsoptions('TopSrc');}; ?>"></i><span class="btt-ring" aria-hidden="true"></span>
   </button>
 <?php endif;?>
 <?php if(Bsoptions('Control_Panel') == true) :?>
@@ -162,18 +165,38 @@ if (!empty($active_methods)) {
   <script>
 $(document).ready(function () {
   const backToTopButton = $('#back-to-top');
+  const toBottomButton = $('#to-bottom');
 
   backToTopButton.on('click', function () {
     $('html, body').animate({ scrollTop: 0 }, 'smooth');
   });
 
-  $(window).on('scroll', function () {
-    if ($(window).scrollTop() > 100) {
-      backToTopButton.css('display', 'flex');
-    } else {
-      backToTopButton.css('display', 'none');
-    }
+  toBottomButton.on('click', function () {
+    $('html, body').animate({ scrollTop: $(document).height() }, 'smooth');
   });
+
+  // ponytail: 初始状态也要计算（顶部恰是"到底部"按钮该出现的位置），scroll 事件不会自动触发首次计算
+  const onScroll = function () {
+    const st = $(window).scrollTop();
+    // ponytail: 环形阅读进度（conic-gradient 环绕按钮边缘），JS 仅更新 CSS 变量；docH 为可滚动高度，为 0 时按 0% 处理
+    const docH = $(document).height() - $(window).height();
+    const pct = docH > 0 ? Math.round(st / docH * 100) : 0;
+    if (st > 100) {
+      // solo：接近底部时"到底部"隐藏，回顶按钮下移补位；双按钮并存时回顶固定在上（140px）
+      backToTopButton.css('display', 'flex').toggleClass('solo', docH - st <= 100);
+      backToTopButton[0].style.setProperty('--btt-pct', pct);
+    } else {
+      backToTopButton.css('display', 'none').css('--btt-pct', 0);
+    }
+    // ponytail: 剩余可滚动 >100px 才显示"到底部"；固定占底层 80px，位置不随回顶按钮变化
+    if (docH - st > 100) {
+      toBottomButton.css('display', 'flex');
+    } else {
+      toBottomButton.css('display', 'none');
+    }
+  };
+  $(window).on('scroll', onScroll);
+  onScroll();
 
   const settingsButton = $('#foot-settings-button');
   const settingsPanel = $('#foot-settings-panel');
