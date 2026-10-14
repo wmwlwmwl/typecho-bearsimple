@@ -1,6 +1,5 @@
 <?php
 header("HTTP/1.1 200 OK");
-header("Access-Control-Allow-Origin: *");
 date_default_timezone_set('PRC');
 session_start();
     use Typecho\Db;

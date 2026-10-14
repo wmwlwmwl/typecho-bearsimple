@@ -4,7 +4,6 @@ use Typecho\Db;
 use Typecho\Common;
 use Widget\Options;
 header("HTTP/1.1 200 OK");
-header("Access-Control-Allow-Origin: *");
 date_default_timezone_set('PRC');
 
 $options = Helper::options();

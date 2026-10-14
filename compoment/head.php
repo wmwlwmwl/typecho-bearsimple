@@ -1,6 +1,6 @@
 <?php if (!defined('__TYPECHO_ROOT_DIR__')) exit;?>
 <?php
-ob_clean();
+if (ob_get_level()) { ob_clean(); }
 $seo_description = '';
 $keywords = '';
 $seo_description = Helper::options()->description;
@@ -23,7 +23,11 @@ switch(Bsoptions('IframeProtect')){
     break;
 }
 }
-session_start();
+/* ponytail: 无会话 Cookie 则不开启 session（匿名首访零会话开销）；有 Cookie 时 read_and_close 立即释放锁。
+   页面渲染期间无任何 $_SESSION 写入（session 仅在 getCommentAction/friendlink 动作端点内自行 start 并写 token） */
+if (isset($_COOKIE[session_name()])) {
+    session_start(['read_and_close' => true]);
+}
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN" data-theme="light"<?php if (Bsoptions('Mournmode') == true): ?> class="gray"<?php endif; ?>>
@@ -100,11 +104,11 @@ session_start();
 <script src="<?php AssetsDir();?>assets/js/jquery.min.js" type="application/javascript"></script>
 <?php /* ponytail: jQuery 不能 defer——body 内联脚本直接调用 $()，defer 会破坏执行顺序 */ ?>
 <link href="<?php AssetsDir();?>assets/css/bearsimple.min.css?v=<?php echo themeVersion(); ?>" rel="stylesheet">
-<link href="<?php AssetsDir();?>assets/vendors/fomantic-ui/semantic.subset.min.css?v=1" rel="stylesheet">
+<link href="<?php AssetsDir();?>assets/vendors/fomantic-ui/semantic.subset.min.css?v=2" rel="stylesheet">
 <?php /* ponytail: Fomantic 全量 1679KB→子集 568KB，组件清单见子集文件头注释；缺失组件时从官方发布包 components/ 补拼 */ ?>
 <link href="<?php AssetsDir();?>assets/css/modules/global_custom.min.css?v=<?php echo themeVersion(); ?>" rel="stylesheet">
 <link rel="preload" href="<?php AssetsDir();?>assets/vendors/fontawesome/all.min.css?ver=5.15.4" as="style" onload="this.rel='stylesheet'" crossorigin>
-<link rel="preload" href="<?php AssetsDir();?>assets/vendors/fontawesome/v4-shims.min.css?ver=5.15.4" as="style" onload="this.rel='stylesheet'" crossorigin>
+<?php /* ponytail: 前端模板/JS 无 FA v4 类名（全为 fas/far/fab 语法），v4-shims 仅后台 BsCore 选项框架需要（setup.class.php 自行加载），前端移除 */ ?>
 <?php if(Bsoptions('GoogleSerifFont') == true): ?>
 <?php /* ponytail: Google 思源宋体按开关加载（默认关），仅保留本地霞鹜文楷；开启时补 gstatic 预连接 */ ?>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
@@ -139,13 +143,18 @@ session_start();
   <?php if (Bsoptions('Translate') == "11"): ?>
   <script src="<?php AssetsDir();?>assets/vendors/translate/translate.js"></script>
   <?php endif; ?>
-<link href="<?php AssetsDir();?>assets/vendors/sweetalert2/sweetalert2.min.css" type="text/css" rel="stylesheet" />
+<?php /* ponytail: sweetalert2 仅交互触发（打包在 defer 的 app.bundle 内），CSS 异步加载避免阻塞首屏 */ ?>
+<link rel="preload" href="<?php AssetsDir();?>assets/vendors/sweetalert2/sweetalert2.min.css" as="style" onload="this.rel='stylesheet'" crossorigin>
+<noscript><link rel="stylesheet" href="<?php AssetsDir();?>assets/vendors/sweetalert2/sweetalert2.min.css"></noscript>
 
 <?php if($this->is('single')): ?>
 <?php /* ponytail: 音频播放器样式仅文章/独立页面输出（bs-audio 短代码只在正文出现） */ ?>
 <link rel="stylesheet" href="<?php AssetsDir();?>assets/vendors/bs-audio/audio.css">
 <?php endif; ?>
+<?php if($this->is('single')): ?>
+<?php /* ponytail: bs-emoji 仅评论表单/朋友圈/说说（均为 single 或自带引入：memos.php、UserCenter 各自加载）使用，首页列表无需 */ ?>
 <link href="<?php AssetsDir();?>assets/vendors/bs-emoji/bs-emoji.css?v=<?php echo themeVersion(); ?>" rel="stylesheet" type="text/css">
+<?php endif; ?>
  <?php if(Bsoptions('AIService') == true && Bsoptions('AIService_Key') !== ''): ?> 
 <link rel="stylesheet" href="<?php AssetsDir();?>assets/vendors/aiTool/ai.min.css">
 <?php endif;?>

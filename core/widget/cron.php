@@ -10,16 +10,15 @@ if (!class_exists('bsOptions')){
     require_once \Utils\Helper::options()->pluginDir('BsCore').'/bsOptions.php';
 }
 use Typecho\Db;
-ob_clean();
+if (ob_get_level()) { ob_clean(); }
 header("HTTP/1.1 200 OK");
-    header("Access-Control-Allow-Origin: *");
     date_default_timezone_set('PRC');
 ignore_user_abort(true);
 set_time_limit(0);
 ini_set('memory_limit',-1);
 // ponytail: mysql.connect_timeout 为 PHP-INI_SYSTEM 且已废弃，运行时设置无效，已移除
 ini_set('default_socket_timeout', 900);
-session_start();
+// ponytail: 本文件不读写 $_SESSION（session 仅在 friendlink/getCommentAction 端点内使用），移除无用的 session_start 避免为 HTTP 触发生成会话文件
     $removeChar = ["https://", "http://"]; 
     \Typecho\Widget::widget('Widget\User')->to($user);
     $db = \Typecho\Db::get();
@@ -48,7 +47,8 @@ function checkLinks($url) {
         // 检查域名是否匹配
         $removeChar = ["https://", "http://","/"];
         $url2 = str_replace($removeChar, "", $options->siteUrl);
-        $appUrlPreg = "/$url2/i";
+        // ponytail: 站点 URL 需 preg_quote，否则含 . 等元字符时正则失真误匹配
+        $appUrlPreg = '/' . preg_quote($url2, '/') . '/i';
         preg_match($appUrlPreg, $response, $match);
 
         // 返回结果
