@@ -7,7 +7,7 @@
 ?>
 <?php if (!defined('__TYPECHO_ROOT_DIR__')) exit; ?>
 <?php $this->need('compoment/head.php');?>
-<link rel="stylesheet" href="https://staticfile.typecho.co.uk/fancybox/fancybox.min.css">
+<link rel="stylesheet" href="<?php AssetsDir2();?>assets/vendors/fancybox/fancybox.min.css">
 <script>
 window.Prism = window.Prism || {};
 window.Prism.manual = true; // 禁用自动高亮

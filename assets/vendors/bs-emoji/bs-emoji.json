@@ -144,7 +144,7 @@
 		"data": "[Smile]",
 		"codex": "/::)",
 		"web_codex": "/微笑",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Smile.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Smile.png",
 		"category": "微信"
 	},
 	{
@@ -153,7 +153,7 @@
 		"data": "[Grimace]",
 		"codex": "/::~",
 		"web_codex": "/撇嘴",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Grimace.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Grimace.png",
 		"category": "微信"
 	},
 	{
@@ -162,7 +162,7 @@
 		"data": "[Drool]",
 		"codex": "/::B",
 		"web_codex": "/色",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Drool.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Drool.png",
 		"category": "微信"
 	},
 	{
@@ -171,7 +171,7 @@
 		"data": "[Scowl]",
 		"codex": "/::|",
 		"web_codex": "/发呆",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Scowl.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Scowl.png",
 		"category": "微信"
 	},
 	{
@@ -180,7 +180,7 @@
 		"data": "[CoolGuy]",
 		"codex": "/:8-)",
 		"web_codex": "/得意",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/CoolGuy.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/CoolGuy.png",
 		"category": "微信"
 	},
 	{
@@ -189,7 +189,7 @@
 		"data": "[Sob]",
 		"codex": "/::<",
 		"web_codex": "/流泪",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Sob.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Sob.png",
 		"category": "微信"
 	},
 	{
@@ -198,7 +198,7 @@
 		"data": "[Shy]",
 		"codex": "/::$",
 		"web_codex": "/害羞",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Shy.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Shy.png",
 		"category": "微信"
 	},
 	{
@@ -207,7 +207,7 @@
 		"data": "[Silent]",
 		"codex": "/::X",
 		"web_codex": "/闭嘴",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Silent.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Silent.png",
 		"category": "微信"
 	},
 	{
@@ -216,7 +216,7 @@
 		"data": "[Sleep]",
 		"codex": "/::Z",
 		"web_codex": "/睡",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Sleep.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Sleep.png",
 		"category": "微信"
 	},
 	{
@@ -225,7 +225,7 @@
 		"data": "[Cry]",
 		"codex": "/::'(",
 		"web_codex": "/大哭",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Cry.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Cry.png",
 		"category": "微信"
 	},
 	{
@@ -234,7 +234,7 @@
 		"data": "[Awkward]",
 		"codex": "/::-|",
 		"web_codex": "/尴尬",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Awkward.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Awkward.png",
 		"category": "微信"
 	},
 	{
@@ -243,7 +243,7 @@
 		"data": "[Angry]",
 		"codex": "/::@",
 		"web_codex": "/发怒",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Angry.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Angry.png",
 		"category": "微信"
 	},
 	{
@@ -252,7 +252,7 @@
 		"data": "[Tongue]",
 		"codex": "/::P",
 		"web_codex": "/调皮",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Tongue.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Tongue.png",
 		"category": "微信"
 	},
 	{
@@ -261,7 +261,7 @@
 		"data": "[Grin]",
 		"codex": "/::D",
 		"web_codex": "/呲牙",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Grin.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Grin.png",
 		"category": "微信"
 	},
 	{
@@ -270,7 +270,7 @@
 		"data": "[Surprise]",
 		"codex": "/::O",
 		"web_codex": "/惊讶",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Surprise.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Surprise.png",
 		"category": "微信"
 	},
 	{
@@ -279,7 +279,7 @@
 		"data": "[Frown]",
 		"codex": "/::(",
 		"web_codex": "/难过",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Frown.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Frown.png",
 		"category": "微信"
 	},
 	{
@@ -288,7 +288,7 @@
 		"data": "[Ruthless]",
 		"codex": "/::+",
 		"web_codex": "/酷",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Ruthless.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Ruthless.png",
 		"category": "微信"
 	},
 	{
@@ -297,7 +297,7 @@
 		"data": "[Blush]",
 		"codex": "/:--b",
 		"web_codex": "/冷汗",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Blush.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Blush.png",
 		"category": "微信"
 	},
 	{
@@ -306,7 +306,7 @@
 		"data": "[Scream]",
 		"codex": "/::Q",
 		"web_codex": "/抓狂",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Scream.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Scream.png",
 		"category": "微信"
 	},
 	{
@@ -315,7 +315,7 @@
 		"data": "[Puke]",
 		"codex": "/::T",
 		"web_codex": "/吐",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Puke.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Puke.png",
 		"category": "微信"
 	},
 	{
@@ -324,7 +324,7 @@
 		"data": "[Chuckle]",
 		"codex": "/:,@P",
 		"web_codex": "/偷笑",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Chuckle.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Chuckle.png",
 		"category": "微信"
 	},
 	{
@@ -333,7 +333,7 @@
 		"data": "[Joyful]",
 		"codex": "/:,@-D",
 		"web_codex": "/可爱",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Joyful.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Joyful.png",
 		"category": "微信"
 	},
 	{
@@ -342,7 +342,7 @@
 		"data": "[Slight]",
 		"codex": "/::d",
 		"web_codex": "/白眼",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Slight.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Slight.png",
 		"category": "微信"
 	},
 	{
@@ -351,7 +351,7 @@
 		"data": "[Smug]",
 		"codex": "/:,@o",
 		"web_codex": "/傲慢",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Smug.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Smug.png",
 		"category": "微信"
 	},
 	{
@@ -360,7 +360,7 @@
 		"data": "[Hungry]",
 		"codex": "/::g",
 		"web_codex": "/饥饿",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Hungry.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Hungry.png",
 		"category": "微信"
 	},
 	{
@@ -369,7 +369,7 @@
 		"data": "[Drowsy]",
 		"codex": "/:|-)",
 		"web_codex": "/困",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Drowsy.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Drowsy.png",
 		"category": "微信"
 	},
 	{
@@ -378,7 +378,7 @@
 		"data": "[Panic]",
 		"codex": "/::!",
 		"web_codex": "/惊恐",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Panic.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Panic.png",
 		"category": "微信"
 	},
 	{
@@ -387,7 +387,7 @@
 		"data": "[Sweat]",
 		"codex": "/::L",
 		"web_codex": "/流汗",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Sweat.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Sweat.png",
 		"category": "微信"
 	},
 	{
@@ -396,7 +396,7 @@
 		"data": "[Laugh]",
 		"codex": "/::>",
 		"web_codex": "/憨笑",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Laugh.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Laugh.png",
 		"category": "微信"
 	},
 	{
@@ -405,7 +405,7 @@
 		"data": "[Commando]",
 		"codex": "/::,@",
 		"web_codex": "/大兵",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Commando.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Commando.png",
 		"category": "微信"
 	},
 	{
@@ -414,7 +414,7 @@
 		"data": "[Determined]",
 		"codex": "/:,@f",
 		"web_codex": "/奋斗",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Determined.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Determined.png",
 		"category": "微信"
 	},
 	{
@@ -423,7 +423,7 @@
 		"data": "[Scold]",
 		"codex": "/::-S",
 		"web_codex": "/咒骂",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Scold.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Scold.png",
 		"category": "微信"
 	},
 	{
@@ -432,7 +432,7 @@
 		"data": "[Shocked]",
 		"codex": "/:?",
 		"web_codex": "/疑问",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Shocked.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Shocked.png",
 		"category": "微信"
 	},
 	{
@@ -441,7 +441,7 @@
 		"data": "[Shhh]",
 		"codex": "/:,@x",
 		"web_codex": "/嘘",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Shhh.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Shhh.png",
 		"category": "微信"
 	},
 	{
@@ -450,7 +450,7 @@
 		"data": "[Dizzy]",
 		"codex": "/:,@@",
 		"web_codex": "/晕",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Dizzy.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Dizzy.png",
 		"category": "微信"
 	},
 	{
@@ -459,7 +459,7 @@
 		"data": "[Tormented]",
 		"codex": "/::8",
 		"web_codex": "/折磨",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Tormented.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Tormented.png",
 		"category": "微信"
 	},
 	{
@@ -468,7 +468,7 @@
 		"data": "[Toasted]",
 		"codex": "/:,@!",
 		"web_codex": "/衰",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Toasted.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Toasted.png",
 		"category": "微信"
 	},
 	{
@@ -477,7 +477,7 @@
 		"data": "[Skull]",
 		"codex": "/:!!!",
 		"web_codex": "/骷髅",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Skull.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Skull.png",
 		"category": "微信"
 	},
 	{
@@ -486,7 +486,7 @@
 		"data": "[Hammer]",
 		"codex": "/:xx",
 		"web_codex": "/敲打",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Hammer.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Hammer.png",
 		"category": "微信"
 	},
 	{
@@ -495,7 +495,7 @@
 		"data": "[Wave]",
 		"codex": "/:bye",
 		"web_codex": "/再见",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Wave.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Wave.png",
 		"category": "微信"
 	},
 	{
@@ -504,7 +504,7 @@
 		"data": "[Speechless]",
 		"codex": "/:wipe",
 		"web_codex": "/擦汗",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Speechless.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Speechless.png",
 		"category": "微信"
 	},
 	{
@@ -513,7 +513,7 @@
 		"data": "[NosePick]",
 		"codex": "/:dig",
 		"web_codex": "/抠鼻",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/NosePick.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/NosePick.png",
 		"category": "微信"
 	},
 	{
@@ -522,7 +522,7 @@
 		"data": "[Clap]",
 		"codex": "/:handclap",
 		"web_codex": "/鼓掌",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Clap.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Clap.png",
 		"category": "微信"
 	},
 	{
@@ -531,7 +531,7 @@
 		"data": "[Shame]",
 		"codex": "/:&-(",
 		"web_codex": "/糗大了",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Shame.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Shame.png",
 		"category": "微信"
 	},
 	{
@@ -540,7 +540,7 @@
 		"data": "[Trick]",
 		"codex": "/:B-)",
 		"web_codex": "/坏笑",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Trick.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Trick.png",
 		"category": "微信"
 	},
 	{
@@ -549,7 +549,7 @@
 		"data": "[Bah！L]",
 		"codex": "/:<@",
 		"web_codex": "/左哼哼",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Bah！L.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Bah！L.png",
 		"category": "微信"
 	},
 	{
@@ -558,7 +558,7 @@
 		"data": "[Bah！R]",
 		"codex": "/:@>",
 		"web_codex": "/右哼哼",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Bah！R.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Bah！R.png",
 		"category": "微信"
 	},
 	{
@@ -567,7 +567,7 @@
 		"data": "[Yawn]",
 		"codex": "/::-O",
 		"web_codex": "/哈欠",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Yawn.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Yawn.png",
 		"category": "微信"
 	},
 	{
@@ -576,7 +576,7 @@
 		"data": "[Pooh-pooh]",
 		"codex": "/:>-|",
 		"web_codex": "/鄙视",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Pooh-pooh.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Pooh-pooh.png",
 		"category": "微信"
 	},
 	{
@@ -585,7 +585,7 @@
 		"data": "[Shrunken]",
 		"codex": "/:P-(",
 		"web_codex": "/委屈",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Shrunken.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Shrunken.png",
 		"category": "微信"
 	},
 	{
@@ -594,7 +594,7 @@
 		"data": "[TearingUp]",
 		"codex": "/::'|",
 		"web_codex": "/快哭了",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/TearingUp.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/TearingUp.png",
 		"category": "微信"
 	},
 	{
@@ -603,7 +603,7 @@
 		"data": "[Sly]",
 		"codex": "/:X-)",
 		"web_codex": "/阴险",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Sly.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Sly.png",
 		"category": "微信"
 	},
 	{
@@ -612,7 +612,7 @@
 		"data": "[Kiss]",
 		"codex": "/::*",
 		"web_codex": "/亲亲",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Kiss.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Kiss.png",
 		"category": "微信"
 	},
 	{
@@ -621,7 +621,7 @@
 		"data": "[Wrath]",
 		"codex": "/:@x",
 		"web_codex": "/吓",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Wrath.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Wrath.png",
 		"category": "微信"
 	},
 	{
@@ -630,7 +630,7 @@
 		"data": "[Whimper]",
 		"codex": "/:8*",
 		"web_codex": "/可怜",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Whimper.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Whimper.png",
 		"category": "微信"
 	},
 	{
@@ -639,7 +639,7 @@
 		"data": "[Cleaver]",
 		"codex": "/:pd",
 		"web_codex": "/菜刀",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Cleaver.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Cleaver.png",
 		"category": "微信"
 	},
 	{
@@ -648,7 +648,7 @@
 		"data": "[Watermelon]",
 		"codex": "/:<W>",
 		"web_codex": "/西瓜",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Watermelon.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Watermelon.png",
 		"category": "微信"
 	},
 	{
@@ -657,7 +657,7 @@
 		"data": "[Beer]",
 		"codex": "/:beer",
 		"web_codex": "/啤酒",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Beer.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Beer.png",
 		"category": "微信"
 	},
 	{
@@ -666,7 +666,7 @@
 		"data": "[Basketball]",
 		"codex": "/:basketb",
 		"web_codex": "/篮球",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Basketball.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Basketball.png",
 		"category": "微信"
 	},
 	{
@@ -675,7 +675,7 @@
 		"data": "[PingPong]",
 		"codex": "/:oo",
 		"web_codex": "/乒乓",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/PingPong.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/PingPong.png",
 		"category": "微信"
 	},
 	{
@@ -684,7 +684,7 @@
 		"data": "[Coffee]",
 		"codex": "/:coffee",
 		"web_codex": "/咖啡",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Coffee.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Coffee.png",
 		"category": "微信"
 	},
 	{
@@ -693,7 +693,7 @@
 		"data": "[Rice]",
 		"codex": "/:eat",
 		"web_codex": "/饭",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Rice.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Rice.png",
 		"category": "微信"
 	},
 	{
@@ -702,7 +702,7 @@
 		"data": "[Pig]",
 		"codex": "/:pig",
 		"web_codex": "/猪头",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Pig.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Pig.png",
 		"category": "微信"
 	},
 	{
@@ -711,7 +711,7 @@
 		"data": "[Rose]",
 		"codex": "/:rose",
 		"web_codex": "/玫瑰",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Rose.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Rose.png",
 		"category": "微信"
 	},
 	{
@@ -720,7 +720,7 @@
 		"data": "[Wilt]",
 		"codex": "/:fade",
 		"web_codex": "/凋谢",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Wilt.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Wilt.png",
 		"category": "微信"
 	},
 	{
@@ -729,7 +729,7 @@
 		"data": "[Lips]",
 		"codex": "/:showlove",
 		"web_codex": "/示爱",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Lips.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Lips.png",
 		"category": "微信"
 	},
 	{
@@ -738,7 +738,7 @@
 		"data": "[Heart]",
 		"codex": "/:heart",
 		"web_codex": "/爱心",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Heart.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Heart.png",
 		"category": "微信"
 	},
 	{
@@ -747,7 +747,7 @@
 		"data": "[BrokenHeart]",
 		"codex": "/:break",
 		"web_codex": "/心碎",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/BrokenHeart.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/BrokenHeart.png",
 		"category": "微信"
 	},
 	{
@@ -756,7 +756,7 @@
 		"data": "[Cake]",
 		"codex": "/:cake",
 		"web_codex": "/蛋糕",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Cake.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Cake.png",
 		"category": "微信"
 	},
 	{
@@ -765,7 +765,7 @@
 		"data": "[Lightning]",
 		"codex": "/:li",
 		"web_codex": "/闪电",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Lightning.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Lightning.png",
 		"category": "微信"
 	},
 	{
@@ -774,7 +774,7 @@
 		"data": "[Bomb]",
 		"codex": "/:bome",
 		"web_codex": "/炸弹",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Bomb.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Bomb.png",
 		"category": "微信"
 	},
 	{
@@ -783,7 +783,7 @@
 		"data": "[Dagger]",
 		"codex": "/:kn",
 		"web_codex": "/刀",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Dagger.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Dagger.png",
 		"category": "微信"
 	},
 	{
@@ -792,7 +792,7 @@
 		"data": "[Soccer]",
 		"codex": "/:footb",
 		"web_codex": "/足球",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Soccer.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Soccer.png",
 		"category": "微信"
 	},
 	{
@@ -801,7 +801,7 @@
 		"data": "[Ladybug]",
 		"codex": "/:ladybug",
 		"web_codex": "/瓢虫",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Ladybug.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Ladybug.png",
 		"category": "微信"
 	},
 	{
@@ -810,7 +810,7 @@
 		"data": "[Poop]",
 		"codex": "/:shit",
 		"web_codex": "/便便",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Poop.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Poop.png",
 		"category": "微信"
 	},
 	{
@@ -819,7 +819,7 @@
 		"data": "[Moon]",
 		"codex": "/:moon",
 		"web_codex": "/月亮",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Moon.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Moon.png",
 		"category": "微信"
 	},
 	{
@@ -828,7 +828,7 @@
 		"data": "[Sun]",
 		"codex": "/:sun",
 		"web_codex": "/太阳",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Sun.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Sun.png",
 		"category": "微信"
 	},
 	{
@@ -837,7 +837,7 @@
 		"data": "[Gift]",
 		"codex": "/:gift",
 		"web_codex": "/礼物",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Gift.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Gift.png",
 		"category": "微信"
 	},
 	{
@@ -846,7 +846,7 @@
 		"data": "[Hug]",
 		"codex": "/:hug",
 		"web_codex": "/拥抱",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Hug.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Hug.png",
 		"category": "微信"
 	},
 	{
@@ -855,7 +855,7 @@
 		"data": "[ThumbsUp]",
 		"codex": "/:strong",
 		"web_codex": "/强",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/ThumbsUp.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/ThumbsUp.png",
 		"category": "微信"
 	},
 	{
@@ -864,7 +864,7 @@
 		"data": "[ThumbsDown]",
 		"codex": "/:weak",
 		"web_codex": "/弱",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/ThumbsDown.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/ThumbsDown.png",
 		"category": "微信"
 	},
 	{
@@ -873,7 +873,7 @@
 		"data": "[Shake]",
 		"codex": "/:share",
 		"web_codex": "/握手",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Shake.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Shake.png",
 		"category": "微信"
 	},
 	{
@@ -882,7 +882,7 @@
 		"data": "[Peace]",
 		"codex": "/:v",
 		"web_codex": "/胜利",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Peace.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Peace.png",
 		"category": "微信"
 	},
 	{
@@ -891,7 +891,7 @@
 		"data": "[Fight]",
 		"codex": "/:@)",
 		"web_codex": "/抱拳",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Fight.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Fight.png",
 		"category": "微信"
 	},
 	{
@@ -900,7 +900,7 @@
 		"data": "[Beckon]",
 		"codex": "/:jj",
 		"web_codex": "/勾引",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Beckon.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Beckon.png",
 		"category": "微信"
 	},
 	{
@@ -909,7 +909,7 @@
 		"data": "[Fist]",
 		"codex": "/:@@",
 		"web_codex": "/拳头",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Fist.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Fist.png",
 		"category": "微信"
 	},
 	{
@@ -918,7 +918,7 @@
 		"data": "[Pinky]",
 		"codex": "/:bad",
 		"web_codex": "/差劲",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Pinky.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Pinky.png",
 		"category": "微信"
 	},
 	{
@@ -927,7 +927,7 @@
 		"data": "[RockOn]",
 		"codex": "/:lvu",
 		"web_codex": "/爱你",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/RockOn.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/RockOn.png",
 		"category": "微信"
 	},
 	{
@@ -936,7 +936,7 @@
 		"data": "[Nuh-uh]",
 		"codex": "/:no",
 		"web_codex": "/NO",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Nuh-uh.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Nuh-uh.png",
 		"category": "微信"
 	},
 	{
@@ -945,7 +945,7 @@
 		"data": "[OK]",
 		"codex": "/:ok",
 		"web_codex": "/OK",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/OK.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/OK.png",
 		"category": "微信"
 	},
 	{
@@ -954,7 +954,7 @@
 		"data": "[InLove]",
 		"codex": "/:love",
 		"web_codex": "/爱情",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/InLove.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/InLove.png",
 		"category": "微信"
 	},
 	{
@@ -963,7 +963,7 @@
 		"data": "[Blowkiss]",
 		"codex": "/:<L>",
 		"web_codex": "/飞吻",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Blowkiss.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Blowkiss.png",
 		"category": "微信"
 	},
 	{
@@ -972,7 +972,7 @@
 		"data": "[Waddle]",
 		"codex": "/:jump",
 		"web_codex": "/跳跳",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Waddle.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Waddle.png",
 		"category": "微信"
 	},
 	{
@@ -981,7 +981,7 @@
 		"data": "[Tremble]",
 		"codex": "/:shake",
 		"web_codex": "/发抖",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Tremble.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Tremble.png",
 		"category": "微信"
 	},
 	{
@@ -990,7 +990,7 @@
 		"data": "[Aaagh!]",
 		"codex": "/:<O>",
 		"web_codex": "/怄火",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Aaagh!.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Aaagh!.png",
 		"category": "微信"
 	},
 	{
@@ -999,7 +999,7 @@
 		"data": "[Twirl]",
 		"codex": "/:circle",
 		"web_codex": "/转圈",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Twirl.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Twirl.png",
 		"category": "微信"
 	},
 	{
@@ -1008,7 +1008,7 @@
 		"data": "[Kotow]",
 		"codex": "/:kotow",
 		"web_codex": "/磕头",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Kotow.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Kotow.png",
 		"category": "微信"
 	},
 	{
@@ -1017,7 +1017,7 @@
 		"data": "[Dramatic]",
 		"codex": "/:turn",
 		"web_codex": "/回头",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Dramatic.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Dramatic.png",
 		"category": "微信"
 	},
 	{
@@ -1026,7 +1026,7 @@
 		"data": "[JumpRope]",
 		"codex": "/:skip",
 		"web_codex": "/跳绳",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/JumpRope.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/JumpRope.png",
 		"category": "微信"
 	},
 	{
@@ -1035,7 +1035,7 @@
 		"data": "[Surrender]",
 		"codex": "/:oY",
 		"web_codex": "/挥手",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Surrender.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Surrender.png",
 		"category": "微信"
 	},
 	{
@@ -1044,7 +1044,7 @@
 		"data": "[Hooray]",
 		"codex": "/:#-0",
 		"web_codex": "/激动",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Hooray.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Hooray.png",
 		"category": "微信"
 	},
 	{
@@ -1053,7 +1053,7 @@
 		"data": "[Meditate]",
 		"codex": "/:hiphot",
 		"web_codex": "/街舞",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Meditate.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Meditate.png",
 		"category": "微信"
 	},
 	{
@@ -1062,7 +1062,7 @@
 		"data": "[Smooch]",
 		"codex": "/:kiss",
 		"web_codex": "/献吻",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Smooch.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Smooch.png",
 		"category": "微信"
 	},
 	{
@@ -1071,7 +1071,7 @@
 		"data": "[TaiChi L]",
 		"codex": "/:<&",
 		"web_codex": "/左太极",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/TaiChi L.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/TaiChi L.png",
 		"category": "微信"
 	},
 	{
@@ -1080,7 +1080,7 @@
 		"data": "[TaiChi R]",
 		"codex": "/:&\"",
 		"web_codex": "/右太极",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/TaiChi R.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/TaiChi R.png",
 		"category": "微信"
 	},
 	{
@@ -1088,7 +1088,7 @@
 		"zh": "[奸笑]",
 		"data": "[Smirk]",
 		"codex": "[Smirk]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Smirk.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Smirk.png",
 		"category": "微信"
 	},
 	{
@@ -1096,7 +1096,7 @@
 		"zh": "[吼嘿]",
 		"data": "[Hey]",
 		"codex": "[Hey]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Hey.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Hey.png",
 		"category": "微信"
 	},
 	{
@@ -1104,7 +1104,7 @@
 		"zh": "[掩面]",
 		"data": "[Facepalm]",
 		"codex": "[Facepalm]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Facepalm.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Facepalm.png",
 		"category": "微信"
 	},
 	{
@@ -1112,7 +1112,7 @@
 		"zh": "[機智]",
 		"data": "[Smart]",
 		"codex": "[Smart]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Smart.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Smart.png",
 		"category": "微信"
 	},
 	{
@@ -1120,7 +1120,7 @@
 		"zh": "[茶]",
 		"data": "[Tea]",
 		"codex": "[Tea]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Tea.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Tea.png",
 		"category": "微信"
 	},
 	{
@@ -1128,7 +1128,7 @@
 		"zh": "[Packet]",
 		"data": "[Packet]",
 		"codex": "[Packet]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Packet.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Packet.png",
 		"category": "微信"
 	},
 	{
@@ -1136,7 +1136,7 @@
 		"zh": "[蠟燭]",
 		"data": "[Candle]",
 		"codex": "[Candle]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Candle.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Candle.png",
 		"category": "微信"
 	},
 	{
@@ -1144,7 +1144,7 @@
 		"zh": "[歐耶]",
 		"data": "[Yeah!]",
 		"codex": "[Yeah!]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Yeah!.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Yeah!.png",
 		"category": "微信"
 	},
 	{
@@ -1152,7 +1152,7 @@
 		"zh": "[皺眉]",
 		"data": "[Concerned]",
 		"codex": "[Concerned]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Concerned.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Concerned.png",
 		"category": "微信"
 	},
 	{
@@ -1160,7 +1160,7 @@
 		"zh": "[抱拳]",
 		"data": "[Salute]",
 		"codex": "[Salute]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Salute.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Salute.png",
 		"category": "微信"
 	},
 	{
@@ -1168,7 +1168,7 @@
 		"zh": "[小雞]",
 		"data": "[Chick]",
 		"codex": "[Chick]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Chick.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Chick.png",
 		"category": "微信"
 	},
 	{
@@ -1176,7 +1176,7 @@
 		"zh": "[福]",
 		"data": "[Blessing]",
 		"codex": "[Blessing]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Blessing.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Blessing.png",
 		"category": "微信"
 	},
 	{
@@ -1184,7 +1184,7 @@
 		"zh": "[再見]",
 		"data": "[Bye]",
 		"codex": "[Bye]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Bye.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Bye.png",
 		"category": "微信"
 	},
 	{
@@ -1192,7 +1192,7 @@
 		"zh": "[發]",
 		"data": "[Rich]",
 		"codex": "[Rich]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Rich.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Rich.png",
 		"category": "微信"
 	},
 	{
@@ -1200,7 +1200,7 @@
 		"zh": "[小狗]",
 		"data": "[Pup]",
 		"codex": "[Pup]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Pup.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Pup.png",
 		"category": "微信"
 	},
 	{
@@ -1208,7 +1208,7 @@
 		"zh": "[吃西瓜]",
 		"data": "[Onlooker]",
 		"codex": "[Onlooker]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Onlooker.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Onlooker.png",
 		"category": "微信"
 	},
 	{
@@ -1216,7 +1216,7 @@
 		"zh": "[加油]",
 		"data": "[GoForIt]",
 		"codex": "[GoForIt]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/GoForIt.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/GoForIt.png",
 		"category": "微信"
 	},
 	{
@@ -1224,7 +1224,7 @@
 		"zh": "[汗]",
 		"data": "[Sweats]",
 		"codex": "[Sweats]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Sweats.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Sweats.png",
 		"category": "微信"
 	},
 	{
@@ -1232,7 +1232,7 @@
 		"zh": "[天啊]",
 		"data": "[OMG]",
 		"codex": "[OMG]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/OMG.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/OMG.png",
 		"category": "微信"
 	},
 	{
@@ -1240,7 +1240,7 @@
 		"zh": "[一言難盡]",
 		"data": "[Emm]",
 		"codex": "[Emm]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Emm.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Emm.png",
 		"category": "微信"
 	},
 	{
@@ -1248,7 +1248,7 @@
 		"zh": "[失敬失敬]",
 		"data": "[Respect]",
 		"codex": "[Respect]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Respect.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Respect.png",
 		"category": "微信"
 	},
 	{
@@ -1256,7 +1256,7 @@
 		"zh": "[旺柴]",
 		"data": "[Doge]",
 		"codex": "[Doge]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Doge.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Doge.png",
 		"category": "微信"
 	},
 	{
@@ -1264,7 +1264,7 @@
 		"zh": "[好的]",
 		"data": "[NoProb]",
 		"codex": "[NoProb]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/NoProb.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/NoProb.png",
 		"category": "微信"
 	},
 	{
@@ -1272,7 +1272,7 @@
 		"zh": "[打臉]",
 		"data": "[MyBad]",
 		"codex": "[MyBad]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/MyBad.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/MyBad.png",
 		"category": "微信"
 	},
 	{
@@ -1280,7 +1280,7 @@
 		"zh": "[哇]",
 		"data": "[Wow]",
 		"codex": "[Wow]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Wow.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Wow.png",
 		"category": "微信"
 	},
 	{
@@ -1288,7 +1288,7 @@
 		"zh": "[加油！]",
 		"data": "[KeepFighting]",
 		"codex": "[KeepFighting]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/KeepFighting.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/KeepFighting.png",
 		"category": "微信"
 	},
 	{
@@ -1296,7 +1296,7 @@
 		"zh": "[翻白眼]",
 		"data": "[Boring]",
 		"codex": "[Boring]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Boring.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Boring.png",
 		"category": "微信"
 	},
 	{
@@ -1304,7 +1304,7 @@
 		"zh": "[666]",
 		"data": "[Awesome]",
 		"codex": "[666]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Awesome.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Awesome.png",
 		"category": "微信"
 	},
 	{
@@ -1312,7 +1312,7 @@
 		"zh": "[讓我看看]",
 		"data": "[LetMeSee]",
 		"codex": "[LetMeSee]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/LetMeSee.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/LetMeSee.png",
 		"category": "微信"
 	},
 	{
@@ -1320,7 +1320,7 @@
 		"zh": "[嘆息]",
 		"data": "[Sigh]",
 		"codex": "[Sigh]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Sigh.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Sigh.png",
 		"category": "微信"
 	},
 	{
@@ -1328,7 +1328,7 @@
 		"zh": "[難受]",
 		"data": "[Hurt]",
 		"codex": "[Hurt]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Hurt.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Hurt.png",
 		"category": "微信"
 	},
 	{
@@ -1336,7 +1336,7 @@
 		"zh": "[崩潰]",
 		"data": "[Broken]",
 		"codex": "[Broken]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Broken.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Broken.png",
 		"category": "微信"
 	},
 	{
@@ -1344,7 +1344,7 @@
 		"zh": "[臉紅]",
 		"data": "[Flushed]",
 		"codex": "[Flushed]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Flushed.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Flushed.png",
 		"category": "微信"
 	},
 	{
@@ -1352,7 +1352,7 @@
 		"zh": "[笑臉]",
 		"data": "[Happy]",
 		"codex": "[Happy]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Happy.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Happy.png",
 		"category": "微信"
 	},
 	{
@@ -1360,7 +1360,7 @@
 		"zh": "[破涕為笑]",
 		"data": "[Lol]",
 		"codex": "[Lol]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Lol.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Lol.png",
 		"category": "微信"
 	},
 	{
@@ -1368,7 +1368,7 @@
 		"zh": "[煙花]",
 		"data": "[Fireworks]",
 		"codex": "[Fireworks]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Fireworks.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Fireworks.png",
 		"category": "微信"
 	},
 	{
@@ -1376,7 +1376,7 @@
 		"zh": "[爆竹]",
 		"data": "[爆竹]",
 		"codex": "[爆竹]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Firecracker.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Firecracker.png",
 		"category": "微信"
 	},
 	{
@@ -1384,7 +1384,7 @@
 		"zh": "[慶祝]",
 		"data": "[Party]",
 		"codex": "[Party]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Party.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Party.png",
 		"category": "微信"
 	},
 	{
@@ -1392,7 +1392,7 @@
 		"zh": "[恐懼]",
 		"data": "[Terror]",
 		"codex": "[Terror]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Terror.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Terror.png",
 		"category": "微信"
 	},
 	{
@@ -1400,7 +1400,7 @@
 		"zh": "[無語]",
 		"data": "[Duh]",
 		"codex": "[Duh]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Duh.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Duh.png",
 		"category": "微信"
 	},
 	{
@@ -1408,7 +1408,7 @@
 		"zh": "[失望]",
 		"data": "[Let Down]",
 		"codex": "[LetDown]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Let Down.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Let Down.png",
 		"category": "微信"
 	},
 	{
@@ -1416,7 +1416,7 @@
 		"zh": "[生病]",
 		"data": "[Sick]",
 		"codex": "[Sick]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Sick.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Sick.png",
 		"category": "微信"
 	},
 	{
@@ -1424,7 +1424,7 @@
 		"zh": "[合十]",
 		"data": "[Worship]",
 		"codex": "[Worship]",
-		"icon": "https://staticfile.typecho.co.uk/emoji/wechat/Worship.png",
+		"icon": "assets/vendors/bs-emoji/emoji/wechat/Worship.png",
 		"category": "微信"
 	},
 	{

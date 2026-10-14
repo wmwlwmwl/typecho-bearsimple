@@ -553,7 +553,8 @@ if(json_decode(json_encode($db->fetchAll($db->query("SHOW FULL COLUMNS FROM ".$t
             else{
                 $tem = $options['siteMaintenance_templates'];
             }
-        $content =  file_get_contents(str_replace("/plugins","",dirname(__DIR__)).'/themes/bearsimple/modules/siteMaintenance/'.$tem);
+        // ponytail: str_replace("/plugins","") 在 Windows 反斜杠路径下不匹配导致路径错位，改用 dirname(__DIR__,2) 直接定位 usr 目录
+        $content =  file_get_contents(dirname(__DIR__, 2).'/themes/bearsimple/modules/siteMaintenance/'.$tem);
         echo $content;
         exit;
         }
@@ -1777,7 +1778,39 @@ substr($result, 10, 16) == substr(md5(substr($result, 26).$keyb), 0, 16)) {
      self::getSecurity('set','__typecho_security_token',$securityToken);
  }
  
+ // ponytail: per-IP 文件缓存壳（TTL 7 天，IP 归属地变化极慢）；缓存目录不可写时静默跳过，仅多一次外呼。
+ // 限制：'天外来客'/'未知' 等失败结果同样缓存 7 天；如需强制刷新删除 usr 缓存目录下 iplocation 分片即可。
  public static function getIpLocation($ip){
+     $cacheKey = md5((string)$ip);
+     $bsOpts = bsOptions::getInstance()::get_option( 'bearsimple' );
+     $cacheRoot = $bsOpts['cache_dir'] ?? '';
+     if ($cacheRoot !== '' && strpos($cacheRoot, '/') !== 0) {
+         $cacheRoot = __TYPECHO_ROOT_DIR__.'/usr/'.$cacheRoot;
+     }
+     if ((string)$cacheRoot === '') {
+         $cacheRoot = __TYPECHO_ROOT_DIR__.'/usr/cache';
+     }
+     $cacheFile = self::hash2dir($cacheKey, rtrim($cacheRoot, '/').'/iplocation').$cacheKey.'.txt';
+     if (is_file($cacheFile)) {
+         $mtime = filemtime($cacheFile);
+         if ($mtime !== false && time() - $mtime < 604800) {
+             $cached = file_get_contents($cacheFile);
+             if ($cached !== false && $cached !== '') {
+                 return $cached;
+             }
+         }
+     }
+     $location = self::getIpLocationRemote($ip);
+     if ($location !== '' && $location !== null) {
+         $cacheDir = dirname($cacheFile);
+         if (is_dir($cacheDir) || @mkdir($cacheDir, 0777, true)) {
+             @file_put_contents($cacheFile, $location);
+         }
+     }
+     return $location;
+ }
+
+ public static function getIpLocationRemote($ip){
      $options = bsOptions::getInstance()::get_option( 'bearsimple' );
      if($options['Comment_ipget_data_choose'] == 2 && $options['Comment_ipget_data_tencent_key'] !== ''){
          if(trim($options['Comment_ipget_data_tencent_sign']) !== ''){
@@ -1787,16 +1820,13 @@ substr($result, 10, 16) == substr(md5(substr($result, 26).$keyb), 0, 16)) {
          else{
         $url = 'https://apis.map.qq.com/ws/location/v1/ip?key='.$options['Comment_ipget_data_tencent_key'].'&ip='.$ip;
          }
-$headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0)';
-
-foreach( $headers as $n => $v )
-{ $headerArr[] = $n .':' . $v; }
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url); 
-curl_setopt($ch, CURLOPT_USERAGENT, $headerArr);
+curl_setopt($ch, CURLOPT_URL, $url);
+// ponytail: 原实现把 header 数组误传给 CURLOPT_USERAGENT（PHP8 起触发 Array to string warning），改为直接传 UA 字符串
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0)');
 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $response = curl_exec($ch);
@@ -1815,21 +1845,18 @@ curl_close($ch);
      }
      else{
 $url = 'https://ip.zxinc.org/api.php?type=json&ip='.$ip;
-$headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0)';
-
-foreach( $headers as $n => $v )
-{ $headerArr[] = $n .':' . $v; }
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url); 
-curl_setopt($ch, CURLOPT_USERAGENT, $headerArr);
+curl_setopt($ch, CURLOPT_URL, $url);
+// ponytail: 原实现把 header 数组误传给 CURLOPT_USERAGENT（PHP8 起触发 Array to string warning），改为直接传 UA 字符串
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0)');
 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $response = curl_exec($ch);
 curl_close($ch);
-    
+
     $info = json_decode($response,true)['data']['country'];
     if($info == null){
     $info = '未知';    
@@ -1952,10 +1979,12 @@ curl_close($ch);
  $options = bsOptions::getInstance()::get_option( 'bearsimple' );
  $db = \Typecho\Db::get();
  $removeChar = ["https://", "http://"]; 
-if (strpos($_SERVER['HTTP_REFERER'], str_replace($removeChar, "", Helper::options()->siteUrl)) == false ) { 
+$vtype = $_POST['vtype'] ?? '';
+// ponytail: HTTP_REFERER 未定义时视为来源错误；strpos 命中位置 0 曾被 == false 误判为来源错误，改用 === false
+if (strpos($_SERVER['HTTP_REFERER'] ?? '', str_replace($removeChar, "", Helper::options()->siteUrl)) === false ) {
     throw new \Typecho\Widget\Exception("抱歉，检测到来源错误，请在正确的页面进行评论。",200);
 }
-if($_POST['SecurityToken'] !== $_SESSION['token'] && !$_POST['vtype']){
+if ($vtype === '' && (empty($_SESSION['token']) || !hash_equals((string)$_SESSION['token'], (string)($_POST['SecurityToken'] ?? '')))){
     throw new \Typecho\Widget\Exception("抱歉，安全检测未通过，请刷新页面后重新进行评论。",200);
 }
  if(Plugin::xsscheck($comment['text'])) {
@@ -1966,7 +1995,7 @@ $comment['url'] =htmlspecialchars($comment['url'],ENT_QUOTES,'UTF-8');
         if ($comment['mail'] !== null && preg_match("/^[A-Za-z0-9\-]+([_\.][A-Za-z0-9\-]+)*@([A-Za-z0-9\-]+\.)+[A-Za-z]{2,}$/", $comment['mail']) !== 1) {
     throw new \Typecho\Widget\Exception("抱歉，系统检测到您的评论包含危险内容，请返回修改后再试。", 200);                      
 }
- if(!$_POST['vtype'] && $_POST['vtype'] !== 'cross' && $_POST['vtype'] !== 'friendcircle' && $_POST['vtype'] !== 'circlecomment'){ //判断POST过来的vtype字段是否为指定类型或为空
+ if(empty($vtype)){ //判断POST过来的vtype字段是否为指定类型或为空
  
 
          if (strlen(trim(preg_replace('/\xc2\xa0/',' ',$comment['text']))) == 0) {
@@ -2238,19 +2267,19 @@ public static function filter2($comment)
             $db->query($db->insert('table.bscore_iplocation_data')->rows($ip));
      
  }
- if($_POST['vtype'] == 'friendcircle'){
-     if($_POST['getRead'] == 'on'){
+ if(($_POST['vtype'] ?? '') == 'friendcircle'){
+     if(($_POST['getRead'] ?? '') == 'on'){
          $private = true;
      }
      else{
          $private = false;
      }
-     if($_POST['resources']){
-      $_POST['resources'] = json_encode(explode(',',$_POST['resources']));   
+     if(($_POST['resources'] ?? '') !== ''){
+      $_POST['resources'] = json_encode(explode(',',$_POST['resources']));
      }
      $circle_data = array(
                 'coid' => $comment->coid,
-                'location' => $_POST['getMapInput'],
+                'location' => $_POST['getMapInput'] ?? '',
                 'private' => $private,
                 'resources' => $_POST['resources'],
             );
@@ -2549,7 +2578,10 @@ public static function getEmo($comment){
 $context = stream_context_create($opts);
 
         if($Temoptions['Emoji_HideDefault'] == false || $Temoptions['Emoji_HideDefault'] == ''){
-        $res = json_decode(file_get_contents(str_replace("/plugins","",dirname(__DIR__)).'/themes/bearsimple/assets/vendors/bs-emoji/bs-emoji.json', false, $context),true);
+        // ponytail: 表情图标已本地化到主题 assets，JSON 内存相对子路径，输出前拼站点主题 URL（原为第三方 CDN 绝对链接）
+        // ponytail: str_replace("/plugins","") 在 Windows 反斜杠路径下不匹配导致路径错位，改用 dirname(__DIR__,2) 直接定位 usr 目录
+        $rawJson = (string)file_get_contents(dirname(__DIR__, 2).'/themes/bearsimple/assets/vendors/bs-emoji/bs-emoji.json', false, $context);
+        $res = json_decode(str_replace('assets/vendors/bs-emoji/emoji/', $options->themeUrl.'/assets/vendors/bs-emoji/emoji/', $rawJson),true);
         $emo = $res;
         }
         if($Temoptions['Emoji_Diy'] == true && $Temoptions['Emoji_DiyUrl'] !== ''){

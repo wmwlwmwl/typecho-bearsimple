@@ -6,12 +6,11 @@
 **/
 $options= Helper::options();
 header("HTTP/1.1 200 OK");
-    header('Access-Control-Allow-Origin:*');
-    header("Access-Control-Allow-Headers:Origin, X-Requested-With, Content-Type, Accept");
+/* ponytail: 页面模板同源使用，移除多余的 CORS 通配符（与 friendlinkAction/cron.php 同一轮收紧） */
  $this->need('modules/UserCenter/common/head.php');
   ?>
-  <link rel="stylesheet" href="https://staticfile.typecho.co.uk/fancybox/fancybox.min.css">
-  <link href="https://staticfile.typecho.co.uk/froala/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="<?php AssetsDir2();?>assets/vendors/fancybox/fancybox.min.css">
+  <link href="<?php AssetsDir2();?>assets/vendors/froala/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
 
 <div class="pure-g" id="layout">
           <div class="pure-u-1 pure-u-md-4-4">
@@ -603,13 +602,13 @@ $(document).on("click",".tabs li",function(){
 
         
         </div></div>
-<script src="https://staticfile.typecho.co.uk/froala/js/froala_editor.pkgd.min.js"></script>
-<script src="https://staticfile.typecho.co.uk/froala/js/languages/zh_cn.js"></script>
+<script src="<?php AssetsDir2();?>assets/vendors/froala/js/froala_editor.pkgd.min.js"></script>
+<script src="<?php AssetsDir2();?>assets/vendors/froala/js/languages/zh_cn.js"></script>
 <script>
 
   $(document).ready(function() {
-    
-$.getScript('https://staticfile.typecho.co.uk/fancybox/fancybox.umd.min.js',function(){
+
+$.getScript('<?php AssetsDir2();?>assets/vendors/fancybox/fancybox.umd.min.js',function(){
   Fancybox.bind('[data-fancybox="single"]', {
       groupAttr: false,
 });

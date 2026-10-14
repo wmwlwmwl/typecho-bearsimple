@@ -55,8 +55,10 @@ function bs_emoji_data(){
     );
     $context = stream_context_create($opts);
     if(Bsoptions('Emoji_HideDefault') == false || Bsoptions('Emoji_HideDefault') == ''){
-        // ponytail: 直接读本地文件，原先走站点 URL 回环 HTTP 每请求一次
-        $res = json_decode(file_get_contents(__DIR__.'/assets/vendors/bs-emoji/bs-emoji.json', false, $context),true) ?: [];
+        // ponytail: 直接读本地文件，原先走站点 URL 回环 HTTP 每请求一次。
+        // 表情图标已本地化到主题 assets（JSON 内存相对子路径），此处拼接站点主题 URL（原为第三方 CDN 绝对链接）
+        $rawJson = (string)file_get_contents(__DIR__.'/assets/vendors/bs-emoji/bs-emoji.json', false, $context);
+        $res = json_decode(str_replace('assets/vendors/bs-emoji/emoji/', Helper::options()->themeUrl.'/assets/vendors/bs-emoji/emoji/', $rawJson),true) ?: [];
         $emo = $res;
     }
     if(Bsoptions('Emoji_Diy') == true && Bsoptions('Emoji_DiyUrl') !== ''){
