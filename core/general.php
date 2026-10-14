@@ -1121,7 +1121,9 @@ function lastComments(){
             $val = \Typecho\Widget::widget('Widget\Base\Contents')->push($val);
             $postsMap[$val['cid']] = array(
                 'title' => htmlspecialchars($val['title']),
-                'permalink' => $val['permalink'],
+                // ponytail: push 后的数组不含 permalink（magic getter 仅对象访问可触发），原 $val['permalink'] 恒为 null
+                // 导致侧栏"评论于"链接退化为纯锚点无法跳转；改按站点 post 路由（/archives/[cid]/）生成完整 URL
+                'permalink' => \Typecho\Router::url('post', ['cid' => $val['cid']]),
             );
         }
     }
